@@ -1,0 +1,64 @@
+{
+  "characters": [
+    {
+      "id": "c001",
+      "name": "Firefly",
+      "portrait": "assets/characters/firefly.png"
+    },
+    {
+      "id": "c002",
+      "name": "Minova",
+      "portrait": "assets/characters/minova.png"
+    },
+    {
+      "id": "c003",
+      "name": "Chloe Nguyen",
+      "portrait": "assets/characters/chloe.webp"
+    },
+    {
+      "id": "c004",
+      "name": "Dev Patel",
+      "portrait": "assets/characters/dev_patel_final.jpg"
+    },
+    {
+      "id": "c005",
+      "name": "Elena Rossi",
+      "portrait": "assets/characters/elena.jpg"
+    },
+    {
+      "id": "c006",
+      "name": "Farid Haddad",
+      "portrait": "assets/characters/farid-2.jpg"
+    },
+    {
+      "id": "c007",
+      "name": "Grace Okafor",
+      "portrait": "assets/characters/grace.jpg"
+    },
+    {
+      "id": "c008",
+      "name": "Hugo Lindqvist",
+      "portrait": "assets/characters/hugo.jpg"
+    },
+    {
+      "id": "c009",
+      "name": "Ines Duarte",
+      "portrait": "assets/characters/ines.jpg"
+    },
+    {
+      "id": "c010",
+      "name": "Jae-won Park",
+      "portrait": "assets/characters/jaewon.jpg"
+    },
+    {
+      "id": "c011",
+      "name": "Kira Novak",
+      "portrait": "assets/characters/kira.jpg"
+    },
+    {
+      "id": "c012",
+      "name": "Liam Murphy",
+      "portrait": "assets/characters/liam.jpg"
+    }
+  ]
+}
