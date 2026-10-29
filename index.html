@@ -12,7 +12,7 @@
   --w:128px;            /* portrait size */
   --shift:70px;         /* slide distance */
   --ease:cubic-bezier(.22,1.2,.36,1);
-  --bg-opacity:.5;      /* background slideshow opacity: 0 (hidden) to 1 (full) */
+  --bg-opacity:.2;      /* background slideshow opacity: 0 (hidden) to 1 (full) */
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
@@ -127,6 +127,10 @@ async function getJSON(url){
 }
 
 async function load(){
+  // start both requests at once instead of one after the other
+  const bgReq=getJSON(BACKGROUNDS_URL)
+    .then(d=>(d.backgrounds||[]).filter(b=>b&&b.image))
+    .catch(e=>{ console.warn("No backgrounds loaded",e); return []; });
   try{
     const d=await getJSON(CHARACTERS_URL);
     characters=(d.characters||[]).filter(c=>c&&c.id&&c.name);
@@ -136,9 +140,9 @@ async function load(){
     $hint.textContent="Could not load data/characters.json. If you opened the file directly, serve the folder instead (python3 -m http.server).";
     return;
   }
-  try{ backgrounds=((await getJSON(BACKGROUNDS_URL)).backgrounds||[]).filter(b=>b&&b.image); }
-  catch(e){ console.warn("No backgrounds loaded",e); }
-  changeBackground();
+  backgrounds=await bgReq;
+  // first background and first round appear together (waits for the image, but at most 1.5 s)
+  await Promise.race([changeBackground(), new Promise(r=>setTimeout(r,1500))]);
   nextRound();
 }
 
@@ -146,9 +150,16 @@ function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.rando
 
 /* ---------- background slideshow ---------- */
 function preload(url){return new Promise(r=>{const i=new Image();i.onload=()=>r(true);i.onerror=()=>r(false);i.src=url})}
+let bgQueued=-1;
+function pickBg(){
+  if(!backgrounds.length) return -1;
+  if(backgrounds.length===1) return 0;
+  let n; do{ n=Math.random()*backgrounds.length|0; }while(n===bgIndex);
+  return n;
+}
 async function changeBackground(){
   if(!backgrounds.length||(backgrounds.length===1&&bgIndex===0)) return;
-  let n; do{ n=Math.random()*backgrounds.length|0; }while(backgrounds.length>1&&n===bgIndex);
+  const n=bgQueued>=0?bgQueued:pickBg(); bgQueued=-1;
   const url=encodeURI(backgrounds[n].image);
   if(!await preload(url)) return;                 // skip broken images
   bgIndex=n;
@@ -158,6 +169,9 @@ async function changeBackground(){
   next.classList.add("on");
   if(bgFront>=0) prev.classList.remove("on");
   bgFront=bgFront===0?1:0;
+  // download the next one in the background so the swap on Submit is instant
+  const q=pickBg();
+  if(q>=0&&q!==bgIndex){ bgQueued=q; preload(encodeURI(backgrounds[q].image)); }
 }
 
 /* ---------- round ---------- */
