@@ -52,6 +52,18 @@ main{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex
 .col.worst .portrait{border-color:var(--red);box-shadow:0 0 0 1px var(--red),0 0 28px 2px rgba(255,107,107,.55),0 0 70px rgba(255,107,107,.25);animation:pulseR 2.6s ease-in-out infinite}
 @keyframes pulseG{50%{box-shadow:0 0 0 1px var(--green),0 0 36px 4px rgba(155,209,123,.7),0 0 90px rgba(155,209,123,.32)}}
 @keyframes pulseR{50%{box-shadow:0 0 0 1px var(--red),0 0 36px 4px rgba(255,107,107,.7),0 0 90px rgba(255,107,107,.32)}}
+/* colored layer BEHIND the image, so transparent PNGs show green / red */
+.portrait::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity .45s;background:radial-gradient(circle at 50% 35%,var(--tint-hi,#fff),var(--tint,#fff))}
+.portrait span{position:relative}
+.col.best .portrait{--tint:var(--green);--tint-hi:#c9edb3}
+.col.worst .portrait{--tint:var(--red);--tint-hi:#ffa3a3}
+.col.best .portrait::before,.col.worst .portrait::before{opacity:1}
+.col.best .portrait span,.col.worst .portrait span{color:#0b0c0f}
+
+/* glowing BEST / WORST words in the title */
+.tag-best,.tag-worst{font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.tag-best{color:var(--green);text-shadow:0 0 8px rgba(155,209,123,.9),0 0 22px rgba(155,209,123,.6),0 0 44px rgba(155,209,123,.35)}
+.tag-worst{color:var(--red);text-shadow:0 0 8px rgba(255,107,107,.9),0 0 22px rgba(255,107,107,.6),0 0 44px rgba(255,107,107,.35)}
 .name{margin-top:10px;font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s}
 .col.best .name{color:var(--green)} .col.worst .name{color:var(--red)}
 .arrow:focus-visible,.portrait:focus-visible,#submit:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
@@ -98,7 +110,7 @@ main{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex
 <body>
 <div class="bg" aria-hidden="true"><div class="bg-layer"></div><div class="bg-layer"></div></div>
 <main>
-  <p class="hint">Choose one best and one worst. Tap a portrait to clear it.</p>
+  <p class="hint">Choose one <b class="tag-best">BEST</b> and one <b class="tag-worst">WORST</b>. Tap a portrait to clear it.</p>
   <div class="row" id="row"></div>
   <button id="submit" disabled>Submit (Spacebar)</button>
   <div id="status" role="status" aria-live="polite"></div>
