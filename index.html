@@ -53,11 +53,13 @@ main{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex
 @keyframes pulseG{50%{box-shadow:0 0 0 1px var(--green),0 0 36px 4px rgba(155,209,123,.7),0 0 90px rgba(155,209,123,.32)}}
 @keyframes pulseR{50%{box-shadow:0 0 0 1px var(--red),0 0 36px 4px rgba(255,107,107,.7),0 0 90px rgba(255,107,107,.32)}}
 /* colored layer BEHIND the image, so transparent PNGs show green / red */
-.portrait::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity .45s;background:radial-gradient(circle at 50% 35%,var(--tint-hi,#fff),var(--tint,#fff))}
-.portrait span{position:relative}
-.col.best .portrait{--tint:var(--green);--tint-hi:#c9edb3}
-.col.worst .portrait{--tint:var(--red);--tint-hi:#ffa3a3}
-.col.best .portrait::before,.col.worst .portrait::before{opacity:1}
+.portrait{isolation:isolate}
+.portrait::before,.portrait::after{content:"";position:absolute;inset:0;z-index:-1;opacity:0;transition:opacity .45s}
+.portrait::before{background:radial-gradient(circle at 50% 35%,#c9edb3,var(--green))}
+.portrait::after{background:radial-gradient(circle at 50% 35%,#ffa3a3,var(--red))}
+.portrait span{position:relative;transition:color .45s}
+.col.best .portrait::before{opacity:1}
+.col.worst .portrait::after{opacity:1}
 .col.best .portrait span,.col.worst .portrait span{color:#0b0c0f}
 
 /* glowing BEST / WORST words in the title */
@@ -110,7 +112,7 @@ main{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex
 <body>
 <div class="bg" aria-hidden="true"><div class="bg-layer"></div><div class="bg-layer"></div></div>
 <main>
-  <p class="hint">Choose one <b class="tag-best">BEST</b> and one <b class="tag-worst">WORST</b>. Tap a portrait to clear it.</p>
+  <p class="hint">Choose the <b class="tag-best">BEST</b> and <b class="tag-worst">WORST</b> among these characters!</p>
   <div class="row" id="row"></div>
   <button id="submit" disabled>Submit (Spacebar)</button>
   <div id="status" role="status" aria-live="polite"></div>
