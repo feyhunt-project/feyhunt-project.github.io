@@ -12,16 +12,17 @@
   --w:128px;            /* portrait size */
   --shift:70px;         /* slide distance */
   --ease:cubic-bezier(.22,1.2,.36,1);
+  --bg-opacity:.5;      /* background slideshow opacity: 0 (hidden) to 1 (full) */
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-body{background:radial-gradient(900px 500px at 50% 0,#171a22 0,var(--bg) 70%) no-repeat var(--bg)}
-main{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:max(24px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+html,body{margin:0;color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+html{background:radial-gradient(900px 500px at 50% 0,#171a22 0,var(--bg) 70%) no-repeat var(--bg)}
+main{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:max(24px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
 
 .hint{margin:0;font-size:14px;color:var(--muted);text-align:center;letter-spacing:.01em}
 .row{display:flex;gap:30px;justify-content:center}
 
-.bg{position:fixed;inset:0;z-index:-1;opacity:.2;overflow:hidden;pointer-events:none}
+.bg{position:fixed;inset:0;z-index:0;opacity:var(--bg-opacity);overflow:hidden;pointer-events:none}
 .bg-layer{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1.12);filter:blur(16px);
   transition:opacity 1.8s ease,transform 7s ease-out,filter 1.8s ease}
 .bg-layer.on{opacity:1;transform:scale(1);filter:blur(0)}
@@ -85,8 +86,8 @@ main{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align
   .portrait{flex:none;border-radius:14px;font-size:22px}
   .name{margin:0;font-size:15px;color:var(--ink);white-space:normal;overflow-wrap:anywhere}
   .col.best .name{color:var(--green)} .col.worst .name{color:var(--red)}
-  #submit{width:100%;max-width:420px}
-  .hint{font-size:13px}
+  #submit{width:100%;max-width:420px;margin-top:22px}
+  .hint{font-size:13px;margin-bottom:22px}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
