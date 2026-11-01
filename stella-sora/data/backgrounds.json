@@ -1,0 +1,20 @@
+{
+  "backgrounds": [
+    {
+      "id": "bg01",
+      "image": "assets/backgrounds/BG_beilin_street.png"
+    },
+    {
+      "id": "bg02",
+      "image": "assets/backgrounds/BG_city_street_daylight.png"
+    },
+    {
+      "id": "bg03",
+      "image": "assets/backgrounds/BG_field_daylight.png"
+    },
+    {
+      "id": "bg04",
+      "image": "assets/backgrounds/BG_ruin_travellers_home_outside.png"
+    }
+  ]
+}
