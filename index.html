@@ -66,6 +66,28 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .col.worst .portrait::after{opacity:1}
 .col.best .portrait span,.col.worst .portrait span{color:#0b0c0f}
 
+/* ---------- sci-fi chevron stream + light beam on picked characters ---------- */
+.card{position:relative;isolation:isolate}
+.chev{position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:0;transition:opacity .4s}
+.chev-best{--dir:1;--cc:#eaffdc;--cg:rgba(155,209,123,.95)}
+.chev-worst{--dir:-1;--cc:#ffe3e3;--cg:rgba(255,107,107,.95)}
+.col.best .chev-best,.col.worst .chev-worst{opacity:1}
+.chev i{position:absolute;left:50%;top:50%;width:calc(52*var(--u));height:calc(52*var(--u));margin:calc(-26*var(--u)) 0 0 calc(-26*var(--u));opacity:0;
+  animation:flow 1.8s linear infinite;animation-delay:calc(var(--k) * -.6s)}
+.chev svg{width:100%;height:100%;display:block;fill:none;stroke:var(--cc);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;transform:scaleY(var(--dir));
+  filter:drop-shadow(0 0 calc(4*var(--u)) var(--cg)) drop-shadow(0 0 calc(10*var(--u)) var(--cg))}
+@keyframes flow{0%{transform:translateY(calc(var(--dir) * 70%));opacity:0}25%,65%{opacity:.95}100%{transform:translateY(calc(var(--dir) * -70%));opacity:0}}
+@keyframes flowx{0%{transform:translateX(calc(var(--dir) * 70%));opacity:0}25%,65%{opacity:.95}100%{transform:translateX(calc(var(--dir) * -70%));opacity:0}}
+
+.beam{position:absolute;z-index:-1;pointer-events:none;opacity:0;left:50%;width:calc(var(--w) * .72);margin-left:calc(var(--w) * -.36);height:calc(100*var(--u));
+  filter:blur(calc(5*var(--u)));-webkit-mask-image:linear-gradient(to right,transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(to right,transparent,#000 30%,#000 70%,transparent)}
+.beam::after{content:"";position:absolute;left:50%;width:calc(4*var(--u));margin-left:calc(-2*var(--u));top:0;bottom:0;background:linear-gradient(var(--cdir),rgba(255,255,255,.9),transparent)}
+.beam-best{bottom:100%;--cdir:to top;background:linear-gradient(to top,rgba(155,209,123,.8),rgba(155,209,123,.25) 55%,transparent)}
+.beam-worst{top:var(--w);--cdir:to bottom;background:linear-gradient(to bottom,rgba(255,107,107,.8),rgba(255,107,107,.25) 55%,transparent)}
+.col.best .beam-best,.col.worst .beam-worst{opacity:1;animation:beamIn .5s ease-out both,beam 2.4s ease-in-out .5s infinite}
+@keyframes beamIn{from{opacity:0}to{opacity:1}}
+@keyframes beam{0%,100%{opacity:1}50%{opacity:.55}}
+
 /* glowing BEST / WORST words in the title */
 .tag-best,.tag-worst{font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .tag-best{color:var(--green);text-shadow:0 0 calc(8*var(--u)) rgba(155,209,123,.9),0 0 calc(22*var(--u)) rgba(155,209,123,.6),0 0 calc(44*var(--u)) rgba(155,209,123,.35)}
@@ -105,6 +127,14 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   .name{margin:0;font-size:15px;color:var(--ink);white-space:normal;overflow-wrap:anywhere}
   .col.best .name{color:var(--green)} .col.worst .name{color:var(--red)}
   #submit{width:100%;max-width:420px;margin-top:22px}
+  /* chevrons and beams run left (best) / right (worst) */
+  .chev i{width:34px;height:34px;margin:-17px 0 0 -17px;animation-name:flowx}
+  .chev svg{transform:rotate(-90deg) scaleY(var(--dir))}
+  .beam{width:50px;height:auto;margin:0;top:8%;bottom:8%;
+    -webkit-mask-image:linear-gradient(to bottom,transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 30%,#000 70%,transparent)}
+  .beam::after{left:0;right:0;top:50%;bottom:auto;width:auto;height:3px;margin:-1.5px 0 0}
+  .beam-best{right:100%;left:auto;--cdir:to left;background:linear-gradient(to left,rgba(155,209,123,.8),rgba(155,209,123,.25) 55%,transparent)}
+  .beam-worst{left:var(--w);right:auto;top:8%;--cdir:to right;background:linear-gradient(to right,rgba(255,107,107,.8),rgba(255,107,107,.25) 55%,transparent)}
   h1{font-size:17px}
   #submit{font-size:13.33px}
   .hint{font-size:13px;margin-bottom:22px}
@@ -112,6 +142,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
   .col{opacity:1;transform:none}
+  .chev i{opacity:.9}.chev i:not(:nth-child(2)){display:none}
 }
 </style>
 </head>
@@ -144,6 +175,8 @@ document.title=PAGE_TITLE;
 document.getElementById("title").textContent=PAGE_TITLE;
 const CHEV_UP='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
 const CHEV_DN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+const CHEV_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l8-8 8 8"/></svg>';
+const chevs=k=>`<em class="chev chev-${k}">`+[0,1,2].map(n=>`<i style="--k:${n}">${CHEV_SVG}</i>`).join("")+"</em>";
 const esc=s=>String(s).replace(/[<>&"]/g,"");
 
 async function getJSON(url){
@@ -213,8 +246,9 @@ function nextRound(){
       <div class="stack">
         <button class="arrow up" aria-label="Mark ${name} as best">${CHEV_UP}</button>
         <div class="card">
-          <button class="portrait" aria-label="${name}: clear pick"><img alt="" src="${encodeURI(c.portrait||"")}"></button>
+          <button class="portrait" aria-label="${name}: clear pick"><img alt="" src="${encodeURI(c.portrait||"")}">${chevs("best")}${chevs("worst")}</button>
           <div class="name">${name}</div>
+          <span class="beam beam-best"></span><span class="beam beam-worst"></span>
         </div>
         <button class="arrow down" aria-label="Mark ${name} as worst">${CHEV_DN}</button>
       </div>`;
