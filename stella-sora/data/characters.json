@@ -2,63 +2,78 @@
   "characters": [
     {
       "id": "c001",
-      "name": "Firefly",
-      "portrait": "assets/characters/firefly.png"
+      "name": "Chaton",
+      "portrait": "assets/characters/chaton.png"
     },
     {
       "id": "c002",
-      "name": "Minova",
-      "portrait": "assets/characters/minova.png"
+      "name": "Chixia",
+      "portrait": "assets/characters/chixia.png"
     },
     {
       "id": "c003",
-      "name": "Chloe Nguyen",
-      "portrait": "assets/characters/chloe.webp"
-    },
+      "name": "Firefly",
+      "portrait": "assets/characters/firefly.png"
+    },    
     {
       "id": "c004",
-      "name": "Dev Patel",
-      "portrait": "assets/characters/dev_patel_final.jpg"
+      "name": "Firenzey",
+      "portrait": "assets/characters/firenze.png"
     },
     {
       "id": "c005",
-      "name": "Elena Rossi",
-      "portrait": "assets/characters/elena.jpg"
+      "name": "Jinglin",
+      "portrait": "assets/characters/jinglin.png"
     },
     {
       "id": "c006",
-      "name": "Farid Haddad",
-      "portrait": "assets/characters/farid-2.jpg"
+      "name": "Kasimira",
+      "portrait": "assets/characters/kasimira.png"
     },
     {
       "id": "c007",
-      "name": "Grace Okafor",
-      "portrait": "assets/characters/grace.jpg"
-    },
+      "name": "Minova",
+      "portrait": "assets/characters/minova.png"
+    },    
     {
       "id": "c008",
-      "name": "Hugo Lindqvist",
-      "portrait": "assets/characters/hugo.jpg"
+      "name": "Mistique",
+      "portrait": "assets/characters/mistique.png"
     },
     {
       "id": "c009",
-      "name": "Ines Duarte",
-      "portrait": "assets/characters/ines.jpg"
+      "name": "Nanoha",
+      "portrait": "assets/characters/nanoha.png"
     },
     {
       "id": "c010",
-      "name": "Jae-won Park",
-      "portrait": "assets/characters/jaewon.jpg"
+      "name": "Firstlight Noya",
+      "portrait": "assets/characters/noya_firstlight.png"
     },
     {
       "id": "c011",
-      "name": "Kira Novak",
-      "portrait": "assets/characters/kira.jpg"
+      "name": "Ridge",
+      "portrait": "assets/characters/ridge.png"
     },
     {
       "id": "c012",
-      "name": "Liam Murphy",
-      "portrait": "assets/characters/liam.jpg"
+      "name": "Shimiao",
+      "portrait": "assets/characters/shimiao.png"
+    },
+    {
+      "id": "c013",
+      "name": "Sparkla",
+      "portrait": "assets/characters/sparkla.png"
+    },
+    {
+      "id": "c014",
+      "name": "Tilia",
+      "portrait": "assets/characters/tilia.png"
+    },
+    {
+      "id": "c015",
+      "name": "Suntide Willow",
+      "portrait": "assets/characters/willow_suntide.jpg"
     }
   ]
 }
