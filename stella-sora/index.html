@@ -123,13 +123,13 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
     <p class="hint">Choose the <b class="tag-best">BEST</b> and <b class="tag-worst">WORST</b> among these characters!</p>
   </header>
   <div class="row" id="row"></div>
-  <button id="submit" disabled>Submit (Spacebar)</button>
+  <button id="submit" disabled>Submit</button>
   <div id="status" role="status" aria-live="polite"></div>
 </main>
 
 <script>
 const PAGE_TITLE = "Stella Sora Favorite Character Voting!";   // change the page title here
-const MAX_ROUND_SIZE = 5;
+const MAX_ROUND_SIZE = 3;
 const SUBMIT_COOLDOWN_MS = 1000;   // design note: max 1 submit / sec
 const CHARACTERS_URL = "data/characters.json";   // source of truth for characters
 const BACKGROUNDS_URL = "data/backgrounds.json"; // source of truth for backgrounds
