@@ -19,9 +19,9 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 html{background:radial-gradient(calc(900*var(--u)) calc(500*var(--u)) at 50% 0,#171a22 0,var(--bg) 70%) no-repeat var(--bg)}
-main{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(20*var(--u));padding:max(calc(24*var(--u)),env(safe-area-inset-top)) calc(16*var(--u)) max(calc(24*var(--u)),env(safe-area-inset-bottom))}
+main{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(14*var(--u));padding:max(calc(16*var(--u)),env(safe-area-inset-top)) calc(16*var(--u)) max(calc(16*var(--u)),env(safe-area-inset-bottom))}
 
-.head{display:flex;flex-direction:column;align-items:center;gap:calc(8*var(--u));text-align:center}
+.head{display:flex;flex-direction:column;align-items:center;gap:calc(6*var(--u));text-align:center}
 h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .hint{margin:0;font-size:calc(14*var(--u));color:var(--muted);text-align:center;letter-spacing:.01em}
 .row{display:flex;gap:calc(30*var(--u));justify-content:center}
@@ -32,7 +32,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .bg-layer.on{opacity:1;transform:scale(1);filter:blur(0)}
 
 /* ---------- column / slide ---------- */
-.col{width:var(--w);height:calc(var(--w) + calc(230*var(--u)));display:flex;align-items:center;justify-content:center}
+.col{width:var(--w);height:calc(var(--w) + calc(190*var(--u)));display:flex;align-items:center;justify-content:center}
 .stack{display:flex;flex-direction:column;align-items:center;gap:calc(14*var(--u));transition:transform .55s var(--ease)}
 .col.best  .stack{transform:translateY(calc(var(--shift) * -1))}
 .col.worst .stack{transform:translateY(var(--shift))}
@@ -72,7 +72,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .tag-worst{color:var(--red);text-shadow:0 0 calc(8*var(--u)) rgba(255,107,107,.9),0 0 calc(22*var(--u)) rgba(255,107,107,.6),0 0 calc(44*var(--u)) rgba(255,107,107,.35)}
 .name{margin-top:calc(10*var(--u));font-size:calc(14*var(--u));color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s}
 .col.best .name{color:var(--green)} .col.worst .name{color:var(--red)}
-.arrow:focus-visible,.portrait:focus-visible,#submit:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u))}
+.arrow:focus-visible,.portrait:focus-visible,#submit:focus-visible,#comment-toggle:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u))}
 
 /* ---------- round enter / exit ---------- */
 .col{opacity:0;transform:translateY(calc(14*var(--u)));animation:enter .6s var(--ease) forwards;animation-delay:calc(var(--i) * 70ms)}
@@ -81,19 +81,39 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 @keyframes leave{from{opacity:1;transform:none}to{opacity:0;transform:translateY(calc(-10*var(--u)))}}
 
 /* ---------- submit ---------- */
-#submit{width:min(100%,calc(var(--w) * 3 + calc(60*var(--u))));height:calc(54*var(--u));border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-family:inherit;font-size:calc(16*var(--u));font-weight:500;letter-spacing:.02em;cursor:not-allowed;
+#submit{width:min(100%,calc(var(--w) * 3 + calc(60*var(--u))));height:calc(50*var(--u));border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-family:inherit;font-size:calc(16*var(--u));font-weight:500;letter-spacing:.02em;cursor:not-allowed;
   transition:background .35s,color .35s,box-shadow .45s,border-color .35s,transform .15s}
 #submit:not(:disabled){cursor:pointer;background:var(--ink);color:#0b0c0f;border-color:var(--ink);box-shadow:0 0 calc(34*var(--u)) rgba(255,255,255,.22)}
 #submit:not(:disabled):hover{box-shadow:0 0 calc(48*var(--u)) rgba(255,255,255,.35)}
 #submit:not(:disabled):active{transform:scale(.98)}
+/* ---------- optional comment (collapsed by default) ---------- */
+.comment{width:min(100%,calc(var(--w) * 3 + calc(60*var(--u))));display:flex;flex-direction:column;align-items:center}
+#comment-toggle{display:inline-flex;align-items:center;gap:calc(6*var(--u));padding:calc(4*var(--u)) calc(14*var(--u));border:0;border-radius:calc(999*var(--u));background:none;color:var(--muted);font-family:inherit;font-size:calc(14*var(--u));letter-spacing:.01em;cursor:pointer;transition:color .25s,background .25s}
+#comment-toggle:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+#comment-toggle svg{width:calc(14*var(--u));height:calc(14*var(--u));fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
+#comment-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.comment-panel{display:grid;grid-template-rows:0fr;width:100%;transition:grid-template-rows .3s ease}
+.comment-panel.open{grid-template-rows:1fr}
+.comment-inner{min-height:0;overflow:hidden;visibility:hidden;transition:visibility 0s .3s}   /* hidden = not focusable when collapsed */
+.comment-panel.open .comment-inner{visibility:visible;transition-delay:0s}
+.comment-field{padding:calc(4*var(--u)) calc(6*var(--u)) calc(4*var(--u))}
+#comment{display:block;width:100%;height:calc(56*var(--u));padding:calc(9*var(--u)) calc(16*var(--u));border-radius:calc(18*var(--u));border:calc(1*var(--u)) solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font-family:inherit;font-size:calc(14*var(--u));line-height:1.45;resize:none;
+  transition:border-color .3s,background .3s,box-shadow .3s,opacity .3s}
+.comment-box{position:relative}
+.comment-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:calc(9*var(--u)) calc(16*var(--u));text-align:center;color:var(--muted);font-size:calc(14*var(--u));line-height:1.45;pointer-events:none;transition:opacity .2s}
+#comment:not(:placeholder-shown)+.comment-ph{display:none}   /* prompt disappears once they type; typed text is left-aligned as usual */
+#comment:disabled+.comment-ph{opacity:.5}
+#comment:focus{outline:none;border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.06);box-shadow:0 0 calc(6*var(--u)) rgba(255,255,255,.12)}
+#comment:disabled{opacity:.5}
+.comment-count{margin-top:calc(3*var(--u));padding-right:calc(6*var(--u));text-align:right;font-size:calc(11*var(--u));line-height:1.2;color:var(--muted);font-variant-numeric:tabular-nums}
 #status{position:fixed;left:0;right:0;bottom:calc(28*var(--u));text-align:center;pointer-events:none;font-size:calc(14*var(--u));color:var(--green);opacity:0;transition:opacity .3s}
 #status.show{opacity:1}
 
 /* ---------- mobile: vertical list, best (left) <-> worst (right) ---------- */
 @media (max-width:700px){
   :root{--u:1px;--w:68px;--shift:30px}
-  main{gap:14px;justify-content:center}
-  .row{flex-direction:column;gap:12px;width:100%;align-items:center}
+  main{gap:10px;justify-content:center;padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(14px,env(safe-area-inset-bottom))}
+  .row{flex-direction:column;gap:10px;width:100%;align-items:center}
   .col{width:100%;height:auto}
   .stack{flex-direction:row;gap:8px}
   .col.best  .stack{transform:translateX(calc(var(--shift) * -1))}
@@ -104,10 +124,14 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   .portrait{flex:none;border-radius:14px;font-size:22px}
   .name{margin:0;font-size:15px;color:var(--ink);white-space:normal;overflow-wrap:anywhere}
   .col.best .name{color:var(--green)} .col.worst .name{color:var(--red)}
-  #submit{width:100%;max-width:420px;margin-top:22px}
+  .comment{width:100%;max-width:420px}
+  #comment-toggle{font-size:13px}
+  #comment{height:56px;padding:8px 14px;border-radius:14px;font-size:16px}   /* 16px stops iOS zooming on focus */
+  .comment-count{font-size:11px}
+  #submit{width:100%;max-width:420px;margin-top:0;height:48px}
   h1{font-size:17px}
   #submit{font-size:13.33px}
-  .hint{font-size:13px;margin-bottom:22px}
+  .hint{font-size:13px;margin-bottom:6px}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
@@ -120,9 +144,26 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 <main>
   <header class="head">
     <h1 id="title"></h1>
-    <p class="hint">Choose the <b class="tag-best">BEST</b> and <b class="tag-worst">WORST</b> among these characters!</p>
+    <p class="hint">Choose which character you like the <b class="tag-best">MOST</b> and the <b class="tag-worst">LEAST</b></p>
   </header>
   <div class="row" id="row"></div>
+  <div class="comment">
+    <button type="button" id="comment-toggle" aria-expanded="true" aria-controls="comment-panel">
+      <span id="comment-toggle-label">Hide optional comment</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="comment-panel open" id="comment-panel">
+      <div class="comment-inner">
+        <div class="comment-field">
+          <div class="comment-box">
+            <textarea id="comment" maxlength="300" placeholder=" " aria-label="Optional comment, up to 300 characters" aria-describedby="comment-ph"></textarea>
+            <div class="comment-ph" id="comment-ph">Optional: What is your thought process here?</div>
+          </div>
+          <div class="comment-count" id="comment-count" aria-hidden="true">0/300</div>
+        </div>
+      </div>
+    </div>
+  </div>
   <button id="submit" disabled>Submit</button>
   <div id="status" role="status" aria-live="polite"></div>
 </main>
@@ -134,11 +175,15 @@ const SUBMIT_COOLDOWN_MS = 1000;   // design note: max 1 submit / sec
 const CHARACTERS_URL = "data/characters.json";   // source of truth for characters
 const BACKGROUNDS_URL = "data/backgrounds.json"; // source of truth for backgrounds
 
-let characters=[], backgrounds=[], best=null, worst=null, locked=false, cols={};
+let characters=[], backgrounds=[], best=null, worst=null, locked=false, cols={}, askKind="best";
 let bgIndex=-1, bgFront=-1;
 const $row=document.getElementById("row"), $submit=document.getElementById("submit"),
       $status=document.getElementById("status"), $hint=document.querySelector(".hint"),
       layers=[...document.querySelectorAll(".bg-layer")];
+const $comment=document.getElementById("comment"), $commentPh=document.getElementById("comment-ph"), $commentToggle=document.getElementById("comment-toggle"),
+      $commentLabel=document.getElementById("comment-toggle-label"), $commentPanel=document.getElementById("comment-panel"),
+      $commentCount=document.getElementById("comment-count");
+const COMMENT_MAX=300;
 
 document.title=PAGE_TITLE;
 document.getElementById("title").textContent=PAGE_TITLE;
@@ -200,9 +245,27 @@ async function changeBackground(){
   if(q>=0&&q!==bgIndex){ bgQueued=q; preload(encodeURI(backgrounds[q].image)); }
 }
 
+/* ---------- optional comment ---------- */
+function syncComment(){
+  const open=$commentPanel.classList.contains("open"), has=$comment.value.trim().length>0;
+  $commentCount.textContent=$comment.value.length+"/"+COMMENT_MAX;
+  $commentToggle.setAttribute("aria-expanded",open);
+  $commentLabel.textContent=open?"Hide optional comment":has?"Show optional comment •":"Add an optional comment";   // • = there is text in the hidden box
+}
+function setCommentOpen(open){ $commentPanel.classList.toggle("open",open); syncComment(); }
+function resetComment(){ $comment.value=""; syncComment(); }          // clears the text only; open/closed state is kept
+$commentToggle.addEventListener("click",()=>{
+  const open=!$commentPanel.classList.contains("open");
+  setCommentOpen(open);
+  if(open) $comment.focus({preventScroll:true});
+});
+$comment.addEventListener("input",syncComment);
+
 /* ---------- round ---------- */
 function nextRound(){
   best=worst=null; cols={};
+  resetComment();                       // every round starts with an empty comment box (stays open or closed as the person left it)
+  askKind=Math.random()<.5?"best":"worst";   // which pick the placeholder asks about this round (when both are chosen)
   $row.classList.remove("leaving"); $row.innerHTML="";
   const size=Math.min(MAX_ROUND_SIZE,characters.length);
   shuffle(characters).slice(0,size).forEach((c,i)=>{
@@ -243,12 +306,22 @@ function update(){
     col.classList.toggle("worst",id===worst);
   }
   $submit.disabled=!(best&&worst)||locked;
+  $comment.disabled=locked;
+  updatePlaceholder();
+}
+function charName(id){ const c=characters.find(c=>c.id===id); return c?c.name:""; }
+function updatePlaceholder(){
+  const ask={best:best&&"Optional: Why do you think "+charName(best)+" is the best?",
+             worst:worst&&"Optional: Why do you think "+charName(worst)+" is the worst?"};
+  $commentPh.textContent=ask[askKind]||ask[askKind==="best"?"worst":"best"]||"Optional: What is your thought process here?";
 }
 
 async function submit(){
   if(!best||!worst||locked) return;     // both picks required; also blocks double submit
-  locked=true; $submit.disabled=true;
+  locked=true; $submit.disabled=true; $comment.disabled=true;
+  const comment=$comment.value.trim().slice(0,COMMENT_MAX);
   const payload={best,worst,shown:Object.keys(cols),ts:Date.now()};
+  if(comment) payload.comment=comment;  // no comment key at all when the box is empty
   // MOCK: replace with fetch(YOUR_WORKER_URL,{method:"POST",body:JSON.stringify({...payload,turnstileToken})})
   console.log("vote submitted",payload);
   $status.textContent="Vote recorded"; $status.classList.add("show");
@@ -261,6 +334,7 @@ async function submit(){
 
 $submit.addEventListener("click",submit);
 document.addEventListener("keydown",e=>{
+  if(e.target===$comment||e.target===$commentToggle) return;   // let Space type a space / press the toggle
   if(e.code==="Space"&&!e.repeat){ e.preventDefault(); submit(); }
 });
 load();
