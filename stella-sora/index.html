@@ -337,7 +337,7 @@ function charName(id){ const c=characters.find(c=>c.id===id); return c?c.name:""
 function updatePlaceholder(){
   const ask={best:best&&"Optional: Why do you think "+charName(best)+" is the best?",
              worst:worst&&"Optional: Why do you think "+charName(worst)+" is the worst?"};
-  $commentPh.textContent=ask[askKind]||ask[askKind==="best"?"worst":"best"]||"What is your thought process here?";
+  $commentPh.textContent=ask[askKind]||ask[askKind==="best"?"worst":"best"]||"Optional: What is your thought process here?";
 }
 
 async function submit(){
