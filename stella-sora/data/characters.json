@@ -3,77 +3,77 @@
     {
       "id": "c001",
       "name": "Chaton",
-      "portrait": "assets/characters/chaton.png"
+      "portrait": "assets/characters/chaton.webp"
     },
     {
       "id": "c002",
       "name": "Chixia",
-      "portrait": "assets/characters/chixia.png"
+      "portrait": "assets/characters/chixia.webp"
     },
     {
       "id": "c003",
       "name": "Firefly",
-      "portrait": "assets/characters/firefly.png"
+      "portrait": "assets/characters/firefly.webp"
     },    
     {
       "id": "c004",
       "name": "Firenze",
-      "portrait": "assets/characters/firenze.png"
+      "portrait": "assets/characters/firenze.webp"
     },
     {
       "id": "c005",
       "name": "Jinglin",
-      "portrait": "assets/characters/jinglin.png"
+      "portrait": "assets/characters/jinglin.webp"
     },
     {
       "id": "c006",
       "name": "Kasimira",
-      "portrait": "assets/characters/kasimira.png"
+      "portrait": "assets/characters/kasimira.webp"
     },
     {
       "id": "c007",
       "name": "Minova",
-      "portrait": "assets/characters/minova.png"
+      "portrait": "assets/characters/minova.webp"
     },    
     {
       "id": "c008",
       "name": "Mistique",
-      "portrait": "assets/characters/mistique.png"
+      "portrait": "assets/characters/mistique.webp"
     },
     {
       "id": "c009",
       "name": "Nanoha",
-      "portrait": "assets/characters/nanoha.png"
+      "portrait": "assets/characters/nanoha.webp"
     },
     {
       "id": "c010",
       "name": "Firstlight Noya",
-      "portrait": "assets/characters/noya_firstlight.png"
+      "portrait": "assets/characters/noya_firstlight.webp"
     },
     {
       "id": "c011",
       "name": "Ridge",
-      "portrait": "assets/characters/ridge.png"
+      "portrait": "assets/characters/ridge.webp"
     },
     {
       "id": "c012",
       "name": "Shimiao",
-      "portrait": "assets/characters/shimiao.png"
+      "portrait": "assets/characters/shimiao.webp"
     },
     {
       "id": "c013",
       "name": "Sparkla",
-      "portrait": "assets/characters/sparkla.png"
+      "portrait": "assets/characters/sparkla.webp"
     },
     {
       "id": "c014",
       "name": "Tilia",
-      "portrait": "assets/characters/tilia.png"
+      "portrait": "assets/characters/tilia.webp"
     },
     {
       "id": "c015",
       "name": "Suntide Willow",
-      "portrait": "assets/characters/willow_suntide.png"
+      "portrait": "assets/characters/willow_suntide.webp"
     }
   ]
 }
