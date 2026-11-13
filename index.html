@@ -184,7 +184,7 @@ main.mode-tier .head{margin-bottom:0}
 .bar{position:relative;width:min(100%,calc(333*var(--u)));height:calc(5*var(--u));border-radius:calc(999*var(--u));background:rgba(255,255,255,.08)}
 .bar-fill{height:100%;border-radius:inherit;background:var(--ink);opacity:.8;transition:width .4s}
 .bar-tick{position:absolute;top:calc(-3*var(--u));bottom:calc(-3*var(--u));width:calc(1*var(--u));background:rgba(255,255,255,.4)}
-.meter-sub{font-size:calc(11.5*var(--u));color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.meter-sub{white-space:pre-line;line-height:1.5;font-size:calc(11.5*var(--u));color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
 
 .tier-actions{display:flex;flex-wrap:wrap;gap:calc(8*var(--u));justify-content:center}
 .btn{height:calc(31*var(--u));padding:0 calc(16*var(--u));border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font-family:inherit;font-size:calc(11.5*var(--u));cursor:pointer;transition:background .25s,border-color .25s,opacity .25s}
@@ -285,7 +285,7 @@ main.mode-tier .head{margin-bottom:0}
     <div class="tiers-panel" id="tiers-panel">
       <div class="tiers-inner">
         <div id="tiers-list"></div>
-        <p class="tier-legend">Dashed = close to a tier boundary, still being resolved</p>
+        <p class="tier-legend" id="tier-legend">Dashed = close to a tier boundary, still being resolved</p>
         <div class="tiers-tools"><button type="button" class="btn" id="t-copy">Copy tier list</button></div>
       </div>
     </div>
@@ -468,7 +468,7 @@ const TS={
   SHRINK:.80,                      // sigma multiplier after an expected result
   SURPRISE_P:.35,                  // a win with expected probability below this counts as an upset
   SPIKE:.9,                        // how hard an upset inflates sigma
-  EPS:10, BATCH:3, PRIOR_TAU:200, MLE_ITERS:60
+  EPS:10, BATCH_VOTES:5, PRIOR_TAU:200, MLE_ITERS:60
 };
 function tsHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0)/4294967296}
 const tsKey=(a,b)=>a<b?a+"\u0001"+b:b+"\u0001"+a;
@@ -513,13 +513,18 @@ function tsRecalibrate(S){
 function tsRecord(S,w,l){
   S.games.push([w,l]);
   const k=tsKey(w,l);S.pairs.set(k,(S.pairs.get(k)||0)+1);
-  tsOnline(S,w,l);
-  if(S.games.length%TS.BATCH===0)tsRecalibrate(S);
+  tsOnline(S,w,l);               // cheap online update only; the retrospective recalibration runs once per batch of votes (see tsReplay / UI)
 }
-/* state is a pure function of the comparison history, so undo / reload = replay */
-function tsReplay(ids,games){
-  const S=tsNew(ids),ok=new Set(ids);
-  for(const[w,l]of games)if(ok.has(w)&&ok.has(l)&&w!==l)tsRecord(S,w,l);
+/* state is a pure function of the vote history, so undo / reload = replay. A vote = a list of [winner,loser] matchups.
+   Every TS.BATCH_VOTES votes the whole history is re-fitted (recalibration); the UI refreshes confidence/tiers/pairs at the same points. */
+function tsBatchBoundary(S){tsRecalibrate(S);S.snap=tsBuckets(S);}   // S.snap = what the UI shows (tiers + confidence) until the next boundary
+function tsReplay(ids,votes){
+  const S=tsNew(ids),ok=new Set(ids);let n=0;
+  S.snap=tsBuckets(S);
+  for(const v of votes){
+    for(const[w,l]of v)if(ok.has(w)&&ok.has(l)&&w!==l)tsRecord(S,w,l);
+    if(++n%TS.BATCH_VOTES===0)tsBatchBoundary(S);
+  }
   return S;
 }
 /* active sampler: pair score = (si^2+sj^2)/(|mi-mj|+eps); jitter = random tie-break (no list-order bias);
@@ -531,16 +536,17 @@ function tsPairScore(S,a,b){
   s/=1+3*(S.pairs.get(k)||0)+20*(S.skips.get(k)||0);
   return s*(.9+.2*Math.random());
 }
-function tsSelectSet(S,size){
+function tsSelectSet(S,size,exclude){
   const it=S.items;size=Math.min(size,it.length);
+  const skip=i=>exclude&&exclude.has(it[i].id);
   let best=null,bs=-1;
-  for(let i=0;i<it.length;i++)for(let j=i+1;j<it.length;j++){const s=tsPairScore(S,it[i],it[j]);if(s>bs){bs=s;best=[i,j];}}
+  for(let i=0;i<it.length;i++){if(skip(i))continue;for(let j=i+1;j<it.length;j++){if(skip(j))continue;const s=tsPairScore(S,it[i],it[j]);if(s>bs){bs=s;best=[i,j];}}}
   if(!best)return[];
   const set=[best[0],best[1]];
   if(size>=3){
     let k3=-1,s3=-1;
     for(let k=0;k<it.length;k++){
-      if(k===best[0]||k===best[1])continue;
+      if(k===best[0]||k===best[1]||skip(k))continue;
       const s=tsPairScore(S,it[best[0]],it[k])+tsPairScore(S,it[best[1]],it[k]);
       if(s>s3){s3=s;k3=k;}
     }
@@ -549,9 +555,24 @@ function tsSelectSet(S,size){
   for(let i=set.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[set[i],set[j]]=[set[j],set[i]];}   // random on-screen order
   return set.map(i=>it[i].id);
 }
-/* Suggested budget in matchups for a roster of N, fitted from simulation (N = 8..100): the meter typically turns yellow around
-   4.2N matchups and green around N*(5.3+0.5*log2(N/8)) - convergence cost grows slowly with roster size, it is NOT a fixed fraction of N. */
-function tsBudget(N){const x=Math.max(0,Math.log2(N/8));return[Math.max(1,Math.round(4.2*N)),Math.max(2,Math.round(N*(5.3+.5*x)))];}
+/* One batch of vote-sets chosen from the same snapshot of the ratings; characters are not reused inside a batch while enough others remain. */
+function tsSelectBatch(S,nSets,size){
+  const used=new Set(),out=[];
+  for(let n=0;n<nSets;n++){
+    if(S.items.length-used.size<Math.min(size,S.items.length))used.clear();
+    const set=tsSelectSet(S,size,used);
+    if(!set.length)break;
+    out.push(set);set.forEach(id=>used.add(id));
+  }
+  return out;
+}
+/* Votes needed for the meter to reach green, as a function of roster size N (fitted from simulation, N = 8..100, 3-card votes, batch of 5):
+   best = the earliest green seen in any simulated run; typical = what ~3 in 4 runs need with realistic (noisy) voters.
+   Cost grows slightly faster than linearly in N. Rounded up to a batch boundary because the meter only updates every TS.BATCH_VOTES votes. */
+function tsBudget(N){
+  const x=Math.max(0,Math.log2(N/8)),up=v=>Math.max(TS.BATCH_VOTES,Math.ceil(v/TS.BATCH_VOTES)*TS.BATCH_VOTES);
+  return[up(N*(1.7+.10*x)),up(N*(2.4+.12*x))];
+}
 /* bucket assignment by rank percentile + boundary stability */
 function tsBuckets(S){
   const N=S.items.length,order=S.items.slice().sort((a,b)=>b.mu-a.mu||a.tb-b.tb);
@@ -582,7 +603,7 @@ const $main=document.querySelector("main"), $tier=document.getElementById("tier"
       $reset=document.getElementById("t-reset"), $copy=document.getElementById("t-copy"), $tiersToggle=document.getElementById("tiers-toggle"),
       $tiersLabel=document.getElementById("tiers-toggle-label"), $tiersPanel=document.getElementById("tiers-panel"), $tiersList=document.getElementById("tiers-list"),
       $modeVote=document.getElementById("mode-vote"), $modeTier=document.getElementById("mode-tier"), $hintTier=document.getElementById("hint-tier");
-let mode="vote", T=null, tB=null, tCur=null, tBest=null, tWorst=null, tCols=new Map(), tLocked=false, tiersOpen=false, charById=new Map();
+let mode="vote", T=null, tB=null, tCur=null, tQueue=[], tBest=null, tWorst=null, tCols=new Map(), tLocked=false, tiersOpen=false, charById=new Map();
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 function tierLoadVotes(){
@@ -598,8 +619,8 @@ function tierSave(){ try{ localStorage.setItem(TIER_STORE,JSON.stringify(T.votes
 function tierRebuild(votes){            // state is a pure function of the vote history: undo / reset / reload / roster edits all go through here
   const skips=T?T.skips:new Map(), ok=new Set(characters.map(c=>c.id));
   votes=votes.map(v=>v.filter(([w,l])=>ok.has(w)&&ok.has(l)&&w!==l)).filter(v=>v.length);   // drop matchups involving characters no longer in the JSON
-  T=tsReplay(characters.map(c=>c.id),votes.flat()); T.skips=skips; T.votes=votes;
-  tB=tsBuckets(T); tCur=null;
+  T=tsReplay(characters.map(c=>c.id),votes); T.skips=skips; T.votes=votes;
+  tB=T.snap; tCur=null; tQueue=[];
 }
 function initTier(){
   charById=new Map(characters.map(c=>[c.id,c]));
@@ -616,7 +637,8 @@ function fillPortrait(el,c){
 /* ----- one vote = a set of 3 cards; best / middle / worst become 3 matchups (best>middle, middle>worst, best>worst) ----- */
 function tierNext(){
   tBest=tWorst=null;
-  tCur=tsSelectSet(T,3);            // active sampler: most ambiguous neighbourhood (one set per batch of 3 matchups)
+  if(!tQueue.length) tQueue=tsSelectBatch(T,TS.BATCH_VOTES-(T.votes.length%TS.BATCH_VOTES),3);   // pairing is refreshed once per batch of votes
+  tCur=tQueue.shift()||null;
   renderTrio();
 }
 function renderTrio(){
@@ -658,10 +680,11 @@ async function tierSubmit(){
   if(tLocked||tBest===null||tWorst===null) return; tLocked=true; $tsubmit.disabled=true;
   const mid=tCur.find(id=>id!==tBest&&id!==tWorst);
   const matchups=mid===undefined?[[tBest,tWorst]]:[[tBest,mid],[mid,tWorst],[tBest,tWorst]];   // [winner, loser]
-  matchups.forEach(([w,l])=>tsRecord(T,w,l)); T.votes.push(matchups); tierSave();   // tsRecord recalibrates every TS.BATCH (=3) matchups, i.e. once per vote
+  matchups.forEach(([w,l])=>tsRecord(T,w,l)); T.votes.push(matchups); tierSave();   // cheap online rating update happens per matchup; the full re-fit + display refresh only per batch
   // MOCK: replace with fetch(YOUR_WORKER_URL,{method:"POST",body:JSON.stringify({best:tBest,middle:mid,worst:tWorst,shown:tCur,ts})})
   console.log("tier vote recorded",{best:tBest,middle:mid,worst:tWorst,matchups,ts:Date.now()});
-  tB=tsBuckets(T); if(tiersOpen) renderTiers(); renderMeter();
+  if(T.votes.length%TS.BATCH_VOTES===0){ tsBatchBoundary(T); tB=T.snap; if(tiersOpen) renderTiers(); }   // batch boundary: recalibrate, refresh confidence + tiers; next batch of pairs is chosen in tierNext
+  renderMeter();
   $status.textContent="Vote recorded"; $status.classList.add("show");
   await sleep(SUBMIT_COOLDOWN_MS-300);
   $trow.classList.add("leaving"); await sleep(300);
@@ -670,7 +693,7 @@ async function tierSubmit(){
 function tierSkip(){
   if(tLocked||!tCur) return;
   for(let i=0;i<tCur.length;i++)for(let j=i+1;j<tCur.length;j++){ const k=tsKey(tCur[i],tCur[j]); T.skips.set(k,(T.skips.get(k)||0)+1); }
-  tierNext();
+  tQueue=[]; tierNext();      // re-pick the rest of this batch with the skipped pairs discounted
 }
 function tierUndo(){            // removes the last vote (its 3 matchups)
   if(tLocked||!T.votes.length) return;
@@ -684,20 +707,24 @@ function tierReset(){
 
 /* ----- confidence indicator (updates at each batch boundary) ----- */
 function renderMeter(){
-  const N=characters.length, votes=T.votes.length, pct=tB.confidence;
-  const per=Math.min(3,N), [loM,hiM]=tsBudget(N), lo=Math.ceil(loM/per), hi=Math.max(lo+1,Math.ceil(hiM/per));   // budget in votes, derived from the actual roster size
+  const N=characters.length, votes=T.votes.length, pct=tB.confidence, B=TS.BATCH_VOTES;
+  const [best,typ]=tsBudget(N);                       // votes to green: best case / typical, derived from the roster size in the JSON
   const level=pct>=80?"green":pct>=50?"yellow":"red";
   $meter.dataset.level=level;
   $conf.textContent=Math.round(pct)+"%";
   $confLabel.textContent=level==="green"?"Converged · safe to stop":level==="yellow"?"Stabilizing · boundaries resolving":"Volatile · keep voting";
-  $barFill.style.width=Math.min(100,votes/hi*100)+"%";
-  $barTick.style.left=(lo/hi*100)+"%";
-  $meterSub.textContent=votes+" vote"+(votes===1?"":"s")+" · typically stabilizes around "+lo+"–"+hi+" votes for "+N+" characters"+(votes>hi&&level!=="green"?" · past that, more votes still help":"");
+  $barFill.style.width=Math.min(100,votes/typ*100)+"%";
+  $barTick.style.left=(best/typ*100)+"%";
+  const left=B-votes%B;
+  $meterSub.textContent=votes+" vote"+(votes===1?"":"s")+" · green is possible from ~"+best+" votes, typically ~"+typ+" for "+N+" characters"
+    +(votes>typ&&level!=="green"?" · past the typical range, more votes still help":"")
+    +"\nUpdates every "+B+" votes"+(left===B?"":" · next in "+left);
   $undo.disabled=!votes; $reset.disabled=!votes;
 }
 
 /* ----- tier list ----- */
 function renderTiers(){
+  document.getElementById("tier-legend").textContent="Dashed = close to a tier boundary, still being resolved · refreshed every "+TS.BATCH_VOTES+" votes";
   $tiersList.innerHTML="";
   tB.tiers.forEach((items,b)=>{
     const row=document.createElement("div"); row.className="tier-row"; row.style.setProperty("--tc",TIER_COLORS[b]);
