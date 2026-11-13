@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<title>Best / Worst Vote</title>
+<title>Tier Sort</title>
 <style>
 :root{
   --bg:#0b0c0f; --surface:#14161b; --line:rgba(255,255,255,.12); --ink:#f2f3f5; --muted:#7d828c;
@@ -73,7 +73,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .tag-worst{color:var(--red);text-shadow:0 0 calc(8*var(--u)) rgba(255,107,107,.9),0 0 calc(22*var(--u)) rgba(255,107,107,.6),0 0 calc(44*var(--u)) rgba(255,107,107,.35)}
 .name{margin-top:calc(9*var(--u));font-size:calc(13*var(--u));color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s}
 .col.best .name{color:var(--green)} .col.worst .name{color:var(--red)}
-.arrow:focus-visible,.portrait:focus-visible,#submit:focus-visible,#t-submit:focus-visible,#comment-toggle:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u))}
+.arrow:focus-visible,.portrait:focus-visible,#submit:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u))}
 
 /* ---------- round enter / exit ---------- */
 .col{opacity:0;transform:translateY(calc(14*var(--u)));animation:enter .6s var(--ease) forwards;animation-delay:calc(var(--i) * 70ms)}
@@ -82,42 +82,21 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 @keyframes leave{from{opacity:1;transform:none}to{opacity:0;transform:translateY(calc(-10*var(--u)))}}
 
 /* ---------- submit ---------- */
-#submit,#t-submit{width:min(100%,calc(333*var(--u)));height:calc(37.5*var(--u));border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-family:inherit;font-size:calc(12*var(--u));font-weight:500;letter-spacing:.02em;cursor:not-allowed;
+#submit{width:min(100%,calc(333*var(--u)));height:calc(37.5*var(--u));border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-family:inherit;font-size:calc(12*var(--u));font-weight:500;letter-spacing:.02em;cursor:not-allowed;
   transition:background .35s,color .35s,box-shadow .45s,border-color .35s,transform .15s}
-#submit:not(:disabled),#t-submit:not(:disabled){cursor:pointer;background:var(--ink);color:#0b0c0f;border-color:var(--ink);box-shadow:0 0 calc(25.5*var(--u)) rgba(255,255,255,.22)}
-#submit:not(:disabled):hover,#t-submit:not(:disabled):hover{box-shadow:0 0 calc(36*var(--u)) rgba(255,255,255,.35)}
-#submit:not(:disabled):active,#t-submit:not(:disabled):active{transform:scale(.98)}
-/* ---------- optional comment (collapsed by default) ---------- */
-.comment{width:min(100%,calc(333*var(--u)));display:flex;flex-direction:column;align-items:center}
-#comment-toggle{display:inline-flex;align-items:center;gap:calc(4.5*var(--u));padding:calc(3*var(--u)) calc(10.5*var(--u));border:0;border-radius:calc(999*var(--u));background:none;color:var(--muted);font-family:inherit;font-size:calc(10.5*var(--u));letter-spacing:.01em;cursor:pointer;transition:color .25s,background .25s}
-#comment-toggle:hover{color:var(--ink);background:rgba(255,255,255,.05)}
-#comment-toggle svg{width:calc(10.5*var(--u));height:calc(10.5*var(--u));fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
-#comment-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
-.comment-panel{display:grid;grid-template-rows:0fr;width:100%;transition:grid-template-rows .3s ease}
-.comment-panel.open{grid-template-rows:1fr}
-.comment-inner{min-height:0;overflow:hidden;visibility:hidden;transition:visibility 0s .3s}   /* hidden = not focusable when collapsed */
-.comment-panel.open .comment-inner{visibility:visible;transition-delay:0s}
-.comment-field{padding:calc(3*var(--u)) calc(4.5*var(--u)) calc(3*var(--u))}
-#comment{display:block;width:100%;height:calc(42*var(--u));padding:calc(5.5*var(--u)) calc(12*var(--u));border-radius:calc(13.5*var(--u));border:calc(1*var(--u)) solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font-family:inherit;font-size:calc(10.5*var(--u));line-height:1.45;resize:none;
-  transition:border-color .3s,background .3s,box-shadow .3s,opacity .3s}
-.comment-box{position:relative}
-.comment-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:calc(5.5*var(--u)) calc(12*var(--u));text-align:center;color:var(--muted);font-size:calc(10.5*var(--u));line-height:1.45;pointer-events:none;transition:opacity .2s}
-#comment:not(:placeholder-shown)+.comment-ph{display:none}   /* prompt disappears once they type; typed text is left-aligned as usual */
-#comment:disabled+.comment-ph{opacity:.5}
-#comment:focus{outline:none;border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.06);box-shadow:0 0 calc(4.5*var(--u)) rgba(255,255,255,.12)}
-#comment:disabled{opacity:.5}
-.comment-count{margin-top:calc(2*var(--u));padding-right:calc(4.5*var(--u));text-align:right;font-size:calc(8.5*var(--u));line-height:1.2;color:var(--muted);font-variant-numeric:tabular-nums}
-/* ---------- desktop: header pinned to the top, comment + submit pinned to the bottom, voting row dead-centre ---------- */
+#submit:not(:disabled){cursor:pointer;background:var(--ink);color:#0b0c0f;border-color:var(--ink);box-shadow:0 0 calc(25.5*var(--u)) rgba(255,255,255,.22)}
+#submit:not(:disabled):hover{box-shadow:0 0 calc(36*var(--u)) rgba(255,255,255,.35)}
+#submit:not(:disabled):active{transform:scale(.98)}
+/* after submitting, the button itself confirms ('Vote recorded') for the cooldown */
+#submit.done{cursor:default;background:rgba(155,209,123,.14);color:var(--green);border-color:var(--green);box-shadow:0 0 calc(25.5*var(--u)) rgba(155,209,123,.25)}
 @media (min-width:701px){
-  main{display:grid;grid-template-rows:1fr auto 1fr;justify-items:center;gap:0;row-gap:calc(10*var(--u));
+  main{display:grid;grid-template-rows:auto 1fr auto auto;justify-items:center;gap:0;row-gap:calc(10*var(--u));
        padding:max(calc(24*var(--u)),env(safe-area-inset-top)) calc(16*var(--u)) max(calc(24*var(--u)),env(safe-area-inset-bottom))}
-  .head{grid-row:1;align-self:start}
-  .row{grid-row:2;transition:transform .3s ease}   /* same timing as the comment panel */
-  body.comment-open .row{transform:translateY(calc(-30*var(--u)))}   /* comment open: portraits move up by half the panel height; closed: dead centre */
-  .foot{grid-row:3;align-self:end;display:flex;flex-direction:column;align-items:center;gap:calc(14*var(--u));width:100%}
+  .head{grid-row:1;align-self:start}          /* header | cards (fill the gap, centred in it) | Confidence + Submit | Tier Summary */
+  .row{grid-row:2;align-self:center}
+  .submit-row{grid-row:3;align-self:end}
+  .summary{grid-row:4}
 }
-#status{position:fixed;left:0;right:0;bottom:calc(28*var(--u));text-align:center;pointer-events:none;font-size:calc(14*var(--u));color:var(--green);opacity:0;transition:opacity .3s}
-#status.show{opacity:1}
 
 /* ---------- mobile: vertical list, best (left) <-> worst (right) ---------- */
 @media (max-width:700px){
@@ -134,57 +113,29 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   .portrait{flex:none;border-radius:14px;font-size:22px}
   .name{margin:0;font-size:15px;color:var(--ink);white-space:normal;overflow-wrap:anywhere}
   .col.best .name{color:var(--green)} .col.worst .name{color:var(--red)}
-  .foot{display:contents}
-  /* extra breathing room: title block -> portraits, portraits -> comment (100px, shrinks a little on short screens so it still fits) */
+  /* extra breathing room: title block -> portraits, portraits -> Confidence/Submit (100px, shrinks a little on short screens so it still fits) */
   .head{margin-bottom:min(100px,13vh);margin-bottom:min(100px,13dvh)}
   .row{margin-bottom:min(100px,13vh);margin-bottom:min(100px,13dvh)}
-  /* comment box + submit: 25% bigger than the previous mobile size (max 315x42 -> 394x52.5); on narrow phones the width is capped by the screen */
-  .comment{width:100%;max-width:394px}
-  #comment-toggle{font-size:13px;padding:6px 12px;gap:5px}
-  #comment-toggle svg{width:12px;height:12px}
-  .comment-field{padding:3px 4px}
-  .comment-box{height:52.5px}
-  /* the textarea is laid out at 106.67% size with 16px text (so iOS never auto-zooms on focus) and scaled to 93.75% = 15px on screen */
-  #comment{position:absolute;left:0;top:0;width:106.667%;height:106.667%;transform:scale(.9375);transform-origin:0 0;padding:8px 14px;border-radius:18px;font-size:16px;line-height:1.25}
-  .comment-ph{padding:0 12px;font-size:13px}
-  .comment-count{font-size:11px;margin-top:2px}
-  #submit,#t-submit{width:100%;max-width:394px;margin-top:0;height:45px;font-size:13px}
+  #submit{width:100%;max-width:394px;margin-top:0;height:45px;font-size:13px}
   h1{font-size:17px}
   .period{font-size:11px}
   .hint{font-size:13px;margin-bottom:6px}
 }
 
-/* ================= TIER SORT MODE ================= */
-.modes{display:inline-flex;gap:calc(2*var(--u));padding:calc(3*var(--u));margin-bottom:calc(4*var(--u));border:calc(1*var(--u)) solid var(--line);border-radius:calc(999*var(--u));background:rgba(255,255,255,.03)}
-.modes button{border:0;background:none;color:var(--muted);font-family:inherit;font-size:calc(11.5*var(--u));letter-spacing:.03em;padding:calc(5*var(--u)) calc(14*var(--u));border-radius:calc(999*var(--u));cursor:pointer;transition:color .25s,background .25s}
-.modes button:hover:not(:disabled){color:var(--ink)}
-.modes button[aria-pressed="true"]{background:var(--ink);color:#0b0c0f}
-.modes button:disabled{opacity:.4;cursor:default}
-.modes button:focus-visible,.btn:focus-visible,.linkbtn:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u))}
+/* ================= TIER SORT ================= */
+.btn:focus-visible,.linkbtn:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u))}
+.summary{display:flex;flex-direction:column;align-items:center;gap:calc(6*var(--u));width:min(100%,calc(560*var(--u)))}
+.summary[hidden]{display:none}
+.summary-body{display:flex;flex-direction:column;align-items:center;gap:calc(16*var(--u));padding:calc(8*var(--u)) 0 calc(4*var(--u))}
+.verify:empty{display:none}
+.verify{margin:0;font-size:calc(11.5*var(--u));color:var(--muted);text-align:center}
 
-main.mode-tier{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(18*var(--u))}
-main.mode-tier #row,main.mode-tier .foot{display:none}
-main.mode-tier .head{align-self:center}   /* desktop rule .head{align-self:start} would pin it to the left in the flex layout */
-body.comment-open #trow{transform:none}
-main.mode-tier .head{margin-bottom:0}
-
-.tier{display:flex;flex-direction:column;align-items:center;gap:calc(18*var(--u));width:min(100%,calc(560*var(--u)))}
-.tier[hidden]{display:none}
-.verify{min-height:calc(14*var(--u));margin:calc(-6*var(--u)) 0 0;font-size:calc(11.5*var(--u));color:var(--muted);text-align:center}
-
-.meter{width:100%;display:flex;flex-direction:column;align-items:center;gap:calc(8*var(--u))}
-.meter-line{display:flex;align-items:center;gap:calc(12*var(--u))}
-.lights{display:flex;gap:calc(6*var(--u))}
-.lights i{width:calc(11*var(--u));height:calc(11*var(--u));border-radius:50%;background:rgba(255,255,255,.1);transition:background .4s,box-shadow .4s}
-.meter[data-level="red"] .lights i:nth-child(1){background:var(--red);box-shadow:0 0 calc(12*var(--u)) rgba(255,107,107,.85)}
-.meter[data-level="yellow"] .lights i:nth-child(2){background:#f2c94c;box-shadow:0 0 calc(12*var(--u)) rgba(242,201,76,.85)}
-.meter[data-level="green"] .lights i:nth-child(3){background:var(--green);box-shadow:0 0 calc(12*var(--u)) rgba(155,209,123,.85)}
-.conf{font-size:calc(26*var(--u));font-weight:600;font-variant-numeric:tabular-nums;line-height:1}
-.conf-label{font-size:calc(12.5*var(--u));color:var(--muted)}
+.meter{width:100%;display:flex;flex-direction:column;align-items:center;gap:calc(8*var(--u));margin-bottom:calc(6*var(--u))}
+.meter[hidden]{display:none}
 .bar{position:relative;width:min(100%,calc(333*var(--u)));height:calc(5*var(--u));border-radius:calc(999*var(--u));background:rgba(255,255,255,.08)}
 .bar-fill{height:100%;border-radius:inherit;background:var(--ink);opacity:.8;transition:width .4s}
 .bar-tick{position:absolute;top:calc(-3*var(--u));bottom:calc(-3*var(--u));width:calc(1*var(--u));background:rgba(255,255,255,.4)}
-.meter-sub{font-size:calc(11.5*var(--u));color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.meter-sub{white-space:pre-line;line-height:1.5;font-size:calc(11.5*var(--u));color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
 
 .tier-actions{display:flex;flex-wrap:wrap;gap:calc(8*var(--u));justify-content:center}
 .btn{height:calc(31*var(--u));padding:0 calc(16*var(--u));border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font-family:inherit;font-size:calc(11.5*var(--u));cursor:pointer;transition:background .25s,border-color .25s,opacity .25s}
@@ -209,13 +160,48 @@ main.mode-tier .head{margin-bottom:0}
 .chip.shaky{opacity:.7}
 .chip.shaky .chip-img{border-style:dashed;border-color:rgba(255,255,255,.45)}
 .chip-name{max-width:100%;font-size:calc(8.5*var(--u));color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.submit-row{display:flex;align-items:center;justify-content:center;gap:calc(14*var(--u));width:min(100%,calc(400*var(--u)))}
+.submit-row #submit{flex:1 1 0;width:auto;min-width:0}
+.conf-wheel{flex:none;display:flex;align-items:center;gap:calc(8*var(--u))}
+.conf-wheel[hidden]{display:none}
+.conf-wheel-label{font-size:calc(11.5*var(--u));color:var(--muted);letter-spacing:.02em}
+.donut{width:calc(46*var(--u));height:calc(46*var(--u))}
+.donut-track{fill:none;stroke:rgba(255,255,255,.1);stroke-width:4}
+.donut-fill{fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .6s var(--ease),stroke .4s}
+.donut text{fill:var(--ink);font-family:inherit;font-size:10px;font-weight:600;font-variant-numeric:tabular-nums}
+.conf-wheel[data-level="red"] .donut-fill{stroke:var(--red)}
+.conf-wheel[data-level="yellow"] .donut-fill{stroke:#f2c94c}
+.conf-wheel[data-level="green"] .donut-fill{stroke:var(--green)}
+.state-line{font-size:calc(12.5*var(--u));color:var(--muted);text-align:center}
+.state-line b{color:var(--ink);font-weight:600}
+.stats{display:grid;gap:calc(5*var(--u));margin:0;width:min(100%,calc(320*var(--u)))}
+.stats>div{display:flex;justify-content:space-between;gap:calc(12*var(--u));font-size:calc(12*var(--u))}
+.stats dt{color:var(--muted)}
+.stats dd{margin:0;color:var(--ink);font-variant-numeric:tabular-nums}
+.stats dd small{color:var(--muted);font-size:inherit}
+.stat-note{margin:0;font-size:calc(10.5*var(--u));color:var(--muted);text-align:center;line-height:1.5}
+/* nerd stats: per-character numbers next to each portrait */
+#tiers-list{width:100%}
+#tiers-list.nerd{max-height:min(62vh,calc(560*var(--u)));overflow-y:auto;padding-right:calc(4*var(--u));scrollbar-width:thin}
+.nerd-head,.nerd .chip{display:grid;grid-template-columns:calc(26*var(--u)) minmax(0,1fr) calc(46*var(--u)) calc(36*var(--u)) calc(44*var(--u)) calc(28*var(--u));align-items:center;column-gap:calc(8*var(--u))}
+.nerd-head{position:sticky;top:0;z-index:1;padding:calc(5*var(--u)) 0 calc(5*var(--u)) calc(42*var(--u));font-size:calc(9.5*var(--u));letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:rgba(11,12,15,.88);backdrop-filter:blur(calc(6*var(--u)))}
+.nerd-head span:nth-child(n+3){text-align:right}
+.nerd .tier-chips{flex-direction:column;flex-wrap:nowrap;gap:calc(4*var(--u));width:100%;min-width:0}
+.nerd .tier-row{align-items:flex-start}
+.nerd .chip{width:100%;opacity:1}
+.nerd .chip-img{width:calc(26*var(--u));height:calc(26*var(--u));border-radius:calc(8*var(--u));font-size:calc(10*var(--u))}
+.nerd .chip-name{font-size:calc(11.5*var(--u));color:var(--ink);text-align:left}
+.nv{font-size:calc(11*var(--u));text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.nv.dim{color:var(--muted)}
+.nv.b1{color:#f2c94c}
+.nv.b2{color:var(--red)}
 .tier-legend{margin:calc(6*var(--u)) 0 calc(8*var(--u));font-size:calc(11*var(--u));color:var(--muted);text-align:center}
-.tiers-tools{display:flex;justify-content:center;padding-top:calc(4*var(--u))}
 @media (max-width:700px){
-  .tier{gap:16px}
-  #trow{margin-bottom:0}
-  .modes button{font-size:12px;padding:6px 14px}
-  .conf{font-size:24px}
+  .summary{width:100%}
+  .submit-row{width:100%;max-width:394px}
+  .conf-wheel-label{font-size:12px}
+  .donut{width:44px;height:44px}
+  .nerd-head,.nerd .chip{grid-template-columns:24px minmax(0,1fr) 40px 30px 38px 24px;column-gap:6px}
   .btn{height:36px;font-size:13px}
   .linkbtn{font-size:13px}
   .tier-letter{font-size:20px}
@@ -226,89 +212,70 @@ main.mode-tier .head{margin-bottom:0}
 }
 </style>
 </head>
-<body class="comment-open">
+<body>
 <div class="bg" aria-hidden="true"><div class="bg-layer"></div><div class="bg-layer"></div></div>
 <main>
   <header class="head">
-    <div class="modes" role="group" aria-label="Mode">
-      <button type="button" id="mode-vote" aria-pressed="true">Best / Worst</button>
-      <button type="button" id="mode-tier" aria-pressed="false" disabled>Tier Sort</button>
-    </div>
     <p class="period">05/13 12:00 AM to 06/30 11:59 PM (UTC)</p>
     <h1 id="title"></h1>
-    <p class="hint">Which character do you like the <b class="tag-best">MOST</b> and <b class="tag-worst">LEAST</b>?</p>
-    <p class="hint" id="hint-tier" hidden>Which character do you like the <b class="tag-best">MOST</b> and <b class="tag-worst">LEAST</b>? Each vote counts as 3 matchups.</p>
+    <p class="hint" id="hint">Which character do you like the <b class="tag-best">MOST</b> and <b class="tag-worst">LEAST</b>?</p>
   </header>
-  <div class="row" id="row"></div>
-  <div class="foot">
-  <div class="comment">
-    <button type="button" id="comment-toggle" aria-expanded="true" aria-controls="comment-panel">
-      <span id="comment-toggle-label">Hide optional comment</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-    </button>
-    <div class="comment-panel open" id="comment-panel">
-      <div class="comment-inner">
-        <div class="comment-field">
-          <div class="comment-box">
-            <textarea id="comment" maxlength="300" placeholder=" " aria-label="Optional comment, up to 300 characters" aria-describedby="comment-ph"></textarea>
-            <div class="comment-ph" id="comment-ph">Optional: What is your thought process here?</div>
-          </div>
-          <div class="comment-count" id="comment-count" aria-hidden="true">0/300</div>
-        </div>
-      </div>
+  <div class="row" id="trow"></div>
+  <div class="submit-row">
+    <div class="conf-wheel" id="conf-wheel" data-level="red" title="Confidence = share of characters whose 95% interval (mu ± 2 sigma) crosses at most one tier boundary, i.e. their tier is at worst one step off">
+      <span class="conf-wheel-label">Confidence</span>
+      <svg class="donut" viewBox="0 0 44 44" role="img" aria-label="Confidence">
+        <circle class="donut-track" cx="22" cy="22" r="18"/>
+        <circle class="donut-fill" id="donut-fill" cx="22" cy="22" r="18" transform="rotate(-90 22 22)" style="stroke-dasharray:113.1;stroke-dashoffset:113.1"/>
+        <text id="donut-text" x="22" y="22" text-anchor="middle" dominant-baseline="central">0%</text>
+      </svg>
     </div>
+    <button id="submit" disabled>Submit</button>
   </div>
-  <button id="submit" disabled>Submit</button>
-  </div>
-  <section class="tier" id="tier" hidden aria-label="Tier sort">
-    <div class="row" id="trow"></div>
-    <p class="verify" id="verify" aria-live="polite"></p>
-    <button id="t-submit" disabled>Submit</button>
-    <div class="meter" id="meter" data-level="red" title="Share of characters whose 95% interval (mu ± 2 sigma) sits entirely inside one tier">
-      <div class="meter-line">
-        <div class="lights" aria-hidden="true"><i></i><i></i><i></i></div>
-        <span class="conf" id="conf">0%</span>
-        <span class="conf-label" id="conf-label">Volatile · keep voting</span>
-      </div>
-      <div class="bar" aria-hidden="true"><div class="bar-fill" id="bar-fill" style="width:0"></div><div class="bar-tick" id="bar-tick" style="left:50%"></div></div>
+  <section class="summary" id="summary" aria-label="Tier summary">
+    <div class="meter" id="meter">
       <div class="meter-sub" id="meter-sub"></div>
-    </div>
-    <div class="tier-actions">
-      <button type="button" class="btn" id="t-undo" disabled>Undo</button>
-      <button type="button" class="btn" id="t-skip">Skip set</button>
-      <button type="button" class="btn" id="t-reset" disabled>Reset</button>
+      <div class="bar" aria-hidden="true"><div class="bar-fill" id="bar-fill" style="width:0"></div></div>
     </div>
     <button type="button" class="linkbtn" id="tiers-toggle" aria-expanded="false" aria-controls="tiers-panel">
-      <span id="tiers-toggle-label">Show current tiers</span>
+      <span id="tiers-toggle-label">Show Tier Summary</span>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
     </button>
     <div class="tiers-panel" id="tiers-panel">
       <div class="tiers-inner">
-        <div id="tiers-list"></div>
-        <p class="tier-legend">Dashed = close to a tier boundary, still being resolved</p>
-        <div class="tiers-tools"><button type="button" class="btn" id="t-copy">Copy tier list</button></div>
+        <div class="summary-body">
+          <div class="state-line">Current State: <b id="state-main">Volatile</b> · <span id="state-sub">Keep voting</span></div>
+          <p class="verify" id="verify" aria-live="polite"></p>
+          <dl class="stats">
+            <div title="Characters whose 95% interval sits entirely inside one tier"><dt>Exact-tier stability</dt><dd id="stat-exact">0%</dd></div>
+            <div title="Characters whose 95% interval crosses at most one tier boundary (tier is at worst one step off). This drives the Confidence wheel"><dt>Boundary stability</dt><dd id="stat-boundary">0%</dd></div>
+          </dl>
+          <p class="stat-note" id="update-note"></p>
+          <button type="button" class="linkbtn" id="nerd-toggle" aria-pressed="false">Show Nerd Stats</button>
+          <div id="tiers-list"></div>
+          <p class="tier-legend" id="tier-legend"></p>
+          <div class="tier-actions">
+            <button type="button" class="btn" id="t-undo" disabled>Undo</button>
+            <button type="button" class="btn" id="t-skip">Skip set</button>
+            <button type="button" class="btn" id="t-reset" disabled>Reset</button>
+            <button type="button" class="btn" id="t-copy">Copy tier list</button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
-  <div id="status" role="status" aria-live="polite"></div>
 </main>
 
 <script>
 const PAGE_TITLE = "Stella Sora Favorite Character Voting!";   // change the page title here
-const MAX_ROUND_SIZE = 3;
 const SUBMIT_COOLDOWN_MS = 1000;   // design note: max 1 submit / sec
 const CHARACTERS_URL = "data/characters.json";   // source of truth for characters
 const BACKGROUNDS_URL = "data/backgrounds.json"; // source of truth for backgrounds
 
-let characters=[], backgrounds=[], best=null, worst=null, locked=false, cols={}, askKind="best";
+let characters=[], backgrounds=[];
 let bgIndex=-1, bgFront=-1;
-const $row=document.getElementById("row"), $submit=document.getElementById("submit"),
-      $status=document.getElementById("status"), $hint=document.querySelector(".hint"),
+const $submit=document.getElementById("submit"), $hint=document.getElementById("hint"),
       layers=[...document.querySelectorAll(".bg-layer")];
-const $comment=document.getElementById("comment"), $commentPh=document.getElementById("comment-ph"), $commentToggle=document.getElementById("comment-toggle"),
-      $commentLabel=document.getElementById("comment-toggle-label"), $commentPanel=document.getElementById("comment-panel"),
-      $commentCount=document.getElementById("comment-count");
-const COMMENT_MAX=300;
 
 document.title=PAGE_TITLE;
 document.getElementById("title").textContent=PAGE_TITLE;
@@ -338,12 +305,10 @@ async function load(){
     return;
   }
   backgrounds=await bgReq;
-  // first background and first round appear together (waits for the image, but at most 1.5 s)
+  // first background and first set of cards appear together (waits for the image, but at most 1.5 s)
   await Promise.race([changeBackground(), new Promise(r=>setTimeout(r,1500))]);
-  nextRound();
+  tierNext(); renderMeter();
 }
-
-function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
 
 /* ---------- background slideshow ---------- */
 function preload(url){return new Promise(r=>{const i=new Image();i.onload=()=>r(true);i.onerror=()=>r(false);i.src=url})}
@@ -371,94 +336,6 @@ async function changeBackground(){
   if(q>=0&&q!==bgIndex){ bgQueued=q; preload(encodeURI(backgrounds[q].image)); }
 }
 
-/* ---------- optional comment ---------- */
-function syncComment(){
-  const open=$commentPanel.classList.contains("open"), has=$comment.value.trim().length>0;
-  $commentCount.textContent=$comment.value.length+"/"+COMMENT_MAX;
-  $commentToggle.setAttribute("aria-expanded",open);
-  document.body.classList.toggle("comment-open",open);
-  $commentLabel.textContent=open?"Hide optional comment":has?"Show optional comment •":"Add an optional comment";   // • = there is text in the hidden box
-}
-function setCommentOpen(open){ $commentPanel.classList.toggle("open",open); syncComment(); }
-function resetComment(){ $comment.value=""; syncComment(); }          // clears the text only; open/closed state is kept
-$commentToggle.addEventListener("click",()=>{
-  const open=!$commentPanel.classList.contains("open");
-  setCommentOpen(open);
-  if(open) $comment.focus({preventScroll:true});
-});
-$comment.addEventListener("input",syncComment);
-
-/* ---------- round ---------- */
-function nextRound(){
-  best=worst=null; cols={};
-  resetComment();                       // every round starts with an empty comment box (stays open or closed as the person left it)
-  askKind=Math.random()<.5?"best":"worst";   // which pick the placeholder asks about this round (when both are chosen)
-  $row.classList.remove("leaving"); $row.innerHTML="";
-  const size=Math.min(MAX_ROUND_SIZE,characters.length);
-  shuffle(characters).slice(0,size).forEach((c,i)=>{
-    const col=document.createElement("div");
-    col.className="col"; col.style.setProperty("--i",i);
-    const name=esc(c.name);
-    col.innerHTML=`
-      <div class="stack">
-        <button class="arrow up" aria-label="Mark ${name} as best">${CHEV_UP}</button>
-        <div class="card">
-          <button class="portrait" aria-label="${name}: clear pick"><img alt="" src="${encodeURI(c.portrait||"")}"></button>
-          <div class="name">${name}</div>
-        </div>
-        <button class="arrow down" aria-label="Mark ${name} as worst">${CHEV_DN}</button>
-      </div>`;
-    const img=col.querySelector("img");
-    img.onerror=()=>{ img.remove(); const s=document.createElement("span"); s.textContent=c.name.split(" ").map(w=>w[0]).join("").slice(0,2); col.querySelector(".portrait").append(s); };
-    col.querySelector(".up").onclick=()=>pick(c.id,"best");
-    col.querySelector(".down").onclick=()=>pick(c.id,"worst");
-    col.querySelector(".portrait").onclick=()=>clear(c.id);
-    cols[c.id]=col; $row.appendChild(col);
-  });
-  update();
-}
-
-function pick(id,kind){
-  if(locked) return;
-  if(kind==="best"){ best=id; if(worst===id) worst=null; }
-  else { worst=id; if(best===id) best=null; }
-  update();
-}
-function clear(id){ if(locked) return; if(best===id) best=null; if(worst===id) worst=null; update(); }
-
-// Update classes in place (not re-rendering) so the CSS transitions can animate the slide.
-function update(){
-  for(const [id,col] of Object.entries(cols)){
-    col.classList.toggle("best",id===best);
-    col.classList.toggle("worst",id===worst);
-  }
-  $submit.disabled=!(best&&worst)||locked;
-  $comment.disabled=locked;
-  updatePlaceholder();
-}
-function charName(id){ const c=characters.find(c=>c.id===id); return c?c.name:""; }
-function updatePlaceholder(){
-  const ask={best:best&&"Optional: Why do you think "+charName(best)+" is the best?",
-             worst:worst&&"Optional: Why do you think "+charName(worst)+" is the worst?"};
-  $commentPh.textContent=ask[askKind]||ask[askKind==="best"?"worst":"best"]||"Optional: What is your thought process here?";
-}
-
-async function submit(){
-  if(!best||!worst||locked) return;     // both picks required; also blocks double submit
-  locked=true; $submit.disabled=true; $comment.disabled=true;
-  const comment=$comment.value.trim().slice(0,COMMENT_MAX);
-  const payload={best,worst,shown:Object.keys(cols),ts:Date.now()};
-  if(comment) payload.comment=comment;  // no comment key at all when the box is empty
-  // MOCK: replace with fetch(YOUR_WORKER_URL,{method:"POST",body:JSON.stringify({...payload,turnstileToken})})
-  console.log("vote submitted",payload);
-  $status.textContent="Vote recorded"; $status.classList.add("show");
-  changeBackground();                   // shuffle background on submit
-  await new Promise(r=>setTimeout(r,SUBMIT_COOLDOWN_MS-300));
-  $row.classList.add("leaving");
-  await new Promise(r=>setTimeout(r,300));
-  locked=false; $status.classList.remove("show"); nextRound();
-}
-
 /* ===== TIER ENGINE START ===== */
 const TS={
   LABELS:["S","A","B","C","D","E","F"],
@@ -468,8 +345,9 @@ const TS={
   SHRINK:.80,                      // sigma multiplier after an expected result
   SURPRISE_P:.35,                  // a win with expected probability below this counts as an upset
   SPIKE:.9,                        // how hard an upset inflates sigma
-  EPS:10, BATCH:3, PRIOR_TAU:200, MLE_ITERS:60,
-  BUDGET_LO:.33, BUDGET_HI:.66
+  EPS:10, BATCH_VOTES:5, PRIOR_TAU:200, MLE_ITERS:60,
+  LIGHT_YELLOW:40, LIGHT_GREEN:95,      // traffic-light thresholds (% of characters whose 95% interval straddles at most one tier boundary)
+  BUDGET_PER_CHAR:1.2                   // suggested votes = 1.2 x roster size
 };
 function tsHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0)/4294967296}
 const tsKey=(a,b)=>a<b?a+"\u0001"+b:b+"\u0001"+a;
@@ -514,13 +392,18 @@ function tsRecalibrate(S){
 function tsRecord(S,w,l){
   S.games.push([w,l]);
   const k=tsKey(w,l);S.pairs.set(k,(S.pairs.get(k)||0)+1);
-  tsOnline(S,w,l);
-  if(S.games.length%TS.BATCH===0)tsRecalibrate(S);
+  tsOnline(S,w,l);               // cheap online update only; the retrospective recalibration runs once per batch of votes (see tsReplay / UI)
 }
-/* state is a pure function of the comparison history, so undo / reload = replay */
-function tsReplay(ids,games){
-  const S=tsNew(ids),ok=new Set(ids);
-  for(const[w,l]of games)if(ok.has(w)&&ok.has(l)&&w!==l)tsRecord(S,w,l);
+/* state is a pure function of the vote history, so undo / reload = replay. A vote = a list of [winner,loser] matchups.
+   Every TS.BATCH_VOTES votes the whole history is re-fitted (recalibration); the UI refreshes confidence/tiers/pairs at the same points. */
+function tsBatchBoundary(S){tsRecalibrate(S);S.snap=tsBuckets(S);}   // S.snap = what the UI shows (tiers + confidence) until the next boundary
+function tsReplay(ids,votes){
+  const S=tsNew(ids),ok=new Set(ids);let n=0;
+  S.snap=tsBuckets(S);
+  for(const v of votes){
+    for(const[w,l]of v)if(ok.has(w)&&ok.has(l)&&w!==l)tsRecord(S,w,l);
+    if(++n%TS.BATCH_VOTES===0)tsBatchBoundary(S);
+  }
   return S;
 }
 /* active sampler: pair score = (si^2+sj^2)/(|mi-mj|+eps); jitter = random tie-break (no list-order bias);
@@ -532,16 +415,17 @@ function tsPairScore(S,a,b){
   s/=1+3*(S.pairs.get(k)||0)+20*(S.skips.get(k)||0);
   return s*(.9+.2*Math.random());
 }
-function tsSelectSet(S,size){
+function tsSelectSet(S,size,exclude){
   const it=S.items;size=Math.min(size,it.length);
+  const skip=i=>exclude&&exclude.has(it[i].id);
   let best=null,bs=-1;
-  for(let i=0;i<it.length;i++)for(let j=i+1;j<it.length;j++){const s=tsPairScore(S,it[i],it[j]);if(s>bs){bs=s;best=[i,j];}}
+  for(let i=0;i<it.length;i++){if(skip(i))continue;for(let j=i+1;j<it.length;j++){if(skip(j))continue;const s=tsPairScore(S,it[i],it[j]);if(s>bs){bs=s;best=[i,j];}}}
   if(!best)return[];
   const set=[best[0],best[1]];
   if(size>=3){
     let k3=-1,s3=-1;
     for(let k=0;k<it.length;k++){
-      if(k===best[0]||k===best[1])continue;
+      if(k===best[0]||k===best[1]||skip(k))continue;
       const s=tsPairScore(S,it[best[0]],it[k])+tsPairScore(S,it[best[1]],it[k]);
       if(s>s3){s3=s;k3=k;}
     }
@@ -550,6 +434,20 @@ function tsSelectSet(S,size){
   for(let i=set.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[set[i],set[j]]=[set[j],set[i]];}   // random on-screen order
   return set.map(i=>it[i].id);
 }
+/* One batch of vote-sets chosen from the same snapshot of the ratings; characters are not reused inside a batch while enough others remain. */
+function tsSelectBatch(S,nSets,size){
+  const used=new Set(),out=[];
+  for(let n=0;n<nSets;n++){
+    if(S.items.length-used.size<Math.min(size,S.items.length))used.clear();
+    const set=tsSelectSet(S,size,used);
+    if(!set.length)break;
+    out.push(set);set.forEach(id=>used.add(id));
+  }
+  return out;
+}
+/* Suggested budget in VOTES for a roster of N: 1.2 votes per character (simulation: ~95-99% of characters within one tier, ~52-63% exact tier;
+   accuracy depends on votes per character, not on roster size). Rounded up to a batch boundary because the display only updates every TS.BATCH_VOTES votes. */
+function tsBudget(N){return Math.max(TS.BATCH_VOTES,Math.ceil(N*TS.BUDGET_PER_CHAR/TS.BATCH_VOTES)*TS.BATCH_VOTES);}
 /* bucket assignment by rank percentile + boundary stability */
 function tsBuckets(S){
   const N=S.items.length,order=S.items.slice().sort((a,b)=>b.mu-a.mu||a.tb-b.tb);
@@ -557,45 +455,58 @@ function tsBuckets(S){
   const bounds=cuts.map(c=>c>0&&c<N?(order[c-1].mu+order[c].mu)/2:null).filter(x=>x!==null);
   const tiers=TS.LABELS.map(()=>[]),of=new Map();
   order.forEach((it,r)=>{let b=0;while(b<cuts.length&&r>=cuts[b])b++;tiers[b].push(it);of.set(it.id,b);});
-  let stable=0;const stableSet=new Set();
+  /* Boundary stability from the 95% interval mu +/- 2 sigma:
+     strict  = interval sits entirely inside one tier (crosses 0 boundaries)  -> "exact-tier stability", also drives the dashed chips
+     relaxed = interval crosses at most 1 boundary (tier is at worst one step off) -> System Confidence shown by the Confidence donut */
+  const wl=new Map();for(const[w,l]of S.games){(wl.get(w)||wl.set(w,[0,0]).get(w))[0]++;(wl.get(l)||wl.set(l,[0,0]).get(l))[1]++;}
+  let strict=0,relaxed=0;const stableSet=new Set(),info=new Map();   // info = frozen per-character numbers for the "nerd stats" view
   for(const it of S.items){
     const lo=it.mu-2*it.sigma,hi=it.mu+2*it.sigma;
-    if(!bounds.some(b=>b>lo&&b<hi)){stable++;stableSet.add(it.id);}
+    const crossed=bounds.filter(b=>b>lo&&b<hi).length,rec=wl.get(it.id)||[0,0];
+    if(crossed===0){strict++;stableSet.add(it.id);}
+    if(crossed<=1)relaxed++;
+    info.set(it.id,{mu:it.mu,sigma:it.sigma,crossed,w:rec[0],l:rec[1],spike:it.spike});
   }
-  return{order,tiers,of,bounds,stableSet,confidence:N?stable/N*100:0};
+  return{order,tiers,of,bounds,stableSet,info,strict,relaxed,confidence:N?relaxed/N*100:0,strictConfidence:N?strict/N*100:0};
 }
 /* ===== TIER ENGINE END ===== */
 
 /* ============================================================
-   TIER SORT MODE  (Active Bayesian Bucket Classifier)
+   TIER SORT  (Active Bayesian Bucket Classifier)
    Pairwise comparisons -> Bayesian ratings (mu, sigma) -> 7 quantile buckets.
    Tune everything in the TS object above (bucket %, step size, shrink rate, batch size ...).
    ============================================================ */
-const TIER_STORE="stellasora.tiersort.v1";   // localStorage key; only the comparison history is stored
+const TIER_STORE="stellasora.tiersort.v2", TIER_STORE_V1="stellasora.tiersort.v1";   // localStorage keys; only the vote history is stored (v1 = old flat list of pairs)
 const TIER_COLORS=["#ff8f6b","#ffb86b","#ffe16b","#c8e86b","#7fd9a1","#6bc2ff","#a98bff"];
-const $main=document.querySelector("main"), $tier=document.getElementById("tier"), $trow=document.getElementById("trow"), $tsubmit=document.getElementById("t-submit"),
-      $verify=document.getElementById("verify"), $meter=document.getElementById("meter"), $conf=document.getElementById("conf"),
-      $confLabel=document.getElementById("conf-label"), $barFill=document.getElementById("bar-fill"), $barTick=document.getElementById("bar-tick"),
+const $trow=document.getElementById("trow"), $updateNote=document.getElementById("update-note"), $wheel=document.getElementById("conf-wheel"), $donutFill=document.getElementById("donut-fill"), $donutText=document.getElementById("donut-text"),
+      $stateMain=document.getElementById("state-main"), $stateSub=document.getElementById("state-sub"), $statExact=document.getElementById("stat-exact"), $statBoundary=document.getElementById("stat-boundary"), $nerd=document.getElementById("nerd-toggle"),
+      $verify=document.getElementById("verify"),
+      $barFill=document.getElementById("bar-fill"),
       $meterSub=document.getElementById("meter-sub"), $undo=document.getElementById("t-undo"), $skip=document.getElementById("t-skip"),
       $reset=document.getElementById("t-reset"), $copy=document.getElementById("t-copy"), $tiersToggle=document.getElementById("tiers-toggle"),
-      $tiersLabel=document.getElementById("tiers-toggle-label"), $tiersPanel=document.getElementById("tiers-panel"), $tiersList=document.getElementById("tiers-list"),
-      $modeVote=document.getElementById("mode-vote"), $modeTier=document.getElementById("mode-tier"), $hintTier=document.getElementById("hint-tier");
-let mode="vote", T=null, tB=null, tCur=null, tBest=null, tWorst=null, tCols=new Map(), tLocked=false, tiersOpen=false, charById=new Map();
+      $tiersLabel=document.getElementById("tiers-toggle-label"), $tiersPanel=document.getElementById("tiers-panel"), $tiersList=document.getElementById("tiers-list");
+let T=null, tB=null, tCur=null, tQueue=[], tBest=null, tWorst=null, tCols=new Map(), tLocked=false, tiersOpen=false, nerdOn=false, charById=new Map();
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
-function tierLoadGames(){
-  try{ const g=JSON.parse(localStorage.getItem(TIER_STORE)||"[]"); return Array.isArray(g)?g.filter(x=>Array.isArray(x)&&x.length===2):[]; }catch(e){ return []; }
+function tierLoadVotes(){
+  try{
+    const v2=JSON.parse(localStorage.getItem(TIER_STORE)||"null");
+    if(Array.isArray(v2)) return v2.filter(v=>Array.isArray(v)&&v.every(g=>Array.isArray(g)&&g.length===2));
+    const v1=JSON.parse(localStorage.getItem(TIER_STORE_V1)||"[]"), out=[];   // migrate: old data was flat, 3 pairs per vote
+    if(Array.isArray(v1)) for(let i=0;i<v1.length;i+=3) out.push(v1.slice(i,i+3).filter(g=>Array.isArray(g)&&g.length===2));
+    return out.filter(v=>v.length);
+  }catch(e){ return []; }
 }
-function tierSave(){ try{ localStorage.setItem(TIER_STORE,JSON.stringify(T.games)); }catch(e){} }
-function tierRebuild(games){            // state is a pure function of the history: undo / reset / reload all go through here
-  const skips=T?T.skips:new Map();
-  T=tsReplay(characters.map(c=>c.id),games); T.skips=skips;
-  tB=tsBuckets(T); tCur=null;
+function tierSave(){ try{ localStorage.setItem(TIER_STORE,JSON.stringify(T.votes)); }catch(e){} }
+function tierRebuild(votes){            // state is a pure function of the vote history: undo / reset / reload / roster edits all go through here
+  const skips=T?T.skips:new Map(), ok=new Set(characters.map(c=>c.id));
+  votes=votes.map(v=>v.filter(([w,l])=>ok.has(w)&&ok.has(l)&&w!==l)).filter(v=>v.length);   // drop pairs involving characters no longer in the JSON
+  T=tsReplay(characters.map(c=>c.id),votes); T.skips=skips; T.votes=votes;
+  tB=T.snap; tCur=null; tQueue=[];
 }
 function initTier(){
   charById=new Map(characters.map(c=>[c.id,c]));
-  T=null; tierRebuild(tierLoadGames());
-  $modeTier.disabled=false;
+  T=null; tierRebuild(tierLoadVotes());
 }
 
 function fillPortrait(el,c){
@@ -604,10 +515,11 @@ function fillPortrait(el,c){
   el.append(img);
 }
 
-/* ----- one vote = a set of 3 cards; best / middle / worst become 3 matchups (best>middle, middle>worst, best>worst) ----- */
+/* ----- one vote = a set of 3 cards; best / middle / worst are stored as 3 ordered pairs (best>middle, middle>worst, best>worst) ----- */
 function tierNext(){
   tBest=tWorst=null;
-  tCur=tsSelectSet(T,3);            // active sampler: most ambiguous neighbourhood (one set per batch of 3 matchups)
+  if(!tQueue.length) tQueue=tsSelectBatch(T,TS.BATCH_VOTES-(T.votes.length%TS.BATCH_VOTES),3);   // pairing is refreshed once per batch of votes
+  tCur=tQueue.shift()||null;
   renderTrio();
 }
 function renderTrio(){
@@ -643,53 +555,74 @@ function tierMark(id,kind){
 }
 function tierSync(){
   for(const [id,col] of tCols){ col.classList.toggle("best",id===tBest); col.classList.toggle("worst",id===tWorst); }
-  $tsubmit.disabled=tBest===null||tWorst===null||tLocked;
+  $submit.disabled=tBest===null||tWorst===null||tLocked;     
 }
 async function tierSubmit(){
-  if(tLocked||tBest===null||tWorst===null) return; tLocked=true; $tsubmit.disabled=true;
+  if(tLocked||tBest===null||tWorst===null) return; tLocked=true; $submit.disabled=true;
   const mid=tCur.find(id=>id!==tBest&&id!==tWorst);
   const matchups=mid===undefined?[[tBest,tWorst]]:[[tBest,mid],[mid,tWorst],[tBest,tWorst]];   // [winner, loser]
-  matchups.forEach(([w,l])=>tsRecord(T,w,l)); tierSave();   // tsRecord recalibrates every TS.BATCH (=3) matchups, i.e. once per vote
-  // MOCK: replace with fetch(YOUR_WORKER_URL,{method:"POST",body:JSON.stringify({best:tBest,middle:mid,worst:tWorst,shown:tCur,ts})})
-  console.log("tier vote recorded",{best:tBest,middle:mid,worst:tWorst,matchups,ts:Date.now()});
-  tB=tsBuckets(T); if(tiersOpen) renderTiers(); renderMeter();
-  $status.textContent="Vote recorded"; $status.classList.add("show");
+  matchups.forEach(([w,l])=>tsRecord(T,w,l)); T.votes.push(matchups); tierSave();   // cheap online rating update happens per matchup; the full re-fit + display refresh only per batch
+  const payload={best:tBest,middle:mid,worst:tWorst,shown:tCur,ts:Date.now()};
+  // MOCK: replace with fetch(YOUR_WORKER_URL,{method:"POST",body:JSON.stringify({...payload,turnstileToken})})
+  console.log("tier vote recorded",payload);
+  if(T.votes.length%TS.BATCH_VOTES===0){ tsBatchBoundary(T); tB=T.snap; if(tiersOpen) renderTiers(); }   // batch boundary: recalibrate, refresh confidence + tiers; next batch of pairs is chosen in tierNext
+  renderMeter();
+  $submit.textContent="Vote recorded"; $submit.classList.add("done");      // confirmation shown on the button itself
+  changeBackground();                                  // shuffle background on submit
   await sleep(SUBMIT_COOLDOWN_MS-300);
   $trow.classList.add("leaving"); await sleep(300);
-  $status.classList.remove("show"); tLocked=false; tierNext();
+  $submit.classList.remove("done"); $submit.textContent="Submit"; tLocked=false; tierNext();
 }
 function tierSkip(){
   if(tLocked||!tCur) return;
   for(let i=0;i<tCur.length;i++)for(let j=i+1;j<tCur.length;j++){ const k=tsKey(tCur[i],tCur[j]); T.skips.set(k,(T.skips.get(k)||0)+1); }
-  tierNext();
+  tQueue=[]; tierNext();      // re-pick the rest of this batch with the skipped pairs discounted
 }
-function tierUndo(){            // removes the last vote (its 3 matchups)
-  if(tLocked||!T.games.length) return;
-  tierRebuild(T.games.slice(0,T.games.length-(T.games.length%3||3))); tierSave(); tierNext(); renderMeter(); if(tiersOpen) renderTiers();
+function tierUndo(){            // removes the last vote
+  if(tLocked||!T.votes.length) return;
+  tierRebuild(T.votes.slice(0,-1)); tierSave(); tierNext(); renderMeter(); if(tiersOpen) renderTiers();
 }
 function tierReset(){
-  if(tLocked||!T.games.length) return;
-  if(!confirm("Clear all "+T.games.length+" matchups and start over?")) return;
+  if(tLocked||!T.votes.length) return;
+  if(!confirm("Clear all "+T.votes.length+" votes and start over?")) return;
   T.skips=new Map(); tierRebuild([]); tierSave(); tierNext(); renderMeter(); if(tiersOpen) renderTiers();
 }
 
 /* ----- confidence indicator (updates at each batch boundary) ----- */
 function renderMeter(){
-  const N=characters.length, n=T.games.length, pct=tB.confidence;
-  const lo=Math.max(1,Math.round(TS.BUDGET_LO*N)), hi=Math.max(lo,Math.round(TS.BUDGET_HI*N));
-  const level=pct>=80?"green":pct>=50?"yellow":"red";
-  $meter.dataset.level=level;
-  $conf.textContent=Math.round(pct)+"%";
-  $confLabel.textContent=level==="green"?"Converged · safe to stop":level==="yellow"?"Stabilizing · boundaries resolving":"Volatile · keep voting";
-  $barFill.style.width=Math.min(100,n/hi*100)+"%";
-  $barTick.style.left=(lo/hi*100)+"%";
-  $meterSub.textContent=n+" matchup"+(n===1?"":"s")+" ("+Math.ceil(n/3)+" vote"+(n<=3?"":"s")+") · suggested budget "+lo+"–"+hi+" matchups"+(n>hi&&level!=="green"?" · past budget, more votes still help":"");
-  $undo.disabled=!n; $reset.disabled=!n;
+  const N=characters.length, votes=T.votes.length, pct=tB.confidence, B=TS.BATCH_VOTES;
+  const budget=tsBudget(N);                           // suggested votes = 1.2 x roster size (from the JSON)
+  const level=pct>=TS.LIGHT_GREEN?"green":pct>=TS.LIGHT_YELLOW?"yellow":"red";
+  $wheel.dataset.level=level;
+  // Confidence donut (left of Submit)
+  $donutFill.style.strokeDashoffset=(113.1*(1-Math.min(100,pct)/100)).toFixed(2);
+  $donutText.textContent=Math.round(pct)+"%";
+  $wheel.setAttribute("aria-label","Confidence "+Math.round(pct)+" percent");
+  // suggested votes + progress bar
+  $barFill.style.width=Math.min(100,votes/budget*100)+"%";
+  $meterSub.textContent=votes+" / ~"+budget+" suggested votes for "+N+" characters"
+    +(votes>budget&&level!=="green"?" · past the suggestion, more votes still help":"");
+  // Tier Summary
+  const [m,sub]=level==="green"?["Converged","Tiers within ±1"]:level==="yellow"?["Stabilizing","Boundaries resolving"]:["Volatile","Keep voting"];
+  $stateMain.textContent=m; $stateSub.textContent=sub;
+  $statExact.innerHTML=Math.round(tB.strictConfidence)+"% <small>("+tB.strict+" / "+N+")</small>";
+  $statBoundary.innerHTML=Math.round(pct)+"% <small>("+tB.relaxed+" / "+N+")</small>";
+  const left=B-votes%B;
+  $updateNote.textContent="Donut: yellow ≥ "+TS.LIGHT_YELLOW+"%, green ≥ "+TS.LIGHT_GREEN+"% boundary stability. Updates every "+B+" votes"+(left===B?"":" · next in "+left);
+  $undo.disabled=!votes; $reset.disabled=!votes;
 }
 
-/* ----- tier list ----- */
+/* ----- tier list (+ nerd stats) ----- */
 function renderTiers(){
-  $tiersList.innerHTML="";
+  $tiersList.innerHTML=""; $tiersList.classList.toggle("nerd",nerdOn);
+  document.getElementById("tier-legend").textContent=nerdOn
+    ? "μ rating · σ uncertainty · W–L wins–losses · Bnd = tier boundaries inside μ ± 2σ (0 = exact tier, 1 = at worst ±1). Refreshed every "+TS.BATCH_VOTES+" votes"
+    : "Dashed = close to a tier boundary, still being resolved · refreshed every "+TS.BATCH_VOTES+" votes";
+  if(nerdOn){
+    const h=document.createElement("div"); h.className="nerd-head";
+    ["","Character","μ","σ","W–L","Bnd"].forEach(t=>{ const x=document.createElement("span"); x.textContent=t; h.append(x); });
+    $tiersList.append(h);
+  }
   tB.tiers.forEach((items,b)=>{
     const row=document.createElement("div"); row.className="tier-row"; row.style.setProperty("--tc",TIER_COLORS[b]);
     const L=document.createElement("div"); L.className="tier-letter"; L.textContent=TS.LABELS[b];
@@ -697,10 +630,16 @@ function renderTiers(){
     if(!items.length){ const e=document.createElement("span"); e.className="tier-empty"; e.textContent="—"; chips.append(e); }
     items.forEach(it=>{
       const c=charById.get(it.id), chip=document.createElement("div");
-      chip.className="chip"+(tB.stableSet.has(it.id)?"":" shaky"); chip.title=c.name;
+      chip.className="chip"+(!nerdOn&&!tB.stableSet.has(it.id)?" shaky":""); chip.title=c.name;
       const im=document.createElement("div"); im.className="chip-img"; fillPortrait(im,c);
       const nm=document.createElement("div"); nm.className="chip-name"; nm.textContent=c.name;
-      chip.append(im,nm); chips.append(chip);
+      chip.append(im,nm);
+      if(nerdOn){
+        const i=tB.info.get(it.id), add=(t,cls)=>{ const x=document.createElement("span"); x.className="nv"+(cls?" "+cls:""); x.textContent=t; chip.append(x); };
+        add(Math.round(i.mu)); add(i.sigma.toFixed(0),"dim"); add(i.w+"–"+i.l,"dim");
+        add(i.crossed===0?"·":String(i.crossed),i.crossed===1?"b1":i.crossed>1?"b2":"dim");
+      }
+      chips.append(chip);
     });
     row.append(L,chips); $tiersList.append(row);
   });
@@ -708,40 +647,27 @@ function renderTiers(){
 function setTiersOpen(open){
   tiersOpen=open; $tiersPanel.classList.toggle("open",open);
   $tiersToggle.setAttribute("aria-expanded",open);
-  $tiersLabel.textContent=open?"Hide current tiers":"Show current tiers";
+  $tiersLabel.textContent=open?"Hide Tier Summary":"Show Tier Summary";
   if(open) renderTiers();
+}
+function setNerd(on){
+  nerdOn=on; $nerd.setAttribute("aria-pressed",on); $nerd.textContent=on?"Hide Nerd Stats":"Show Nerd Stats";
+  renderTiers();
 }
 async function tierCopy(){
   const text=tB.tiers.map((items,b)=>TS.LABELS[b]+": "+items.map(i=>charById.get(i.id).name).join(", ")).join("\n");
   let ok=false; try{ await navigator.clipboard.writeText(text); ok=true; }catch(e){}
-  $status.textContent=ok?"Tier list copied":"Couldn't copy (browser blocked clipboard)";
-  $status.classList.add("show"); setTimeout(()=>$status.classList.remove("show"),1600);
+  $copy.textContent=ok?"Copied ✓":"Copy failed";
+  setTimeout(()=>{ $copy.textContent="Copy tier list"; },1600);
 }
 
-/* ----- mode switch ----- */
-function setMode(m){
-  if(m==="tier"&&!T) return;
-  mode=m; const t=m==="tier";
-  $main.classList.toggle("mode-tier",t);
-  $tier.hidden=!t; $hintTier.hidden=!t; $hint.hidden=t;
-  $modeVote.setAttribute("aria-pressed",!t); $modeTier.setAttribute("aria-pressed",t);
-  if(t){ if(!tCur) tierNext(); renderMeter(); if(tiersOpen) renderTiers(); }
-}
-$modeVote.onclick=()=>setMode("vote");
-$modeTier.onclick=()=>setMode("tier");
-$tsubmit.addEventListener("click",tierSubmit); $undo.onclick=tierUndo; $skip.onclick=tierSkip; $reset.onclick=tierReset; $copy.onclick=tierCopy;
-$tiersToggle.onclick=()=>setTiersOpen(!tiersOpen);
-
-$submit.addEventListener("click",submit);
-document.addEventListener("keydown",e=>{
-  if(mode==="tier"){                                   // Space = submit, Ctrl/Cmd+Z = undo last vote
-    if(e.repeat) return;
-    if(e.code==="Space"){ e.preventDefault(); tierSubmit(); }
-    else if(e.code==="KeyZ"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); tierUndo(); }
-    return;
-  }
-  if(e.target===$comment||e.target===$commentToggle) return;   // let Space type a space / press the toggle
-  if(e.code==="Space"&&!e.repeat){ e.preventDefault(); submit(); }
+$undo.onclick=tierUndo; $skip.onclick=tierSkip; $reset.onclick=tierReset; $copy.onclick=tierCopy;
+$tiersToggle.onclick=()=>setTiersOpen(!tiersOpen); $nerd.onclick=()=>setNerd(!nerdOn);
+$submit.addEventListener("click",tierSubmit);
+document.addEventListener("keydown",e=>{               // Space = submit, Ctrl/Cmd+Z = undo last vote
+  if(e.repeat||(e.target.closest&&e.target.closest(".summary button"))) return;   // let the Tier Summary buttons behave normally
+  if(e.code==="Space"){ e.preventDefault(); tierSubmit(); }
+  else if(e.code==="KeyZ"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); tierUndo(); }
 });
 load();
 </script>
