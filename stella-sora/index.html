@@ -73,7 +73,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .tag-worst{color:var(--red);text-shadow:0 0 calc(8*var(--u)) rgba(255,107,107,.9),0 0 calc(22*var(--u)) rgba(255,107,107,.6),0 0 calc(44*var(--u)) rgba(255,107,107,.35)}
 .name{margin-top:calc(9*var(--u));font-size:calc(13*var(--u));color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s}
 .col.best .name{color:var(--green)} .col.worst .name{color:var(--red)}
-.arrow:focus-visible,.portrait:focus-visible,#submit:focus-visible,#comment-toggle:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u))}
+.arrow:focus-visible,.portrait:focus-visible,#submit:focus-visible,#t-submit:focus-visible,#comment-toggle:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u))}
 
 /* ---------- round enter / exit ---------- */
 .col{opacity:0;transform:translateY(calc(14*var(--u)));animation:enter .6s var(--ease) forwards;animation-delay:calc(var(--i) * 70ms)}
@@ -82,11 +82,11 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 @keyframes leave{from{opacity:1;transform:none}to{opacity:0;transform:translateY(calc(-10*var(--u)))}}
 
 /* ---------- submit ---------- */
-#submit{width:min(100%,calc(333*var(--u)));height:calc(37.5*var(--u));border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-family:inherit;font-size:calc(12*var(--u));font-weight:500;letter-spacing:.02em;cursor:not-allowed;
+#submit,#t-submit{width:min(100%,calc(333*var(--u)));height:calc(37.5*var(--u));border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-family:inherit;font-size:calc(12*var(--u));font-weight:500;letter-spacing:.02em;cursor:not-allowed;
   transition:background .35s,color .35s,box-shadow .45s,border-color .35s,transform .15s}
-#submit:not(:disabled){cursor:pointer;background:var(--ink);color:#0b0c0f;border-color:var(--ink);box-shadow:0 0 calc(25.5*var(--u)) rgba(255,255,255,.22)}
-#submit:not(:disabled):hover{box-shadow:0 0 calc(36*var(--u)) rgba(255,255,255,.35)}
-#submit:not(:disabled):active{transform:scale(.98)}
+#submit:not(:disabled),#t-submit:not(:disabled){cursor:pointer;background:var(--ink);color:#0b0c0f;border-color:var(--ink);box-shadow:0 0 calc(25.5*var(--u)) rgba(255,255,255,.22)}
+#submit:not(:disabled):hover,#t-submit:not(:disabled):hover{box-shadow:0 0 calc(36*var(--u)) rgba(255,255,255,.35)}
+#submit:not(:disabled):active,#t-submit:not(:disabled):active{transform:scale(.98)}
 /* ---------- optional comment (collapsed by default) ---------- */
 .comment{width:min(100%,calc(333*var(--u)));display:flex;flex-direction:column;align-items:center}
 #comment-toggle{display:inline-flex;align-items:center;gap:calc(4.5*var(--u));padding:calc(3*var(--u)) calc(10.5*var(--u));border:0;border-radius:calc(999*var(--u));background:none;color:var(--muted);font-family:inherit;font-size:calc(10.5*var(--u));letter-spacing:.01em;cursor:pointer;transition:color .25s,background .25s}
@@ -148,10 +148,77 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   #comment{position:absolute;left:0;top:0;width:106.667%;height:106.667%;transform:scale(.9375);transform-origin:0 0;padding:8px 14px;border-radius:18px;font-size:16px;line-height:1.25}
   .comment-ph{padding:0 12px;font-size:13px}
   .comment-count{font-size:11px;margin-top:2px}
-  #submit{width:100%;max-width:394px;margin-top:0;height:45px;font-size:13px}
+  #submit,#t-submit{width:100%;max-width:394px;margin-top:0;height:45px;font-size:13px}
   h1{font-size:17px}
   .period{font-size:11px}
   .hint{font-size:13px;margin-bottom:6px}
+}
+
+/* ================= TIER SORT MODE ================= */
+.modes{display:inline-flex;gap:calc(2*var(--u));padding:calc(3*var(--u));margin-bottom:calc(4*var(--u));border:calc(1*var(--u)) solid var(--line);border-radius:calc(999*var(--u));background:rgba(255,255,255,.03)}
+.modes button{border:0;background:none;color:var(--muted);font-family:inherit;font-size:calc(11.5*var(--u));letter-spacing:.03em;padding:calc(5*var(--u)) calc(14*var(--u));border-radius:calc(999*var(--u));cursor:pointer;transition:color .25s,background .25s}
+.modes button:hover:not(:disabled){color:var(--ink)}
+.modes button[aria-pressed="true"]{background:var(--ink);color:#0b0c0f}
+.modes button:disabled{opacity:.4;cursor:default}
+.modes button:focus-visible,.btn:focus-visible,.linkbtn:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u))}
+
+main.mode-tier{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(18*var(--u))}
+main.mode-tier #row,main.mode-tier .foot{display:none}
+main.mode-tier .head{align-self:center}   /* desktop rule .head{align-self:start} would pin it to the left in the flex layout */
+body.comment-open #trow{transform:none}
+main.mode-tier .head{margin-bottom:0}
+
+.tier{display:flex;flex-direction:column;align-items:center;gap:calc(18*var(--u));width:min(100%,calc(560*var(--u)))}
+.tier[hidden]{display:none}
+.verify{min-height:calc(14*var(--u));margin:calc(-6*var(--u)) 0 0;font-size:calc(11.5*var(--u));color:var(--muted);text-align:center}
+
+.meter{width:100%;display:flex;flex-direction:column;align-items:center;gap:calc(8*var(--u))}
+.meter-line{display:flex;align-items:center;gap:calc(12*var(--u))}
+.lights{display:flex;gap:calc(6*var(--u))}
+.lights i{width:calc(11*var(--u));height:calc(11*var(--u));border-radius:50%;background:rgba(255,255,255,.1);transition:background .4s,box-shadow .4s}
+.meter[data-level="red"] .lights i:nth-child(1){background:var(--red);box-shadow:0 0 calc(12*var(--u)) rgba(255,107,107,.85)}
+.meter[data-level="yellow"] .lights i:nth-child(2){background:#f2c94c;box-shadow:0 0 calc(12*var(--u)) rgba(242,201,76,.85)}
+.meter[data-level="green"] .lights i:nth-child(3){background:var(--green);box-shadow:0 0 calc(12*var(--u)) rgba(155,209,123,.85)}
+.conf{font-size:calc(26*var(--u));font-weight:600;font-variant-numeric:tabular-nums;line-height:1}
+.conf-label{font-size:calc(12.5*var(--u));color:var(--muted)}
+.bar{position:relative;width:min(100%,calc(333*var(--u)));height:calc(5*var(--u));border-radius:calc(999*var(--u));background:rgba(255,255,255,.08)}
+.bar-fill{height:100%;border-radius:inherit;background:var(--ink);opacity:.8;transition:width .4s}
+.bar-tick{position:absolute;top:calc(-3*var(--u));bottom:calc(-3*var(--u));width:calc(1*var(--u));background:rgba(255,255,255,.4)}
+.meter-sub{font-size:calc(11.5*var(--u));color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+
+.tier-actions{display:flex;flex-wrap:wrap;gap:calc(8*var(--u));justify-content:center}
+.btn{height:calc(31*var(--u));padding:0 calc(16*var(--u));border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font-family:inherit;font-size:calc(11.5*var(--u));cursor:pointer;transition:background .25s,border-color .25s,opacity .25s}
+.btn:hover:not(:disabled){background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3)}
+.btn:disabled{opacity:.35;cursor:default}
+.linkbtn{display:inline-flex;align-items:center;gap:calc(4.5*var(--u));padding:calc(3*var(--u)) calc(10.5*var(--u));border:0;border-radius:calc(999*var(--u));background:none;color:var(--muted);font-family:inherit;font-size:calc(11.5*var(--u));cursor:pointer;transition:color .25s,background .25s}
+.linkbtn:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.linkbtn svg{width:calc(10.5*var(--u));height:calc(10.5*var(--u));fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
+.linkbtn[aria-expanded="true"] svg{transform:rotate(180deg)}
+
+.tiers-panel{display:grid;grid-template-rows:0fr;width:100%;transition:grid-template-rows .3s ease}
+.tiers-panel.open{grid-template-rows:1fr}
+.tiers-inner{min-height:0;overflow:hidden;visibility:hidden;transition:visibility 0s .3s}
+.tiers-panel.open .tiers-inner{visibility:visible;transition-delay:0s}
+.tier-row{display:flex;gap:calc(12*var(--u));align-items:flex-start;padding:calc(9*var(--u)) 0;border-top:calc(1*var(--u)) solid var(--line)}
+.tier-letter{flex:none;width:calc(30*var(--u));font-size:calc(22*var(--u));font-weight:700;text-align:center;color:var(--tc);text-shadow:0 0 calc(10*var(--u)) color-mix(in srgb,var(--tc) 55%,transparent)}
+.tier-chips{display:flex;flex-wrap:wrap;gap:calc(6*var(--u));min-height:calc(40*var(--u))}
+.tier-empty{align-self:center;font-size:calc(11.5*var(--u));color:var(--muted)}
+.chip{width:calc(52*var(--u));display:flex;flex-direction:column;align-items:center;gap:calc(3*var(--u))}
+.chip-img{position:relative;display:grid;place-items:center;width:calc(40*var(--u));height:calc(40*var(--u));border-radius:calc(11*var(--u));overflow:hidden;background:var(--surface);border:calc(1.5*var(--u)) solid var(--line);font-size:calc(13*var(--u));font-weight:600}
+.chip-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.chip.shaky{opacity:.7}
+.chip.shaky .chip-img{border-style:dashed;border-color:rgba(255,255,255,.45)}
+.chip-name{max-width:100%;font-size:calc(8.5*var(--u));color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tier-legend{margin:calc(6*var(--u)) 0 calc(8*var(--u));font-size:calc(11*var(--u));color:var(--muted);text-align:center}
+.tiers-tools{display:flex;justify-content:center;padding-top:calc(4*var(--u))}
+@media (max-width:700px){
+  .tier{gap:16px}
+  #trow{margin-bottom:0}
+  .modes button{font-size:12px;padding:6px 14px}
+  .conf{font-size:24px}
+  .btn{height:36px;font-size:13px}
+  .linkbtn{font-size:13px}
+  .tier-letter{font-size:20px}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
@@ -163,9 +230,14 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 <div class="bg" aria-hidden="true"><div class="bg-layer"></div><div class="bg-layer"></div></div>
 <main>
   <header class="head">
+    <div class="modes" role="group" aria-label="Mode">
+      <button type="button" id="mode-vote" aria-pressed="true">Best / Worst</button>
+      <button type="button" id="mode-tier" aria-pressed="false" disabled>Tier Sort</button>
+    </div>
     <p class="period">05/13 12:00 AM to 06/30 11:59 PM (UTC)</p>
     <h1 id="title"></h1>
     <p class="hint">Which character do you like the <b class="tag-best">MOST</b> and <b class="tag-worst">LEAST</b>?</p>
+    <p class="hint" id="hint-tier" hidden>Which character do you like the <b class="tag-best">MOST</b> and <b class="tag-worst">LEAST</b>? Each vote counts as 3 matchups.</p>
   </header>
   <div class="row" id="row"></div>
   <div class="foot">
@@ -188,6 +260,36 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   </div>
   <button id="submit" disabled>Submit</button>
   </div>
+  <section class="tier" id="tier" hidden aria-label="Tier sort">
+    <div class="row" id="trow"></div>
+    <p class="verify" id="verify" aria-live="polite"></p>
+    <button id="t-submit" disabled>Submit</button>
+    <div class="meter" id="meter" data-level="red" title="Share of characters whose 95% interval (mu ± 2 sigma) sits entirely inside one tier">
+      <div class="meter-line">
+        <div class="lights" aria-hidden="true"><i></i><i></i><i></i></div>
+        <span class="conf" id="conf">0%</span>
+        <span class="conf-label" id="conf-label">Volatile · keep voting</span>
+      </div>
+      <div class="bar" aria-hidden="true"><div class="bar-fill" id="bar-fill" style="width:0"></div><div class="bar-tick" id="bar-tick" style="left:50%"></div></div>
+      <div class="meter-sub" id="meter-sub"></div>
+    </div>
+    <div class="tier-actions">
+      <button type="button" class="btn" id="t-undo" disabled>Undo</button>
+      <button type="button" class="btn" id="t-skip">Skip set</button>
+      <button type="button" class="btn" id="t-reset" disabled>Reset</button>
+    </div>
+    <button type="button" class="linkbtn" id="tiers-toggle" aria-expanded="false" aria-controls="tiers-panel">
+      <span id="tiers-toggle-label">Show current tiers</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="tiers-panel" id="tiers-panel">
+      <div class="tiers-inner">
+        <div id="tiers-list"></div>
+        <p class="tier-legend">Dashed = close to a tier boundary, still being resolved</p>
+        <div class="tiers-tools"><button type="button" class="btn" id="t-copy">Copy tier list</button></div>
+      </div>
+    </div>
+  </section>
   <div id="status" role="status" aria-live="polite"></div>
 </main>
 
@@ -229,6 +331,7 @@ async function load(){
     const d=await getJSON(CHARACTERS_URL);
     characters=(d.characters||[]).filter(c=>c&&c.id&&c.name);
     if(characters.length<2) throw new Error("Need at least 2 characters");
+    initTier();
   }catch(e){
     console.error(e);
     $hint.textContent="Could not load data/characters.json. If you opened the file directly, serve the folder instead (python3 -m http.server).";
@@ -356,8 +459,287 @@ async function submit(){
   locked=false; $status.classList.remove("show"); nextRound();
 }
 
+/* ===== TIER ENGINE START ===== */
+const TS={
+  LABELS:["S","A","B","C","D","E","F"],
+  PCT:[5,15,25,25,15,10,5],        // % of items per bucket, top to bottom (must sum to 100)
+  MU0:1000, SIGMA0:100, SIGMA_MIN:8, SIGMA_CAP:140,
+  K:64,                            // base Elo step (scaled by relative uncertainty)
+  SHRINK:.80,                      // sigma multiplier after an expected result
+  SURPRISE_P:.35,                  // a win with expected probability below this counts as an upset
+  SPIKE:.9,                        // how hard an upset inflates sigma
+  EPS:10, BATCH:3, PRIOR_TAU:200, MLE_ITERS:60,
+  BUDGET_LO:.33, BUDGET_HI:.66
+};
+function tsHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0)/4294967296}
+const tsKey=(a,b)=>a<b?a+"\u0001"+b:b+"\u0001"+a;
+const tsClamp=(x,lo,hi)=>Math.min(hi,Math.max(lo,x));
+function tsNew(ids){
+  const items=ids.map(id=>({id,mu:TS.MU0,sigma:TS.SIGMA0,n:0,spike:1,tb:tsHash(String(id))}));
+  return{items,byId:new Map(items.map(i=>[i.id,i])),games:[],pairs:new Map(),skips:new Map()};
+}
+/* online update: Elo-style step weighted by relative uncertainty, sigma shrinks, upsets spike sigma */
+function tsOnline(S,w,l){
+  const A=S.byId.get(w),B=S.byId.get(l);
+  const E=1/(1+Math.pow(10,(B.mu-A.mu)/400));
+  const vA=A.sigma*A.sigma,vB=B.sigma*B.sigma,tot=vA+vB;
+  A.mu+=TS.K*2*(vA/tot)*(1-E);
+  B.mu-=TS.K*2*(vB/tot)*(1-E);
+  const surprise=E<TS.SURPRISE_P?(TS.SURPRISE_P-E)/TS.SURPRISE_P:0;
+  for(const it of[A,B]){
+    if(surprise>0){ const f=1+TS.SPIKE*surprise; it.sigma*=f; it.spike=Math.min(2.5,it.spike*f); }
+    else{ it.sigma*=TS.SHRINK; it.spike=1+(it.spike-1)*.6; }
+    it.sigma=tsClamp(it.sigma,TS.SIGMA_MIN,TS.SIGMA_CAP);
+    it.n++;
+  }
+}
+/* retrospective recalibration: MAP Bradley-Terry over ALL past comparisons (Gauss-Seidel, diagonal Newton) */
+function tsRecalibrate(S){
+  const lam=Math.LN10/400,tau2=TS.PRIOR_TAU*TS.PRIOR_TAU,idx=new Map(S.items.map((it,i)=>[it.id,i]));
+  const adj=S.items.map(()=>[]);
+  for(const[w,l]of S.games){const a=idx.get(w),b=idx.get(l);adj[a].push([b,1]);adj[b].push([a,0]);}
+  const mu=S.items.map(it=>it.mu);
+  for(let k=0;k<TS.MLE_ITERS;k++){
+    let move=0;
+    for(let i=0;i<mu.length;i++){
+      if(!adj[i].length)continue;
+      let g=-(mu[i]-TS.MU0)/tau2,h=1/tau2;
+      for(const[j,won]of adj[i]){const p=1/(1+Math.exp(-lam*(mu[i]-mu[j])));g+=lam*(won-p);h+=lam*lam*p*(1-p);}
+      const d=tsClamp(g/h,-150,150);mu[i]+=d;move=Math.max(move,Math.abs(d));
+    }
+    if(move<.01)break;
+  }
+  S.items.forEach((it,i)=>{if(adj[i].length)it.mu=mu[i];});
+}
+function tsRecord(S,w,l){
+  S.games.push([w,l]);
+  const k=tsKey(w,l);S.pairs.set(k,(S.pairs.get(k)||0)+1);
+  tsOnline(S,w,l);
+  if(S.games.length%TS.BATCH===0)tsRecalibrate(S);
+}
+/* state is a pure function of the comparison history, so undo / reload = replay */
+function tsReplay(ids,games){
+  const S=tsNew(ids),ok=new Set(ids);
+  for(const[w,l]of games)if(ok.has(w)&&ok.has(l)&&w!==l)tsRecord(S,w,l);
+  return S;
+}
+/* active sampler: pair score = (si^2+sj^2)/(|mi-mj|+eps); jitter = random tie-break (no list-order bias);
+   already-compared / skipped pairs are discounted. A "set" is the best-scoring pair plus the third item that scores
+   best against both, so one 3-card vote re-tests the most ambiguous neighbourhood. */
+function tsPairScore(S,a,b){
+  const k=tsKey(a.id,b.id);
+  let s=(a.sigma*a.sigma+b.sigma*b.sigma)/(Math.abs(a.mu-b.mu)+TS.EPS);
+  s/=1+3*(S.pairs.get(k)||0)+20*(S.skips.get(k)||0);
+  return s*(.9+.2*Math.random());
+}
+function tsSelectSet(S,size){
+  const it=S.items;size=Math.min(size,it.length);
+  let best=null,bs=-1;
+  for(let i=0;i<it.length;i++)for(let j=i+1;j<it.length;j++){const s=tsPairScore(S,it[i],it[j]);if(s>bs){bs=s;best=[i,j];}}
+  if(!best)return[];
+  const set=[best[0],best[1]];
+  if(size>=3){
+    let k3=-1,s3=-1;
+    for(let k=0;k<it.length;k++){
+      if(k===best[0]||k===best[1])continue;
+      const s=tsPairScore(S,it[best[0]],it[k])+tsPairScore(S,it[best[1]],it[k]);
+      if(s>s3){s3=s;k3=k;}
+    }
+    if(k3>=0)set.push(k3);
+  }
+  for(let i=set.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[set[i],set[j]]=[set[j],set[i]];}   // random on-screen order
+  return set.map(i=>it[i].id);
+}
+/* bucket assignment by rank percentile + boundary stability */
+function tsBuckets(S){
+  const N=S.items.length,order=S.items.slice().sort((a,b)=>b.mu-a.mu||a.tb-b.tb);
+  const cuts=[];let cum=0;for(let k=0;k<TS.PCT.length-1;k++){cum+=TS.PCT[k]/100;cuts.push(Math.round(N*cum));}
+  const bounds=cuts.map(c=>c>0&&c<N?(order[c-1].mu+order[c].mu)/2:null).filter(x=>x!==null);
+  const tiers=TS.LABELS.map(()=>[]),of=new Map();
+  order.forEach((it,r)=>{let b=0;while(b<cuts.length&&r>=cuts[b])b++;tiers[b].push(it);of.set(it.id,b);});
+  let stable=0;const stableSet=new Set();
+  for(const it of S.items){
+    const lo=it.mu-2*it.sigma,hi=it.mu+2*it.sigma;
+    if(!bounds.some(b=>b>lo&&b<hi)){stable++;stableSet.add(it.id);}
+  }
+  return{order,tiers,of,bounds,stableSet,confidence:N?stable/N*100:0};
+}
+/* ===== TIER ENGINE END ===== */
+
+/* ============================================================
+   TIER SORT MODE  (Active Bayesian Bucket Classifier)
+   Pairwise comparisons -> Bayesian ratings (mu, sigma) -> 7 quantile buckets.
+   Tune everything in the TS object above (bucket %, step size, shrink rate, batch size ...).
+   ============================================================ */
+const TIER_STORE="stellasora.tiersort.v1";   // localStorage key; only the comparison history is stored
+const TIER_COLORS=["#ff8f6b","#ffb86b","#ffe16b","#c8e86b","#7fd9a1","#6bc2ff","#a98bff"];
+const $main=document.querySelector("main"), $tier=document.getElementById("tier"), $trow=document.getElementById("trow"), $tsubmit=document.getElementById("t-submit"),
+      $verify=document.getElementById("verify"), $meter=document.getElementById("meter"), $conf=document.getElementById("conf"),
+      $confLabel=document.getElementById("conf-label"), $barFill=document.getElementById("bar-fill"), $barTick=document.getElementById("bar-tick"),
+      $meterSub=document.getElementById("meter-sub"), $undo=document.getElementById("t-undo"), $skip=document.getElementById("t-skip"),
+      $reset=document.getElementById("t-reset"), $copy=document.getElementById("t-copy"), $tiersToggle=document.getElementById("tiers-toggle"),
+      $tiersLabel=document.getElementById("tiers-toggle-label"), $tiersPanel=document.getElementById("tiers-panel"), $tiersList=document.getElementById("tiers-list"),
+      $modeVote=document.getElementById("mode-vote"), $modeTier=document.getElementById("mode-tier"), $hintTier=document.getElementById("hint-tier");
+let mode="vote", T=null, tB=null, tCur=null, tBest=null, tWorst=null, tCols=new Map(), tLocked=false, tiersOpen=false, charById=new Map();
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+function tierLoadGames(){
+  try{ const g=JSON.parse(localStorage.getItem(TIER_STORE)||"[]"); return Array.isArray(g)?g.filter(x=>Array.isArray(x)&&x.length===2):[]; }catch(e){ return []; }
+}
+function tierSave(){ try{ localStorage.setItem(TIER_STORE,JSON.stringify(T.games)); }catch(e){} }
+function tierRebuild(games){            // state is a pure function of the history: undo / reset / reload all go through here
+  const skips=T?T.skips:new Map();
+  T=tsReplay(characters.map(c=>c.id),games); T.skips=skips;
+  tB=tsBuckets(T); tCur=null;
+}
+function initTier(){
+  charById=new Map(characters.map(c=>[c.id,c]));
+  T=null; tierRebuild(tierLoadGames());
+  $modeTier.disabled=false;
+}
+
+function fillPortrait(el,c){
+  const img=document.createElement("img"); img.alt=""; img.src=encodeURI(c.portrait||"");
+  img.onerror=()=>{ img.remove(); const s=document.createElement("span"); s.textContent=c.name.split(" ").map(w=>w[0]).join("").slice(0,2); el.append(s); };
+  el.append(img);
+}
+
+/* ----- one vote = a set of 3 cards; best / middle / worst become 3 matchups (best>middle, middle>worst, best>worst) ----- */
+function tierNext(){
+  tBest=tWorst=null;
+  tCur=tsSelectSet(T,3);            // active sampler: most ambiguous neighbourhood (one set per batch of 3 matchups)
+  renderTrio();
+}
+function renderTrio(){
+  $trow.classList.remove("leaving"); $trow.innerHTML=""; tCols=new Map();
+  (tCur||[]).forEach((id,i)=>{
+    const c=charById.get(id), name=esc(c.name), col=document.createElement("div");
+    col.className="col"; col.style.setProperty("--i",i);
+    col.innerHTML=`
+      <div class="stack">
+        <button class="arrow up" aria-label="Mark ${name} as best">${CHEV_UP}</button>
+        <div class="card">
+          <button class="portrait" aria-label="${name}: clear pick"></button>
+          <div class="name">${name}</div>
+        </div>
+        <button class="arrow down" aria-label="Mark ${name} as worst">${CHEV_DN}</button>
+      </div>`;
+    fillPortrait(col.querySelector(".portrait"),c);
+    col.querySelector(".up").onclick=()=>tierMark(id,"best");
+    col.querySelector(".down").onclick=()=>tierMark(id,"worst");
+    col.querySelector(".portrait").onclick=()=>tierMark(id,"clear");
+    tCols.set(id,col); $trow.appendChild(col);
+  });
+  tierSync();
+  // fault tolerance made visible: an upset inflates sigma, so the sampler re-checks that character against close peers
+  $verify.textContent=(tCur||[]).some(id=>T.byId.get(id).spike>1.25)?"Re-verifying a surprising result":"";
+}
+function tierMark(id,kind){
+  if(tLocked) return;
+  if(kind==="best"){ tBest=id; if(tWorst===id) tWorst=null; }
+  else if(kind==="worst"){ tWorst=id; if(tBest===id) tBest=null; }
+  else { if(tBest===id) tBest=null; if(tWorst===id) tWorst=null; }
+  tierSync();
+}
+function tierSync(){
+  for(const [id,col] of tCols){ col.classList.toggle("best",id===tBest); col.classList.toggle("worst",id===tWorst); }
+  $tsubmit.disabled=tBest===null||tWorst===null||tLocked;
+}
+async function tierSubmit(){
+  if(tLocked||tBest===null||tWorst===null) return; tLocked=true; $tsubmit.disabled=true;
+  const mid=tCur.find(id=>id!==tBest&&id!==tWorst);
+  const matchups=mid===undefined?[[tBest,tWorst]]:[[tBest,mid],[mid,tWorst],[tBest,tWorst]];   // [winner, loser]
+  matchups.forEach(([w,l])=>tsRecord(T,w,l)); tierSave();   // tsRecord recalibrates every TS.BATCH (=3) matchups, i.e. once per vote
+  // MOCK: replace with fetch(YOUR_WORKER_URL,{method:"POST",body:JSON.stringify({best:tBest,middle:mid,worst:tWorst,shown:tCur,ts})})
+  console.log("tier vote recorded",{best:tBest,middle:mid,worst:tWorst,matchups,ts:Date.now()});
+  tB=tsBuckets(T); if(tiersOpen) renderTiers(); renderMeter();
+  $status.textContent="Vote recorded"; $status.classList.add("show");
+  await sleep(SUBMIT_COOLDOWN_MS-300);
+  $trow.classList.add("leaving"); await sleep(300);
+  $status.classList.remove("show"); tLocked=false; tierNext();
+}
+function tierSkip(){
+  if(tLocked||!tCur) return;
+  for(let i=0;i<tCur.length;i++)for(let j=i+1;j<tCur.length;j++){ const k=tsKey(tCur[i],tCur[j]); T.skips.set(k,(T.skips.get(k)||0)+1); }
+  tierNext();
+}
+function tierUndo(){            // removes the last vote (its 3 matchups)
+  if(tLocked||!T.games.length) return;
+  tierRebuild(T.games.slice(0,T.games.length-(T.games.length%3||3))); tierSave(); tierNext(); renderMeter(); if(tiersOpen) renderTiers();
+}
+function tierReset(){
+  if(tLocked||!T.games.length) return;
+  if(!confirm("Clear all "+T.games.length+" matchups and start over?")) return;
+  T.skips=new Map(); tierRebuild([]); tierSave(); tierNext(); renderMeter(); if(tiersOpen) renderTiers();
+}
+
+/* ----- confidence indicator (updates at each batch boundary) ----- */
+function renderMeter(){
+  const N=characters.length, n=T.games.length, pct=tB.confidence;
+  const lo=Math.max(1,Math.round(TS.BUDGET_LO*N)), hi=Math.max(lo,Math.round(TS.BUDGET_HI*N));
+  const level=pct>=80?"green":pct>=50?"yellow":"red";
+  $meter.dataset.level=level;
+  $conf.textContent=Math.round(pct)+"%";
+  $confLabel.textContent=level==="green"?"Converged · safe to stop":level==="yellow"?"Stabilizing · boundaries resolving":"Volatile · keep voting";
+  $barFill.style.width=Math.min(100,n/hi*100)+"%";
+  $barTick.style.left=(lo/hi*100)+"%";
+  $meterSub.textContent=n+" matchup"+(n===1?"":"s")+" ("+Math.ceil(n/3)+" vote"+(n<=3?"":"s")+") · suggested budget "+lo+"–"+hi+" matchups"+(n>hi&&level!=="green"?" · past budget, more votes still help":"");
+  $undo.disabled=!n; $reset.disabled=!n;
+}
+
+/* ----- tier list ----- */
+function renderTiers(){
+  $tiersList.innerHTML="";
+  tB.tiers.forEach((items,b)=>{
+    const row=document.createElement("div"); row.className="tier-row"; row.style.setProperty("--tc",TIER_COLORS[b]);
+    const L=document.createElement("div"); L.className="tier-letter"; L.textContent=TS.LABELS[b];
+    const chips=document.createElement("div"); chips.className="tier-chips";
+    if(!items.length){ const e=document.createElement("span"); e.className="tier-empty"; e.textContent="—"; chips.append(e); }
+    items.forEach(it=>{
+      const c=charById.get(it.id), chip=document.createElement("div");
+      chip.className="chip"+(tB.stableSet.has(it.id)?"":" shaky"); chip.title=c.name;
+      const im=document.createElement("div"); im.className="chip-img"; fillPortrait(im,c);
+      const nm=document.createElement("div"); nm.className="chip-name"; nm.textContent=c.name;
+      chip.append(im,nm); chips.append(chip);
+    });
+    row.append(L,chips); $tiersList.append(row);
+  });
+}
+function setTiersOpen(open){
+  tiersOpen=open; $tiersPanel.classList.toggle("open",open);
+  $tiersToggle.setAttribute("aria-expanded",open);
+  $tiersLabel.textContent=open?"Hide current tiers":"Show current tiers";
+  if(open) renderTiers();
+}
+async function tierCopy(){
+  const text=tB.tiers.map((items,b)=>TS.LABELS[b]+": "+items.map(i=>charById.get(i.id).name).join(", ")).join("\n");
+  let ok=false; try{ await navigator.clipboard.writeText(text); ok=true; }catch(e){}
+  $status.textContent=ok?"Tier list copied":"Couldn't copy (browser blocked clipboard)";
+  $status.classList.add("show"); setTimeout(()=>$status.classList.remove("show"),1600);
+}
+
+/* ----- mode switch ----- */
+function setMode(m){
+  if(m==="tier"&&!T) return;
+  mode=m; const t=m==="tier";
+  $main.classList.toggle("mode-tier",t);
+  $tier.hidden=!t; $hintTier.hidden=!t; $hint.hidden=t;
+  $modeVote.setAttribute("aria-pressed",!t); $modeTier.setAttribute("aria-pressed",t);
+  if(t){ if(!tCur) tierNext(); renderMeter(); if(tiersOpen) renderTiers(); }
+}
+$modeVote.onclick=()=>setMode("vote");
+$modeTier.onclick=()=>setMode("tier");
+$tsubmit.addEventListener("click",tierSubmit); $undo.onclick=tierUndo; $skip.onclick=tierSkip; $reset.onclick=tierReset; $copy.onclick=tierCopy;
+$tiersToggle.onclick=()=>setTiersOpen(!tiersOpen);
+
 $submit.addEventListener("click",submit);
 document.addEventListener("keydown",e=>{
+  if(mode==="tier"){                                   // Space = submit, Ctrl/Cmd+Z = undo last vote
+    if(e.repeat) return;
+    if(e.code==="Space"){ e.preventDefault(); tierSubmit(); }
+    else if(e.code==="KeyZ"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); tierUndo(); }
+    return;
+  }
   if(e.target===$comment||e.target===$commentToggle) return;   // let Space type a space / press the toggle
   if(e.code==="Space"&&!e.repeat){ e.preventDefault(); submit(); }
 });
