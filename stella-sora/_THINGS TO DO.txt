@@ -1,0 +1,6 @@
+- Make it actually save the votes
+- Privacy notice
+
+ADD:
+- Characters: Freelance Trekkers, Grace Imperium (18 more characters)
+- NPCs
