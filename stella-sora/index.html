@@ -92,7 +92,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 @media (min-width:701px){
   main{display:grid;grid-template-rows:auto 1fr auto auto;justify-items:center;gap:0;row-gap:calc(10*var(--u));
        padding:max(calc(24*var(--u)),env(safe-area-inset-top)) calc(16*var(--u)) max(calc(24*var(--u)),env(safe-area-inset-bottom))}
-  .head{grid-row:1;align-self:start}          /* header | cards (fill the gap, centred in it) | Confidence + Submit | Tier Summary */
+  .head{grid-row:1;align-self:start}          /* header | cards (fill the gap, centred in it) | Confidence + Submit | Details */
   .row{grid-row:2;align-self:center}
   .submit-row{grid-row:3;align-self:end}
   .summary{grid-row:4}
@@ -188,7 +188,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .stats dt{color:var(--muted)}
 .stats dd{margin:0;color:var(--ink);font-variant-numeric:tabular-nums}
 .stats dd small{color:var(--muted);font-size:inherit}
-.stat-note{margin:0;font-size:calc(10.5*var(--u));color:var(--muted);text-align:center;line-height:1.5}
+.stat-note{white-space:pre-line;margin:0;font-size:calc(10.5*var(--u));color:var(--muted);text-align:center;line-height:1.5}
 /* nerd stats: per-character numbers next to each portrait */
 #tiers-list{width:100%}
 #tiers-list.nerd{max-height:min(62vh,calc(560*var(--u)));overflow-y:auto;padding-right:calc(4*var(--u));scrollbar-width:thin}
@@ -241,14 +241,14 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
     </div>
     <button id="submit" disabled>Submit</button>
   </div>
-  <section class="summary" id="summary" aria-label="Tier summary">
+  <section class="summary" id="summary" aria-label="Details">
     <div class="meter" id="meter">
       <div class="meter-sub" id="meter-sub"></div>
       <div class="bar" aria-hidden="true"><div class="bar-fill" id="bar-fill" style="width:0"></div></div>
     </div>
     <button type="button" class="btn cta" id="shot-cta" hidden>Save your tier image</button>
     <button type="button" class="linkbtn" id="tiers-toggle" aria-expanded="false" aria-controls="tiers-panel">
-      <span id="tiers-toggle-label">Show Tier Summary</span>
+      <span id="tiers-toggle-label">Show Details</span>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
     </button>
     <div class="tiers-panel" id="tiers-panel">
@@ -261,15 +261,15 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
             <div title="Characters whose 95% interval crosses at most one tier boundary (tier is at worst one step off). This drives the Confidence wheel"><dt>Boundary stability</dt><dd id="stat-boundary">0%</dd></div>
           </dl>
           <p class="stat-note" id="update-note"></p>
-          <button type="button" class="linkbtn" id="nerd-toggle" aria-pressed="false">Show Nerd Stats</button>
+          <button type="button" class="btn" id="nerd-toggle" aria-pressed="false">Show Nerd Stats</button>
           <div id="tiers-list"></div>
           <p class="tier-legend" id="tier-legend"></p>
           <div class="tier-actions">
             <button type="button" class="btn" id="t-shot">Save tier image</button>
+            <button type="button" class="btn" id="t-copy">Copy tier list</button>
             <button type="button" class="btn" id="t-undo" disabled>Undo</button>
             <button type="button" class="btn" id="t-skip">Skip set</button>
             <button type="button" class="btn" id="t-reset" disabled>Reset</button>
-            <button type="button" class="btn" id="t-copy">Copy tier list</button>
           </div>
         </div>
       </div>
@@ -366,7 +366,7 @@ const TS={
   SHRINK:.80,                      // sigma multiplier after an expected result
   SURPRISE_P:.35,                  // a win with expected probability below this counts as an upset
   SPIKE:.9,                        // how hard an upset inflates sigma
-  EPS:10, DISPLAY_EVERY:3, PRIOR_TAU:200, MLE_ITERS:60,   // re-fit + next-set pick run after EVERY vote; only the on-screen numbers refresh every DISPLAY_EVERY votes
+  EPS:10, DISPLAY_EVERY:3, PRIOR_TAU:200, MLE_ITERS:60,   // re-fit, next-set pick and the tier list update after EVERY vote; the Confidence numbers refresh every DISPLAY_EVERY votes
   LIGHT_YELLOW:40, LIGHT_GREEN:95,      // traffic-light thresholds (% of characters whose 95% interval straddles at most one tier boundary)
   BUDGET_PER_CHAR:1.2                   // suggested votes = 1.2 x roster size
 };
@@ -417,12 +417,14 @@ function tsRecord(S,w,l){
 }
 /* state is a pure function of the vote history, so undo / reload = replay. A vote = a list of [winner,loser] pairs.
    After EVERY vote the whole history is re-fitted (recalibration, ~1-14 ms) so the next set is always chosen from fresh ratings.
-   What the user SEES (S.snap: tiers, confidence, per-character stats) only refreshes every TS.DISPLAY_EVERY votes, so the number
-   doesn't wobble after every single pick (simulation: ~5 visible confidence drops per 36-vote session if shown every vote, <1 every 3rd vote). */
-function tsAfterVote(S,nVotes){tsRecalibrate(S);if(nVotes%TS.DISPLAY_EVERY===0)S.snap=tsBuckets(S);}
+   What the user SEES is split in two: S.snap (tiers + per-character stats) is rebuilt after every vote, while S.conf (the Confidence
+   numbers) only refreshes every TS.DISPLAY_EVERY votes, so that number doesn't wobble after each single pick
+   (simulation: ~5 visible confidence drops per 36-vote session if shown every vote, <1 every 3rd vote). */
+const tsConfOf=b=>({confidence:b.confidence,strictConfidence:b.strictConfidence,strict:b.strict,relaxed:b.relaxed});
+function tsAfterVote(S,nVotes){tsRecalibrate(S);S.snap=tsBuckets(S);if(nVotes%TS.DISPLAY_EVERY===0)S.conf=tsConfOf(S.snap);}
 function tsReplay(ids,votes){
   const S=tsNew(ids),ok=new Set(ids);let n=0;
-  S.snap=tsBuckets(S);
+  S.snap=tsBuckets(S);S.conf=tsConfOf(S.snap);
   for(const v of votes){
     for(const[w,l]of v)if(ok.has(w)&&ok.has(l)&&w!==l)tsRecord(S,w,l);
     tsAfterVote(S,++n);
@@ -458,7 +460,7 @@ function tsSelectSet(S,size,exclude){
   return set.map(i=>it[i].id);
 }
 /* Suggested budget in VOTES for a roster of N: 1.2 votes per character (simulation: ~95-99% of characters within one tier, ~52-63% exact tier;
-   accuracy depends on votes per character, not on roster size). Rounded up to a display refresh because the numbers only update every TS.DISPLAY_EVERY votes. */
+   accuracy depends on votes per character, not on roster size). Rounded up to a Confidence refresh because that number only updates every TS.DISPLAY_EVERY votes. */
 function tsBudget(N){return Math.max(TS.DISPLAY_EVERY,Math.ceil(N*TS.BUDGET_PER_CHAR/TS.DISPLAY_EVERY)*TS.DISPLAY_EVERY);}
 /* bucket assignment by rank percentile + boundary stability */
 function tsBuckets(S){
@@ -558,7 +560,7 @@ const $trow=document.getElementById("trow"), $updateNote=document.getElementById
       $meterSub=document.getElementById("meter-sub"), $undo=document.getElementById("t-undo"), $skip=document.getElementById("t-skip"),
       $reset=document.getElementById("t-reset"), $copy=document.getElementById("t-copy"), $tiersToggle=document.getElementById("tiers-toggle"),
       $tiersLabel=document.getElementById("tiers-toggle-label"), $tiersPanel=document.getElementById("tiers-panel"), $tiersList=document.getElementById("tiers-list");
-let T=null, tB=null, tCur=null, tBest=null, tWorst=null, tCols=new Map(), tLocked=false, tiersOpen=false, nerdOn=false, charById=new Map();
+let T=null, tB=null, tC=null, tCur=null, tBest=null, tWorst=null, tCols=new Map(), tLocked=false, tiersOpen=false, nerdOn=false, charById=new Map();
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 function tierLoadVotes(){
@@ -575,7 +577,7 @@ function tierRebuild(votes){            // state is a pure function of the vote 
   const skips=T?T.skips:new Map(), ok=new Set(characters.map(c=>c.id));
   votes=votes.map(v=>v.filter(([w,l])=>ok.has(w)&&ok.has(l)&&w!==l)).filter(v=>v.length);   // drop pairs involving characters no longer in the JSON
   T=tsReplay(characters.map(c=>c.id),votes); T.skips=skips; T.votes=votes;
-  tB=T.snap; tCur=null;
+  tB=T.snap; tC=T.conf; tCur=null;
 }
 function initTier(){
   charById=new Map(characters.map(c=>[c.id,c]));
@@ -637,8 +639,8 @@ async function tierSubmit(){
   const payload={best:tBest,middle:mid,worst:tWorst,shown:tCur,ts:Date.now()};
   // MOCK: replace with fetch(YOUR_WORKER_URL,{method:"POST",body:JSON.stringify({...payload,turnstileToken})})
   console.log("tier vote recorded",payload);
-  const shown=T.snap; tsAfterVote(T,T.votes.length);   // re-fit now; the on-screen numbers only change every TS.DISPLAY_EVERY votes
-  if(T.snap!==shown){ tB=T.snap; if(tiersOpen) renderTiers(); }
+  tsAfterVote(T,T.votes.length);                       // re-fit now: tiers update every vote, Confidence only every TS.DISPLAY_EVERY votes
+  tB=T.snap; tC=T.conf; if(tiersOpen) renderTiers();
   renderMeter();
   $submit.textContent="Vote recorded"; $submit.classList.add("done");      // confirmation shown on the button itself
   changeBackground();                                  // shuffle background on submit
@@ -663,7 +665,7 @@ function tierReset(){
 
 /* ----- confidence indicator (updates at each batch boundary) ----- */
 function renderMeter(){
-  const N=characters.length, votes=T.votes.length, pct=tB.confidence, B=TS.DISPLAY_EVERY;
+  const N=characters.length, votes=T.votes.length, pct=tC.confidence, B=TS.DISPLAY_EVERY;
   const budget=tsBudget(N);                           // suggested votes = 1.2 x roster size (from the JSON)
   const level=pct>=TS.LIGHT_GREEN?"green":pct>=TS.LIGHT_YELLOW?"yellow":"red";
   $wheel.dataset.level=level;
@@ -675,13 +677,13 @@ function renderMeter(){
   $barFill.style.width=Math.min(100,votes/budget*100)+"%";
   $meterSub.textContent=votes+" / ~"+budget+" suggested votes for "+N+" characters"
     +(votes>budget&&level!=="green"?" · past the suggestion, more votes still help":"");
-  // Tier Summary
+  // Details panel
   const [m,sub]=level==="green"?["Converged","Tiers within ±1"]:level==="yellow"?["Stabilizing","Boundaries resolving"]:["Volatile","Keep voting"];
   $stateMain.textContent=m; $stateSub.textContent=sub;
-  $statExact.innerHTML=Math.round(tB.strictConfidence)+"% <small>("+tB.strict+" / "+N+")</small>";
-  $statBoundary.innerHTML=Math.round(pct)+"% <small>("+tB.relaxed+" / "+N+")</small>";
+  $statExact.innerHTML=Math.round(tC.strictConfidence)+"% <small>("+tC.strict+" / "+N+")</small>";
+  $statBoundary.innerHTML=Math.round(pct)+"% <small>("+tC.relaxed+" / "+N+")</small>";
   const left=B-votes%B;
-  $updateNote.textContent="Donut: yellow ≥ "+TS.LIGHT_YELLOW+"%, green ≥ "+TS.LIGHT_GREEN+"% boundary stability. Updates every "+B+" votes"+(left===B?"":" · next in "+left);
+  $updateNote.textContent="Donut: yellow ≥ "+TS.LIGHT_YELLOW+"%, green ≥ "+TS.LIGHT_GREEN+"% boundary stability.\nConfidence updates every "+B+" votes"+(left===B?"":" · next in "+left);
   $shotCta.hidden=level!=="green";                     // the prominent button appears once the tiers have converged
   $undo.disabled=!votes; $reset.disabled=!votes;
 }
@@ -690,8 +692,8 @@ function renderMeter(){
 function renderTiers(){
   $tiersList.innerHTML=""; $tiersList.classList.toggle("nerd",nerdOn);
   document.getElementById("tier-legend").textContent=nerdOn
-    ? "μ rating · σ uncertainty · W–L wins–losses · Bnd = tier boundaries inside μ ± 2σ (0 = exact tier, 1 = at worst ±1). Refreshed every "+TS.DISPLAY_EVERY+" votes"
-    : "Dashed = close to a tier boundary, still being resolved · refreshed every "+TS.DISPLAY_EVERY+" votes";
+    ? "μ rating · σ uncertainty · W–L wins–losses · Bnd = tier boundaries inside μ ± 2σ (0 = exact tier, 1 = at worst ±1). Updated every vote"
+    : "Dashed = close to a tier boundary, still being resolved · updated every vote";
   if(nerdOn){
     const h=document.createElement("div"); h.className="nerd-head";
     ["","Character","μ","σ","W–L","Bnd"].forEach(t=>{ const x=document.createElement("span"); x.textContent=t; h.append(x); });
@@ -721,7 +723,7 @@ function renderTiers(){
 function setTiersOpen(open){
   tiersOpen=open; $tiersPanel.classList.toggle("open",open);
   $tiersToggle.setAttribute("aria-expanded",open);
-  $tiersLabel.textContent=open?"Hide Tier Summary":"Show Tier Summary";
+  $tiersLabel.textContent=open?"Hide Details":"Show Details";
   if(open) renderTiers();
 }
 function setNerd(on){
@@ -740,7 +742,7 @@ function loadImg(url,ms=6000){
   });
 }
 async function buildTierImage(){
-  const N=characters.length, votes=T.votes.length, pct=tB.confidence, level=pct>=TS.LIGHT_GREEN?"green":pct>=TS.LIGHT_YELLOW?"yellow":"red";
+  const N=characters.length, votes=T.votes.length, pct=tC.confidence, level=pct>=TS.LIGHT_GREEN?"green":pct>=TS.LIGHT_YELLOW?"yellow":"red";
   const L=siLayout(tB.tiers.map(t=>t.length));
   const layer=document.querySelector(".bg-layer.on"), m=layer&&/url\(["']?([^"')]+)["']?\)/.exec(layer.style.backgroundImage||"");
   const flat=tB.tiers.flat();
@@ -788,7 +790,7 @@ $tiersToggle.onclick=()=>setTiersOpen(!tiersOpen); $nerd.onclick=()=>setNerd(!ne
 $submit.addEventListener("click",tierSubmit);
 document.addEventListener("keydown",e=>{               // Space = submit, Ctrl/Cmd+Z = undo last vote, Esc closes the image preview
   if(!$shot.hidden){ if(e.code==="Escape") closeShot(); return; }   // while the preview is open, nothing else reacts
-  if(e.repeat||(e.target.closest&&e.target.closest(".summary button"))) return;   // let the Tier Summary buttons behave normally
+  if(e.repeat||(e.target.closest&&e.target.closest(".summary button"))) return;   // let the Details buttons behave normally
   if(e.code==="Space"){ e.preventDefault(); tierSubmit(); }
   else if(e.code==="KeyZ"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); tierUndo(); }
 });
