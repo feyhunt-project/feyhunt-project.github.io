@@ -2,76 +2,126 @@
   "characters": [
     {
       "id": "c001",
+      "name": "Amber",
+      "portrait": "assets/characters/amber.webp"
+    },
+    {
+      "id": "c002",
       "name": "Chaton",
       "portrait": "assets/characters/chaton.webp"
     },
     {
-      "id": "c002",
+      "id": "c003",
       "name": "Chixia",
       "portrait": "assets/characters/chixia.webp"
     },
     {
-      "id": "c003",
+      "id": "c004",
+      "name": "Donna",
+      "portrait": "assets/characters/donna.webp"
+    },
+    {
+      "id": "c005",
       "name": "Firefly",
       "portrait": "assets/characters/firefly.webp"
-    },    
+    },
     {
-      "id": "c004",
+      "id": "c006",
       "name": "Firenze",
       "portrait": "assets/characters/firenze.webp"
     },
     {
-      "id": "c005",
+      "id": "c007",
+      "name": "Freesia",
+      "portrait": "assets/characters/freesia.webp"
+    },
+    {
+      "id": "c008",
+      "name": "Fuyuka",
+      "portrait": "assets/characters/fuyuka.webp"
+    },
+    {
+      "id": "c009",
+      "name": "Iris",
+      "portrait": "assets/characters/iris.webp"
+    },
+    {
+      "id": "c010",
       "name": "Jinglin",
       "portrait": "assets/characters/jinglin.webp"
     },
     {
-      "id": "c006",
+      "id": "c011",
       "name": "Kasimira",
       "portrait": "assets/characters/kasimira.webp"
     },
     {
-      "id": "c007",
+      "id": "c012",
+      "name": "Leafia",
+      "portrait": "assets/characters/leafia.webp"
+    },
+    {
+      "id": "c013",
       "name": "Minova",
       "portrait": "assets/characters/minova.webp"
-    },    
+    },
     {
-      "id": "c008",
+      "id": "c014",
       "name": "Mistique",
       "portrait": "assets/characters/mistique.webp"
     },
     {
-      "id": "c009",
+      "id": "c015",
       "name": "Nanoha",
       "portrait": "assets/characters/nanoha.webp"
     },
     {
-      "id": "c010",
+      "id": "c016",
+      "name": "Nazuka",
+      "portrait": "assets/characters/nazuka.webp"
+    },
+    {
+      "id": "c017",
+      "name": "Nazuna",
+      "portrait": "assets/characters/nazuna.webp"
+    },
+    {
+      "id": "c018",
+      "name": "Noya",
+      "portrait": "assets/characters/noya.webp"
+    },
+    {
+      "id": "c019",
       "name": "Firstlight Noya",
       "portrait": "assets/characters/noya_firstlight.webp"
     },
     {
-      "id": "c011",
+      "id": "c020",
       "name": "Ridge",
       "portrait": "assets/characters/ridge.webp"
     },
     {
-      "id": "c012",
+      "id": "c021",
       "name": "Shimiao",
       "portrait": "assets/characters/shimiao.webp"
     },
     {
-      "id": "c013",
+      "id": "c022",
       "name": "Sparkla",
       "portrait": "assets/characters/sparkla.webp"
     },
     {
-      "id": "c014",
+      "id": "c023",
+      "name": "Teresa",
+      "portrait": "assets/characters/teresa.webp"
+    },
+    {
+      "id": "c024",
       "name": "Tilia",
       "portrait": "assets/characters/tilia.webp"
     },
     {
-      "id": "c015",
+      "id": "c025",
       "name": "Suntide Willow",
       "portrait": "assets/characters/willow_suntide.webp"
     }
