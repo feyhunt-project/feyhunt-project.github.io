@@ -1,5 +1,4 @@
-- Let's remove the ID for characters. Use Key instead, which is listed in the JSON as camel_case
-- Send the payload JSON with Key instead.
+- Payload just send best, middle, worst. No need for shown.
 - Make it actually save the votes: https://docs.google.com/spreadsheets/d/1RZ-s7eDAmursV0mtulPVNWqwmbm_JegnktIoUi6uWdo/edit?gid=0#gid=0
 - Privacy notice
 - Reset button to reset the entire page
