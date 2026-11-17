@@ -4,11 +4,3 @@ Maybe Desktop has the live tierlist on the right instead?
 - Reset button to reset the entire page
 
 - Add More Characters: Freelance Trekkers, Grace Imperium (18 more characters)
-
-
-PRIVACY NOTICE:
-Data & Privacy Policy
-- What we save: The 3-character triad choices you make and your non-PII country of origin (automatically detected by Cloudflare).
-- What stays private: Your final generated tier list, custom rankings, and progress live entirely in your browser's local storage. We do not track, save, or upload your personal tier list.
-- What we ignore: We never log your IP address, assign user tracking IDs, or require logins/cookies, ensuring zero Personally Identifiable Information (PII) is ever collected.
-- Where it goes: Votes are pooled anonymously into a public-facing community dataset used exclusively to calculate global character rankings.
