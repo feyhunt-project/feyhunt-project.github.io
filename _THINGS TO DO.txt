@@ -1,6 +1,6 @@
-- Payload just send best, middle, worst. No need for shown.
+Maybe Desktop has the live tierlist on the right instead?
+
 - Make it actually save the votes: https://docs.google.com/spreadsheets/d/1RZ-s7eDAmursV0mtulPVNWqwmbm_JegnktIoUi6uWdo/edit?gid=0#gid=0
-- Privacy notice
 - Reset button to reset the entire page
 
 - Add More Characters: Freelance Trekkers, Grace Imperium (18 more characters)

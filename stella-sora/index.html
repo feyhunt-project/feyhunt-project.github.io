@@ -13,8 +13,9 @@
   --shift:calc(65*var(--u));         /* slide distance */
   --ease:cubic-bezier(.22,1.2,.36,1);
   /* UI scale: 1 unit = whichever is smaller of (viewport width / --fit-w) and (viewport height / --fit-h). The voting screen is ~450 units wide and ~640 units tall,
-     so --fit-w / --fit-h are the sizes (in units) it should just fit into. 640 tall = 2.25px per unit at 1440p. Lower them to make everything bigger. Mobile resets it to 1px */
-  --fit-w:480; --fit-h:640;
+     so --fit-w / --fit-h are the sizes (in units) it should just fit into. (660 leaves room for the footer; 640 would be 2.25px per unit at 1440p.) Lower them to make everything bigger. Mobile resets it to 1px */
+  --fit-w:480; --fit-h:660;
+  --foot:calc(26*var(--u));      /* footer height: measured by script (ResizeObserver) so the stage + footer always add up to one screen */
   --u:max(.7px,min(100vw / var(--fit-w),100vh / var(--fit-h)));
   --bg-opacity:.1;      /* background slideshow opacity: 0 (hidden) to 1 (full) */
 }
@@ -23,7 +24,7 @@ html,body{margin:0;color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-s
 html{background:radial-gradient(calc(900*var(--u)) calc(500*var(--u)) at 50% 0,#171a22 0,var(--bg) 70%) no-repeat var(--bg)}
 main{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center}
 /* .stage = the voting screen, always one viewport tall and centred; the tier list lives in .below, under the fold, so opening it never moves the stage */
-.stage{width:100%;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(14*var(--u));padding:max(calc(16*var(--u)),env(safe-area-inset-top)) calc(16*var(--u)) max(calc(16*var(--u)),env(safe-area-inset-bottom))}
+.stage{width:100%;min-height:calc(100vh - var(--foot));min-height:calc(100dvh - var(--foot));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(14*var(--u));padding:max(calc(16*var(--u)),env(safe-area-inset-top)) calc(16*var(--u)) max(calc(16*var(--u)),env(safe-area-inset-bottom))}
 
 .head{display:flex;flex-direction:column;align-items:center;gap:calc(6*var(--u));text-align:center}
 h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
@@ -104,7 +105,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 
 /* ---------- mobile: vertical list, best (left) <-> worst (right) ---------- */
 @media (max-width:700px){
-  :root{--u:1px;--w:68px;--shift:30px}
+  :root{--u:1px;--w:68px;--shift:30px;--foot:48px}
   .stage{gap:10px;justify-content:center;padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(14px,env(safe-area-inset-bottom))}
   .row{flex-direction:column;gap:10px;width:100%;align-items:center}
   .col{width:100%;height:auto}
@@ -118,8 +119,8 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   .name{margin:0;font-size:15px;color:var(--ink);white-space:normal;overflow-wrap:anywhere}
   .col.best .name{color:var(--green)} .col.worst .name{color:var(--red)}
   /* extra breathing room: title block -> portraits, portraits -> Confidence/Submit (100px, shrinks a little on short screens so it still fits) */
-  .head{margin-bottom:min(100px,13vh);margin-bottom:min(100px,13dvh)}
-  .row{margin-bottom:min(100px,13vh);margin-bottom:min(100px,13dvh)}
+  .head{margin-bottom:clamp(24px,calc(13vh - 24px),100px);margin-bottom:clamp(24px,calc(13dvh - 24px),100px)}
+  .row{margin-bottom:clamp(24px,calc(13vh - 24px),100px);margin-bottom:clamp(24px,calc(13dvh - 24px),100px)}
   #submit{width:100%;max-width:394px;margin-top:0;height:45px;font-size:13px}
   h1{font-size:17px}
   .period{font-size:11px}
@@ -241,6 +242,19 @@ body[data-view="user"] .nerd-only{display:none}
 .dev-line{display:block;font-size:calc(10*var(--u));color:#f2c94c;font-variant-numeric:tabular-nums;white-space:nowrap}
 .below{width:min(100%,calc(560*var(--u)));padding:0 calc(16*var(--u))}
 .below .summary-body{padding-bottom:max(calc(48*var(--u)),env(safe-area-inset-bottom))}   /* inside the collapsing panel, so a closed list adds no scroll */
+/* ---------- footer (fan-made disclaimer + privacy link) and privacy dialog ---------- */
+.site-foot{width:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:calc(10*var(--u));padding:calc(5*var(--u)) calc(16*var(--u)) max(calc(6*var(--u)),env(safe-area-inset-bottom));text-align:center;font-size:calc(10.5*var(--u));line-height:1.45;color:var(--muted)}
+.site-foot p{margin:0}
+.foot-link{margin-left:calc(6*var(--u));padding:0;border:0;background:none;color:var(--ink);font:inherit;text-decoration:underline;text-underline-offset:calc(2*var(--u));cursor:pointer;opacity:.8;transition:opacity .25s}
+.foot-link:hover{opacity:1}
+.foot-link:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u));border-radius:calc(4*var(--u))}
+.privacy-card{align-items:stretch;text-align:left;width:min(100%,calc(520*var(--u)));max-height:100%;overflow-y:auto;gap:calc(12*var(--u))}
+.privacy-card .dialog-title{text-align:center}
+.privacy-list{margin:0;padding:0;list-style:none;display:grid;gap:calc(11*var(--u));font-size:calc(13*var(--u));line-height:1.55;color:var(--muted)}
+.privacy-list b{color:var(--ink);font-weight:600}
+.privacy-card .shot-actions{justify-content:center;margin-top:calc(4*var(--u))}
+@media (max-width:700px){ .site-foot{font-size:11px} .privacy-list{font-size:13px} }
+#t-reset{margin-top:calc(8*var(--u))}
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
   .col{opacity:1;transform:none}
@@ -275,7 +289,7 @@ body[data-view="user"] .nerd-only{display:none}
       <div class="bar" aria-hidden="true"><div class="bar-fill" id="bar-fill" style="width:0"></div></div>
     </div>
     <button type="button" class="linkbtn" id="tiers-toggle" aria-expanded="false" aria-controls="tiers-panel">
-      <span id="tiers-toggle-label">Live Tier List</span>
+      <span id="tiers-toggle-label">Show Live Tier List</span>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
     </button>
   </section>
@@ -302,14 +316,31 @@ body[data-view="user"] .nerd-only{display:none}
           <button type="button" class="btn" id="t-copy">Copy tier list</button>
           <button type="button" class="btn" id="t-undo" disabled>Undo</button>
           <button type="button" class="btn" id="t-skip">Skip set</button>
-          <button type="button" class="btn" id="t-reset" disabled>Reset</button>
         </div>
+        <button type="button" class="btn danger" id="t-reset" disabled>Reset All Data</button>
       </div>
     </div>
   </div>
   </section>
 
+  <footer class="site-foot" id="site-foot">
+    <p>Fan-made project, not affiliated with the official Stella Sora game. <button type="button" class="foot-link" id="privacy-link">Privacy notice</button></p>
+  </footer>
+
   <button type="button" class="dev-badge" id="dev-badge" hidden title="Click, or press ↑ ↓ ← →, to leave dev mode">Dev mode · everything unlocked</button>
+
+  <div class="shot" id="privacy" hidden role="dialog" aria-modal="true" aria-labelledby="privacy-title">
+    <div class="dialog-card privacy-card">
+      <div class="dialog-title" id="privacy-title">Data &amp; Privacy Policy</div>
+      <ul class="privacy-list">
+        <li><b>What we save:</b> The 3-character triad choices you make and your non-PII country of origin (automatically detected by Cloudflare).</li>
+        <li><b>What stays private:</b> Your final generated tier list, custom rankings, and progress live entirely in your browser’s local storage. We do not track, save, or upload your personal tier list.</li>
+        <li><b>What we ignore:</b> We never log your IP address, assign user tracking IDs, or require logins/cookies, ensuring zero Personally Identifiable Information (PII) is ever collected.</li>
+        <li><b>Where it goes:</b> Votes are pooled anonymously into a public-facing community dataset used exclusively to calculate global character rankings.</li>
+      </ul>
+      <div class="shot-actions"><button type="button" class="btn" id="privacy-close">Close</button></div>
+    </div>
+  </div>
 
   <div class="shot" id="confirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-msg">
     <div class="dialog-card">
@@ -639,7 +670,7 @@ const $trow=document.getElementById("trow"), $updateNote=document.getElementById
       $tiersLabel=document.getElementById("tiers-toggle-label"), $tiersPanel=document.getElementById("tiers-panel"), $tiersList=document.getElementById("tiers-list");
 let T=null, tB=null, tC=null, tCur=null, tBest=null, tWorst=null, tCols=new Map(), tLocked=false, tiersOpen=false, nerdOn=false, charById=new Map();
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const $devBadge=document.getElementById("dev-badge");
+const $devBadge=document.getElementById("dev-badge"), $privacy=document.getElementById("privacy"), $privacyLink=document.getElementById("privacy-link"), $privacyClose=document.getElementById("privacy-close"), $foot=document.getElementById("site-foot");
 let DEV=false;   // dev mode: press ArrowUp, ArrowDown, ArrowLeft, ArrowRight (again to leave)
 
 function tierLoadVotes(){
@@ -753,9 +784,10 @@ function closeConfirm(answer){
 }
 async function tierReset(){
   if(tLocked||!T.votes.length) return;
-  if(!await askConfirm("Clear all "+T.votes.length+" votes and start over? This can't be undone.","Clear votes")) return;
+  const n=T.votes.length;
+  if(!await askConfirm("Erase your tier list and the "+n+" vote"+(n===1?"":"s")+" saved in this browser? This only resets your data on this device. Votes you’ve already submitted stay in the community results and can’t be taken back.","Reset all data")) return;
   if(tLocked) return;
-  T.skips=new Map(); tierRebuild([]); tierSave(); tierNext(); renderMeter(); if(tiersOpen) renderTiers();
+  T.skips=new Map(); tierRebuild([]); tierSave(); try{ localStorage.removeItem(TIER_STORE_V1); }catch(e){} tierNext(); renderMeter(); if(tiersOpen) renderTiers();
 }
 
 /* ----- confidence indicator (updates at each batch boundary) ----- */
@@ -870,6 +902,7 @@ const DEV_SEQ="ArrowUp,ArrowDown,ArrowLeft,ArrowRight", devSeq=[];
 function setTiersOpen(open){
   tiersOpen=open; $tiersPanel.classList.toggle("open",open);
   $tiersToggle.setAttribute("aria-expanded",open);
+  $tiersLabel.textContent=open?"Hide Live Tier List":"Show Live Tier List";
   if(open) renderTiers();
 }
 function setNerd(on){ nerdOn=on; applyView(); }
@@ -942,6 +975,14 @@ $confirm.addEventListener("click",e=>{ if(e.target===$confirm) closeConfirm(fals
 $shot.addEventListener("click",e=>{ if(e.target===$shot) closeShot(); });
 $undo.onclick=tierUndo; $skip.onclick=tierSkip; $reset.onclick=tierReset; $copy.onclick=tierCopy;
 $tiersToggle.onclick=()=>setTiersOpen(!tiersOpen); $nerd.onclick=()=>setNerd(!nerdOn); $devBadge.onclick=()=>setDev(false);
+/* privacy notice dialog + footer height (the stage is 100dvh minus the footer, so the closed page never scrolls even if the footer wraps to 2 lines) */
+let privacyReturn=null;
+function openPrivacy(){ privacyReturn=document.activeElement; $privacy.hidden=false; $privacyClose.focus(); }
+function closePrivacy(){ $privacy.hidden=true; if(privacyReturn&&privacyReturn.focus) privacyReturn.focus(); }
+$privacyLink.onclick=openPrivacy; $privacyClose.onclick=closePrivacy;
+$privacy.addEventListener("click",e=>{ if(e.target===$privacy) closePrivacy(); });
+const fitFoot=()=>document.documentElement.style.setProperty("--foot",$foot.offsetHeight+"px");
+if("ResizeObserver" in window) new ResizeObserver(fitFoot).observe($foot); fitFoot();
 $submit.addEventListener("click",tierSubmit);
 document.addEventListener("keydown",e=>{               // Space = submit, Ctrl/Cmd+Z = undo last vote, Esc closes the image preview
   if(!$confirm.hidden){                                // confirm dialog: Esc cancels, Tab stays between its two buttons
@@ -949,13 +990,14 @@ document.addEventListener("keydown",e=>{               // Space = submit, Ctrl/C
     else if(e.code==="Tab"){ e.preventDefault(); (document.activeElement===$confirmCancel?$confirmOk:$confirmCancel).focus(); }
     return;
   }
-  if(!$shot.hidden){ if(e.code==="Escape") closeShot(); return; }   // while the preview is open, nothing else reacts
+  if(!$shot.hidden){ if(e.code==="Escape") closeShot(); return; }
+  if(!$privacy.hidden){ if(e.code==="Escape") closePrivacy(); else if(e.code==="Tab"){ e.preventDefault(); $privacyClose.focus(); } return; }   // while the preview is open, nothing else reacts
   if(!e.repeat){                                      // dev mode: Up, Down, Left, Right in a row (again to leave)
     const k=e.code||"";
     if(k.startsWith("Arrow")){ devSeq.push(k); if(devSeq.length>4) devSeq.shift(); if(devSeq.join()===DEV_SEQ){ devSeq.length=0; setDev(!DEV); } }
     else if(!/^(Shift|Control|Alt|Meta)/.test(k)) devSeq.length=0;
   }
-  if(e.repeat||(e.target.closest&&e.target.closest(".summary button,.below button,#shot-cta"))) return;   // let the Details buttons behave normally
+  if(e.repeat||(e.target.closest&&e.target.closest(".summary button,.below button,.site-foot button,#shot-cta"))) return;   // let the Details buttons behave normally
   if(e.code==="Space"){ e.preventDefault(); tierSubmit(); }
   else if(e.code==="KeyZ"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); if(viewMode()!=="user") tierUndo(); }
 });
