@@ -121,8 +121,8 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   .name{margin:0;font-size:15px;color:var(--ink);white-space:normal;overflow-wrap:anywhere}
   .col.best .name{color:var(--green)} .col.worst .name{color:var(--red)}
   /* extra breathing room: title block -> portraits, portraits -> Confidence/Submit (100px, shrinks a little on short screens so it still fits) */
-  .head{margin-bottom:clamp(24px,calc(13vh - 24px),100px);margin-bottom:clamp(24px,calc(13dvh - 24px),100px)}
-  .row{margin-bottom:clamp(24px,calc(13vh - 24px),100px);margin-bottom:clamp(24px,calc(13dvh - 24px),100px)}
+  .head{margin-bottom:clamp(24px,calc(13vh - 26px),100px);margin-bottom:clamp(24px,calc(13dvh - 26px),100px)}
+  .row{margin-bottom:clamp(24px,calc(13vh - 26px),100px);margin-bottom:clamp(24px,calc(13dvh - 26px),100px)}
   #submit{width:100%;max-width:394px;margin-top:0;height:45px;font-size:13px}
   h1{font-size:17px}
   .period{font-size:11px}
@@ -169,11 +169,13 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .tier-tab{padding:calc(6*var(--u)) calc(16*var(--u));gap:calc(6*var(--u));font-size:calc(12.5*var(--u));font-weight:600;letter-spacing:.02em;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);box-shadow:inset 0 0 0 calc(1*var(--u)) color-mix(in srgb,var(--accent) 55%,transparent)}
 .tier-tab:hover{color:#ffb878;background:color-mix(in srgb,var(--accent) 24%,transparent)}
 .tier-tab:focus-visible{outline:calc(2*var(--u)) solid var(--accent);outline-offset:calc(2*var(--u))}
+.tier-tab[aria-expanded="true"]{background:none;box-shadow:none}                    /* list open: stop shouting, only the text stays orange */
+.tier-tab[aria-expanded="true"]:hover{background:rgba(255,255,255,.05)}
 
 .tiers-panel,.tiers-inner{width:100%}
-.tier-row{display:flex;gap:calc(12*var(--u));align-items:flex-start;padding:calc(9*var(--u)) 0;border-top:calc(1*var(--u)) solid var(--line)}
-.tier-letter{flex:none;width:calc(30*var(--u));font-size:calc(22*var(--u));font-weight:700;text-align:center;color:var(--tc);text-shadow:0 0 calc(10*var(--u)) color-mix(in srgb,var(--tc) 55%,transparent)}
-.tier-chips{display:flex;flex-wrap:wrap;gap:calc(4*var(--u));min-height:calc(60*var(--u))}
+.tier-row{display:flex;gap:calc(12*var(--u));align-items:center;padding:calc(9*var(--u)) 0;border-top:calc(1*var(--u)) solid var(--line)}
+.tier-letter{flex:none;width:calc(44*var(--u));font-size:calc(42*var(--u));line-height:1;font-weight:700;text-align:center;color:var(--tc);text-shadow:0 0 calc(10*var(--u)) color-mix(in srgb,var(--tc) 55%,transparent)}
+.tier-chips{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:calc(4*var(--u));min-height:calc(60*var(--u))}
 .tier-empty{align-self:center;font-size:calc(11.5*var(--u));color:var(--muted)}
 .chip{width:calc(64*var(--u));display:flex;flex-direction:column;align-items:center;gap:calc(3*var(--u))}
 .chip-img{position:relative;display:grid;place-items:center;width:calc(60*var(--u));height:calc(60*var(--u));border-radius:calc(14*var(--u));overflow:hidden;background:var(--surface);border:calc(1.5*var(--u)) solid var(--line);font-size:calc(17*var(--u));font-weight:600}
@@ -206,10 +208,10 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 #tiers-list.nerd{padding-right:0}   /* the whole pane scrolls, not the table */
 .nerd .tier-row{padding-right:calc(16*var(--u))}
 .nerd-head,.nerd .chip{display:grid;grid-template-columns:calc(34*var(--u)) minmax(0,1fr) calc(46*var(--u)) calc(36*var(--u)) calc(44*var(--u)) calc(32*var(--u));align-items:center;column-gap:calc(8*var(--u))}
-.nerd-head{position:sticky;top:0;z-index:1;padding:calc(5*var(--u)) calc(16*var(--u)) calc(5*var(--u)) calc(42*var(--u));font-size:calc(9.5*var(--u));letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:rgba(11,12,15,.88);backdrop-filter:blur(calc(6*var(--u)))}
+.nerd-head{position:sticky;top:0;z-index:1;padding:calc(5*var(--u)) calc(16*var(--u)) calc(5*var(--u)) calc(56*var(--u));font-size:calc(9.5*var(--u));letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:rgba(11,12,15,.88);backdrop-filter:blur(calc(6*var(--u)))}
 .nerd-head span:nth-child(n+3){text-align:right}
 .nerd .tier-chips{flex-direction:column;flex-wrap:nowrap;gap:calc(5*var(--u));width:100%;min-width:0}
-.nerd .tier-row{align-items:flex-start}
+.nerd .tier-row{align-items:center}
 .nerd .chip{width:100%;opacity:1}
 .nerd .chip-img{width:calc(34*var(--u));height:calc(34*var(--u));border-radius:calc(10*var(--u));font-size:calc(12*var(--u))}
 .nerd .chip-name{font-size:calc(11.5*var(--u));color:var(--ink);text-align:left}
@@ -217,6 +219,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .nv.dim{color:var(--muted)}
 .nv.b1{color:#f2c94c}
 .nv.b2{color:var(--red)}
+.tier-note{margin:0 0 calc(-8*var(--u));font-size:calc(12.5*var(--u));line-height:1.5;color:var(--ink);opacity:.85;text-align:center}
 .tier-legend{margin:calc(6*var(--u)) 0 calc(8*var(--u));font-size:calc(11*var(--u));color:var(--muted);text-align:center}
 @media (max-width:700px) and (orientation:portrait){
   .summary{width:100%}
@@ -226,7 +229,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   .nerd-head,.nerd .chip{grid-template-columns:32px minmax(0,1fr) 40px 30px 38px 28px;column-gap:6px}
   .btn{height:36px;font-size:13px}
   .linkbtn,.tier-tab{font-size:13.5px}
-  .tier-letter{font-size:20px}
+  .tier-letter{font-size:36px}
 }
 /* ---------- views: user / nerd / dev (body[data-view]) + progressive reveal ---------- */
 body[data-view="user"] .nerd-only{display:none}
@@ -263,6 +266,8 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
   .tier-tab:focus-visible{outline-offset:calc(-3*var(--u))}   /* inside the tab so the edge of the screen cannot clip it */
   .tier-tab svg{order:-1;width:max(11px,calc(12*var(--u)));height:max(11px,calc(12*var(--u)));transform:rotate(90deg)}   /* points left = "pull the list in" */
   .tier-tab[aria-expanded="true"] svg{transform:rotate(-90deg)}
+  .tier-tab[aria-expanded="true"]{border-color:var(--line);background:rgba(20,22,28,.82);box-shadow:none}
+  .tier-tab[aria-expanded="true"]:hover{background:rgba(34,37,46,.92)}
 }
 /* short landscape screens (phones on their side): drop the date line and tighten the stage so it still fits one screen */
 @media (orientation:landscape) and (max-height:560px){
@@ -274,8 +279,13 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
 @media (prefers-reduced-motion:reduce){ html.tiers-open .below{animation:none} }
 .site-foot{grid-column:1/-1;grid-row:3}
 /* ---------- footer (fan-made disclaimer + privacy link) and privacy dialog ---------- */
-.site-foot{width:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:calc(10*var(--u));padding:calc(5*var(--u)) calc(16*var(--u)) max(calc(6*var(--u)),env(safe-area-inset-bottom));text-align:center;font-size:max(10px,calc(10.5*var(--u)));line-height:1.45;color:var(--muted)}
+.site-foot{width:100%;display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;column-gap:calc(10*var(--u));padding:calc(5*var(--u)) calc(16*var(--u)) max(calc(6*var(--u)),env(safe-area-inset-bottom));text-align:center;font-size:max(10px,calc(10.5*var(--u)));line-height:1.45;color:var(--muted)}
 .site-foot p{margin:0}
+.brand{display:inline-flex;align-items:center;flex:none;border-radius:calc(6*var(--u));opacity:.9;transition:opacity .25s}
+.brand[hidden]{display:none}
+.brand:hover{opacity:1}
+.brand:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u))}
+.brand img{display:block;height:max(18px,calc(24*var(--u)));width:auto;max-width:calc(110*var(--u))}
 .foot-link{margin-left:calc(6*var(--u));padding:0;border:0;background:none;color:var(--ink);font:inherit;text-decoration:underline;text-underline-offset:calc(2*var(--u));cursor:pointer;opacity:.8;transition:opacity .25s}
 .foot-link:hover{opacity:1}
 .foot-link:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u));border-radius:calc(4*var(--u))}
@@ -341,6 +351,7 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
           <p class="stat-note" id="update-note"></p>
         </div>
         <div id="tiers-list"></div>
+        <p class="tier-note">This live tier list isn’t final. Placements can still shift as you keep voting.</p>
         <p class="tier-legend" id="tier-legend"></p>
         <div class="tier-actions nerd-only">
           <button type="button" class="btn" id="t-shot">Save tier image</button>
@@ -355,6 +366,7 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
   </section>
 
   <footer class="site-foot" id="site-foot">
+    <a class="brand" id="brand" target="_blank" rel="noopener noreferrer" hidden><img id="brand-img" alt=""></a>
     <p>Fan-made project, not affiliated with the official Stella Sora game. <button type="button" class="foot-link" id="privacy-link">Privacy notice</button></p>
   </footer>
 
@@ -401,6 +413,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 </script>
 <script>
 const PAGE_TITLE = "Stella Sora Favorite Character Voting!";   // change the page title here
+const LOGO_URL = "logo.png";   // your logo, in the same folder as index.html. "" = no logo. A missing file is simply left out.
+const CHANNEL_URL = "https://www.youtube.com/@FeyHunt";   // where clicking the logo goes
+const BRAND_NAME = "FeyHunt";   // used for the logo's tooltip / screen-reader label
 const STORAGE_ID = "";   // optional. Saved data is filed under this page's id, so several pages on one site (Stella Sora, Blue Archive ...) never share or wipe each other's data.
                          // "" = the id is made from PAGE_TITLE (editing the title then starts a fresh list). Set a fixed word here, e.g. "blue-archive", to keep the data when you reword the title.
 const SUBMIT_COOLDOWN_MS = 1000;   // design note: max 1 submit / sec
@@ -629,7 +644,7 @@ function siRR(c,x,y,w,h,r){r=Math.min(r,w/2,h/2);c.beginPath();c.moveTo(x+r,y);c
 function siWrap(c,t,maxW,maxLines){const words=t.split(/\s+/),out=[];let line='';for(const w of words){const test=line?line+' '+w:w;if(line&&c.measureText(test).width>maxW){out.push(line);line=w;}else line=test;}if(line)out.push(line);if(out.length>maxLines){out.length=maxLines;out[maxLines-1]=siFitText(c,out[maxLines-1]+'…',maxW);}return out;}
 function siFitText(c,t,maxW){if(c.measureText(t).width<=maxW)return t;while(t.length>1&&c.measureText(t+"…").width>maxW)t=t.slice(0,-1);return t+"…";}
 function siCover(c,img,x,y,w,h){const k=Math.max(w/img.width,h/img.height),dw=img.width*k,dh=img.height*k;c.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);}
-/* D = {title, subtitle, pill:{text,color}, tiers:[{label,color,items:[{name,initials,img}]}], bg, footerL, footerR, font,
+/* D = {title, subtitle, logo (Image|null), pill:{text,color}, tiers:[{label,color,items:[{name,initials,img}]}], bg, footerL, footerR, font,
         qr:{n,dark(r,c)}|null, cta, link}   -- with qr, the footer becomes: QR code | call-to-action sentence + link */
 function drawTierImage(c,L,D){
   const {W,H,s}=L;let F=D.font||"sans-serif";
@@ -639,8 +654,10 @@ function drawTierImage(c,L,D){
   if(D.bg){c.save();c.globalAlpha=.55;siCover(c,D.bg,0,0,W,H);c.restore();c.fillStyle="rgba(9,10,13,.72)";c.fillRect(0,0,W,H);}
   c.textBaseline="alphabetic";
   // header
-  c.fillStyle="#f2f3f5";c.font="600 32px "+F;c.textAlign="left";c.fillText(siFitText(c,D.title,W-2*SI.PAD-250),SI.PAD,SI.PAD+30);
-  c.fillStyle="rgba(242,243,245,.62)";c.font="400 17px "+F;c.fillText(D.subtitle,SI.PAD,SI.PAD+60);
+  let tx=SI.PAD;                                                              // text starts after the logo, if there is one
+  if(D.logo){const k=Math.min(64/D.logo.height,180/D.logo.width),dw=D.logo.width*k,dh=D.logo.height*k;c.drawImage(D.logo,SI.PAD,SI.PAD+34-dh/2,dw,dh);tx=SI.PAD+dw+18;}
+  c.fillStyle="#f2f3f5";c.font="600 32px "+F;c.textAlign="left";c.fillText(siFitText(c,D.title,W-SI.PAD-250-tx),tx,SI.PAD+30);
+  c.fillStyle="rgba(242,243,245,.62)";c.font="400 17px "+F;c.fillText(D.subtitle,tx,SI.PAD+60);
   if(D.pill){c.font="600 16px "+F;const tw=c.measureText(D.pill.text).width,pw=tw+46,ph=34,px=W-SI.PAD-pw,py=SI.PAD+4;
     siRR(c,px,py,pw,ph,17);c.fillStyle="rgba(255,255,255,.08)";c.fill();c.strokeStyle="rgba(255,255,255,.18)";c.lineWidth=1;c.stroke();
     c.fillStyle=D.pill.color;c.beginPath();c.arc(px+19,py+ph/2,5,0,7);c.fill();
@@ -967,13 +984,14 @@ async function buildTierImage(){
   const layer=document.querySelector(".bg-layer.on"), m=layer&&/url\(["']?([^"')]+)["']?\)/.exec(layer.style.backgroundImage||"");
   const flat=tB.tiers.flat();
   const [bg,...imgs]=await Promise.all([loadImg(m&&m[1]),...flat.map(it=>{ const c=charById.get(it.id); return loadImg(c.portrait?encodeURI(c.portrait):""); })]);
+  const logo=LOGO_URL?await loadImg(LOGO_URL):null;    // top-left brand mark; null (skipped) if the file is missing
   const imgOf=new Map(flat.map((it,i)=>[it.id,imgs[i]]));
   const D={
     title:PAGE_TITLE,
     subtitle:N+" characters · "+votes+" vote"+(votes===1?"":"s")+" · my tier list",
     pill:{text:(level==="green"?"Confidence ":"Draft · ")+Math.round(pct)+"%"+(level==="green"?"":" confidence"),color:level==="green"?"#9bd17b":level==="yellow"?"#f2c94c":"#ff6b6b"},
     tiers:tB.tiers.map((items,b)=>({label:TS.LABELS[b],color:TIER_COLORS[b],items:items.map(it=>{ const c=charById.get(it.id); return {name:c.name,initials:c.name.split(" ").map(w=>w[0]).join("").slice(0,2),img:imgOf.get(it.id)}; })})),
-    bg, footerL:new Date().toISOString().slice(0,10), footerR:SHARE_IMAGE_FOOTER, font:getComputedStyle(document.body).fontFamily,
+    bg, logo, footerL:new Date().toISOString().slice(0,10), footerR:SHARE_IMAGE_FOOTER, font:getComputedStyle(document.body).fontFamily,
     qr, cta:SHARE_CTA, link:link.replace(/^https?:\/\//,"").replace(/\/$/,"")
   };
   const cv=document.createElement("canvas"); cv.width=L.W; cv.height=L.H;
@@ -1020,6 +1038,12 @@ $privacyLink.onclick=openPrivacy; $privacyClose.onclick=closePrivacy;
 $privacy.addEventListener("click",e=>{ if(e.target===$privacy) closePrivacy(); });
 const fitFoot=()=>document.documentElement.style.setProperty("--foot",$foot.offsetHeight+"px");
 if("ResizeObserver" in window) new ResizeObserver(fitFoot).observe($foot); fitFoot();
+/* logo: shown (and linked) only if the file actually loads, so a missing logo.png leaves no broken icon */
+(function(){
+  const a=document.getElementById("brand"), im=document.getElementById("brand-img");
+  if(!LOGO_URL) return;
+  a.href=CHANNEL_URL; a.title=BRAND_NAME+" on YouTube"; a.setAttribute("aria-label",BRAND_NAME+" on YouTube"); im.onload=()=>{ a.hidden=false; fitFoot(); }; im.src=LOGO_URL;
+})();
 $submit.addEventListener("click",tierSubmit);
 document.addEventListener("keydown",e=>{               // Space = submit, Ctrl/Cmd+Z = undo last vote, Esc closes the image preview
   if(!$confirm.hidden){                                // confirm dialog: Esc cancels, Tab stays between its two buttons
@@ -1034,7 +1058,7 @@ document.addEventListener("keydown",e=>{               // Space = submit, Ctrl/C
     if(k.startsWith("Arrow")){ devSeq.push(k); if(devSeq.length>4) devSeq.shift(); if(devSeq.join()===DEV_SEQ){ devSeq.length=0; setDev(!DEV); } }
     else if(!/^(Shift|Control|Alt|Meta)/.test(k)) devSeq.length=0;
   }
-  if(e.repeat||(e.target.closest&&e.target.closest(".summary button,.below button,.site-foot button,#shot-cta,#tiers-toggle"))) return;   // let the Details buttons behave normally
+  if(e.repeat||(e.target.closest&&e.target.closest(".summary button,.below button,.site-foot button,.site-foot a,#shot-cta,#tiers-toggle"))) return;   // let the Details buttons behave normally
   if(e.code==="Space"){ e.preventDefault(); tierSubmit(); }
   else if(e.code==="KeyZ"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); if(viewMode()!=="user") tierUndo(); }
 });
