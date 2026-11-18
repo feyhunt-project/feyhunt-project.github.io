@@ -14,6 +14,7 @@
   --ease:cubic-bezier(.22,1.2,.36,1);
   /* UI scale: 1 unit = whichever is smaller of (viewport width / --fit-w) and (viewport height / --fit-h). The voting screen is ~450 units wide and ~640 units tall,
      so --fit-w / --fit-h are the sizes (in units) it should just fit into. (660 leaves room for the footer; 640 would be 2.25px per unit at 1440p.) Lower them to make everything bigger. Mobile resets it to 1px */
+  --accent:#ff9a45;               /* orange accent: the Live Tier List toggle */
   --fit-w:480; --fit-h:660;
   --tab-w:max(30px,calc(34*var(--u)));      /* width of the floating Live Tier List tab */
   --foot:calc(26*var(--u));      /* footer height: measured by script (ResizeObserver) so the stage + footer always add up to one screen */
@@ -165,18 +166,21 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .linkbtn:hover{color:var(--ink);background:rgba(255,255,255,.05)}
 .linkbtn svg{width:calc(10.5*var(--u));height:calc(10.5*var(--u));fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
 .linkbtn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.tier-tab{padding:calc(6*var(--u)) calc(16*var(--u));gap:calc(6*var(--u));font-size:calc(12.5*var(--u));font-weight:600;letter-spacing:.02em;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);box-shadow:inset 0 0 0 calc(1*var(--u)) color-mix(in srgb,var(--accent) 55%,transparent)}
+.tier-tab:hover{color:#ffb878;background:color-mix(in srgb,var(--accent) 24%,transparent)}
+.tier-tab:focus-visible{outline:calc(2*var(--u)) solid var(--accent);outline-offset:calc(2*var(--u))}
 
 .tiers-panel,.tiers-inner{width:100%}
 .tier-row{display:flex;gap:calc(12*var(--u));align-items:flex-start;padding:calc(9*var(--u)) 0;border-top:calc(1*var(--u)) solid var(--line)}
 .tier-letter{flex:none;width:calc(30*var(--u));font-size:calc(22*var(--u));font-weight:700;text-align:center;color:var(--tc);text-shadow:0 0 calc(10*var(--u)) color-mix(in srgb,var(--tc) 55%,transparent)}
-.tier-chips{display:flex;flex-wrap:wrap;gap:calc(6*var(--u));min-height:calc(40*var(--u))}
+.tier-chips{display:flex;flex-wrap:wrap;gap:calc(4*var(--u));min-height:calc(60*var(--u))}
 .tier-empty{align-self:center;font-size:calc(11.5*var(--u));color:var(--muted)}
-.chip{width:calc(52*var(--u));display:flex;flex-direction:column;align-items:center;gap:calc(3*var(--u))}
-.chip-img{position:relative;display:grid;place-items:center;width:calc(40*var(--u));height:calc(40*var(--u));border-radius:calc(11*var(--u));overflow:hidden;background:var(--surface);border:calc(1.5*var(--u)) solid var(--line);font-size:calc(13*var(--u));font-weight:600}
+.chip{width:calc(64*var(--u));display:flex;flex-direction:column;align-items:center;gap:calc(3*var(--u))}
+.chip-img{position:relative;display:grid;place-items:center;width:calc(60*var(--u));height:calc(60*var(--u));border-radius:calc(14*var(--u));overflow:hidden;background:var(--surface);border:calc(1.5*var(--u)) solid var(--line);font-size:calc(17*var(--u));font-weight:600}
 .chip-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .chip.shaky{opacity:.7}
 .chip.shaky .chip-img{border-style:dashed;border-color:rgba(255,255,255,.45)}
-.chip-name{max-width:100%;font-size:calc(8.5*var(--u));color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip-name{max-width:100%;font-size:calc(10*var(--u));color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .submit-row{display:flex;align-items:center;justify-content:center;gap:calc(14*var(--u));width:min(100%,calc(400*var(--u)))}
 .submit-row #submit{flex:1 1 0;width:auto;min-width:0}
 .conf-wheel{flex:none;display:flex;align-items:center;gap:calc(8*var(--u))}
@@ -201,13 +205,13 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 #tiers-list{width:100%}
 #tiers-list.nerd{padding-right:0}   /* the whole pane scrolls, not the table */
 .nerd .tier-row{padding-right:calc(16*var(--u))}
-.nerd-head,.nerd .chip{display:grid;grid-template-columns:calc(26*var(--u)) minmax(0,1fr) calc(46*var(--u)) calc(36*var(--u)) calc(44*var(--u)) calc(32*var(--u));align-items:center;column-gap:calc(8*var(--u))}
+.nerd-head,.nerd .chip{display:grid;grid-template-columns:calc(34*var(--u)) minmax(0,1fr) calc(46*var(--u)) calc(36*var(--u)) calc(44*var(--u)) calc(32*var(--u));align-items:center;column-gap:calc(8*var(--u))}
 .nerd-head{position:sticky;top:0;z-index:1;padding:calc(5*var(--u)) calc(16*var(--u)) calc(5*var(--u)) calc(42*var(--u));font-size:calc(9.5*var(--u));letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:rgba(11,12,15,.88);backdrop-filter:blur(calc(6*var(--u)))}
 .nerd-head span:nth-child(n+3){text-align:right}
-.nerd .tier-chips{flex-direction:column;flex-wrap:nowrap;gap:calc(4*var(--u));width:100%;min-width:0}
+.nerd .tier-chips{flex-direction:column;flex-wrap:nowrap;gap:calc(5*var(--u));width:100%;min-width:0}
 .nerd .tier-row{align-items:flex-start}
 .nerd .chip{width:100%;opacity:1}
-.nerd .chip-img{width:calc(26*var(--u));height:calc(26*var(--u));border-radius:calc(8*var(--u));font-size:calc(10*var(--u))}
+.nerd .chip-img{width:calc(34*var(--u));height:calc(34*var(--u));border-radius:calc(10*var(--u));font-size:calc(12*var(--u))}
 .nerd .chip-name{font-size:calc(11.5*var(--u));color:var(--ink);text-align:left}
 .nv{font-size:calc(11*var(--u));text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
 .nv.dim{color:var(--muted)}
@@ -219,9 +223,9 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   .submit-row{width:100%;max-width:394px}
   .conf-wheel-label{font-size:12px}
   .donut{width:44px;height:44px}
-  .nerd-head,.nerd .chip{grid-template-columns:24px minmax(0,1fr) 40px 30px 38px 28px;column-gap:6px}
+  .nerd-head,.nerd .chip{grid-template-columns:32px minmax(0,1fr) 40px 30px 38px 28px;column-gap:6px}
   .btn{height:36px;font-size:13px}
-  .linkbtn{font-size:13px}
+  .linkbtn,.tier-tab{font-size:13.5px}
   .tier-letter{font-size:20px}
 }
 /* ---------- views: user / nerd / dev (body[data-view]) + progressive reveal ---------- */
@@ -253,10 +257,10 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
          padding:max(calc(16*var(--u)),env(safe-area-inset-top)) calc(var(--tab-w) + calc(12*var(--u))) calc(16*var(--u));overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;border-left:calc(1*var(--u)) solid var(--line)}
   html.tiers-open .below{display:flex;flex-direction:column}
   .below .tiers-panel{width:min(100%,calc(560*var(--u)));margin:auto}      /* centred while short, top-aligned and scrollable when tall */
-  .tier-tab{position:fixed;z-index:30;right:env(safe-area-inset-right,0px);top:50%;transform:translateY(-50%);width:var(--tab-w);padding:calc(14*var(--u)) 0;flex-direction:column;gap:calc(9*var(--u));border:calc(1*var(--u)) solid var(--line);border-right:0;border-radius:calc(14*var(--u)) 0 0 calc(14*var(--u));background:rgba(20,22,28,.82);backdrop-filter:blur(calc(8*var(--u)));font-size:max(11px,calc(11.5*var(--u)));letter-spacing:.06em}
+  .tier-tab{position:fixed;z-index:30;right:env(safe-area-inset-right,0px);top:50%;transform:translateY(-50%);width:var(--tab-w);padding:calc(14*var(--u)) 0;flex-direction:column;gap:calc(9*var(--u));border:calc(1*var(--u)) solid color-mix(in srgb,var(--accent) 65%,transparent);border-right:0;border-radius:calc(14*var(--u)) 0 0 calc(14*var(--u));background:color-mix(in srgb,var(--accent) 18%,rgba(20,22,28,.9));box-shadow:0 0 calc(18*var(--u)) color-mix(in srgb,var(--accent) 24%,transparent);backdrop-filter:blur(calc(8*var(--u)));font-size:max(11px,calc(11.5*var(--u)));letter-spacing:.06em}
   .tier-tab span{writing-mode:vertical-rl;white-space:nowrap}
-  .tier-tab:hover{color:var(--ink);background:rgba(34,37,46,.92)}
-  .tier-tab:focus-visible{outline-offset:calc(-3*var(--u))}
+  .tier-tab:hover{color:#ffb878;background:color-mix(in srgb,var(--accent) 30%,rgba(20,22,28,.9))}
+  .tier-tab:focus-visible{outline-offset:calc(-3*var(--u))}   /* inside the tab so the edge of the screen cannot clip it */
   .tier-tab svg{order:-1;width:max(11px,calc(12*var(--u)));height:max(11px,calc(12*var(--u)));transform:rotate(90deg)}   /* points left = "pull the list in" */
   .tier-tab[aria-expanded="true"] svg{transform:rotate(-90deg)}
 }
@@ -363,7 +367,7 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
         <li><b>What we save:</b> The 3-character triad choices you make and your non-PII country of origin (automatically detected by Cloudflare).</li>
         <li><b>What stays private:</b> Your final generated tier list, custom rankings, and progress live entirely in your browser’s local storage. We do not track, save, or upload your personal tier list.</li>
         <li><b>What we ignore:</b> We never log your IP address, assign user tracking IDs, or require logins/cookies, ensuring zero Personally Identifiable Information (PII) is ever collected.</li>
-        <li><b>Where it goes:</b> Votes are pooled anonymously into a public-facing community dataset used exclusively to calculate global character rankings.</li>
+        <li><b>Where it goes:</b> Votes are pooled anonymously into a private database used to calculate global character rankings, conduct statistical research, and publish community insights.</li>
       </ul>
       <div class="shot-actions"><button type="button" class="btn" id="privacy-close">Close</button></div>
     </div>
@@ -397,6 +401,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 </script>
 <script>
 const PAGE_TITLE = "Stella Sora Favorite Character Voting!";   // change the page title here
+const STORAGE_ID = "";   // optional. Saved data is filed under this page's id, so several pages on one site (Stella Sora, Blue Archive ...) never share or wipe each other's data.
+                         // "" = the id is made from PAGE_TITLE (editing the title then starts a fresh list). Set a fixed word here, e.g. "blue-archive", to keep the data when you reword the title.
 const SUBMIT_COOLDOWN_MS = 1000;   // design note: max 1 submit / sec
 const CHARACTERS_URL = "data/characters.json";   // source of truth for characters
 const BACKGROUNDS_URL = "data/backgrounds.json"; // source of truth for backgrounds
@@ -684,7 +690,10 @@ function drawTierImage(c,L,D){
    Pairwise comparisons -> Bayesian ratings (mu, sigma) -> 7 quantile buckets.
    Tune everything in the TS object above (bucket %, step size, shrink rate, batch size ...).
    ============================================================ */
-const TIER_STORE="stellasora.tiersort.v2", TIER_STORE_V1="stellasora.tiersort.v1";   // localStorage keys; only the vote history is stored (v1 = old flat list of pairs)
+// localStorage keys, namespaced per page: tiersort:<page id>:v2. Only the vote history is stored (v1 = old flat list of pairs, read for migration only).
+// Everything this page stores or deletes goes through these two keys; nothing ever calls localStorage.clear().
+const STORE_ID=(STORAGE_ID||PAGE_TITLE).toLowerCase().replace(/[^\p{L}\p{M}\p{N}]+/gu,"-").replace(/^-+|-+$/g,"")||"default";
+const TIER_STORE="tiersort:"+STORE_ID+":v2", TIER_STORE_V1="tiersort:"+STORE_ID+":v1";
 const TIER_COLORS=["#ff8f6b","#ffb86b","#ffe16b","#c8e86b","#7fd9a1","#6bc2ff","#a98bff"];
 const $trow=document.getElementById("trow"), $updateNote=document.getElementById("update-note"), $wheel=document.getElementById("conf-wheel"), $donutFill=document.getElementById("donut-fill"), $donutText=document.getElementById("donut-text"),
       $stateMain=document.getElementById("state-main"), $stateSub=document.getElementById("state-sub"), $statExact=document.getElementById("stat-exact"), $statBoundary=document.getElementById("stat-boundary"), $nerd=document.getElementById("nerd-toggle"),
@@ -814,7 +823,8 @@ async function tierReset(){
   const n=T.votes.length;
   if(!await askConfirm("Erase your tier list and the "+n+" vote"+(n===1?"":"s")+" saved in this browser? This only resets your data on this device. Votes you’ve already submitted stay in the community results and can’t be taken back.","Reset all data")) return;
   if(tLocked) return;
-  T.skips=new Map(); tierRebuild([]); tierSave(); try{ localStorage.removeItem(TIER_STORE_V1); }catch(e){} tierNext(); renderMeter(); if(tiersOpen) renderTiers();
+  T.skips=new Map(); tierRebuild([]); try{ localStorage.removeItem(TIER_STORE); localStorage.removeItem(TIER_STORE_V1); }catch(e){}   // only THIS page's keys; other pages and unrelated data are untouched
+  tierNext(); renderMeter(); if(tiersOpen) renderTiers();
 }
 
 /* ----- confidence indicator (updates at each batch boundary) ----- */
@@ -886,7 +896,7 @@ function renderTiers(){
       if(!u.open){                                     // locked: no name, no portrait, nothing that identifies the character (nerds still see W–L)
         chip.className="chip locked";
         const im=document.createElement("div"); im.className="chip-img anon"; im.innerHTML=ANON_SVG;
-        const nm=document.createElement("div"); nm.className="chip-name"; nm.textContent="?";
+        const nm=document.createElement("div"); nm.className="chip-name"; nm.textContent="???";
         chip.append(im,nm);
         if(nerdOn){ add("—","dim"); add("—","dim"); add(i.w+"–"+i.l); add("—","dim"); }
         chips.append(chip); return;
