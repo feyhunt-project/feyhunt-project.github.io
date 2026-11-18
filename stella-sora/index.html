@@ -15,6 +15,7 @@
   /* UI scale: 1 unit = whichever is smaller of (viewport width / --fit-w) and (viewport height / --fit-h). The voting screen is ~450 units wide and ~640 units tall,
      so --fit-w / --fit-h are the sizes (in units) it should just fit into. (660 leaves room for the footer; 640 would be 2.25px per unit at 1440p.) Lower them to make everything bigger. Mobile resets it to 1px */
   --fit-w:480; --fit-h:660;
+  --tab-w:calc(34*var(--u));      /* width of the floating Live Tier List tab */
   --foot:calc(26*var(--u));      /* footer height: measured by script (ResizeObserver) so the stage + footer always add up to one screen */
   --u:max(.7px,min(100vw / var(--fit-w),100vh / var(--fit-h)));
   --bg-opacity:.1;      /* background slideshow opacity: 0 (hidden) to 1 (full) */
@@ -22,9 +23,9 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 html{background:radial-gradient(calc(900*var(--u)) calc(500*var(--u)) at 50% 0,#171a22 0,var(--bg) 70%) no-repeat var(--bg)}
-main{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center}
+main{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:1fr auto}   /* row 1: vote stage (+ tier list pane when open) | row 2: footer */
 /* .stage = the voting screen, always one viewport tall and centred; the tier list lives in .below, under the fold, so opening it never moves the stage */
-.stage{width:100%;min-height:calc(100vh - var(--foot));min-height:calc(100dvh - var(--foot));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(14*var(--u));padding:max(calc(16*var(--u)),env(safe-area-inset-top)) calc(16*var(--u)) max(calc(16*var(--u)),env(safe-area-inset-bottom))}
+.stage{grid-column:1;grid-row:1;min-width:0;width:100%;min-height:calc(100vh - var(--foot));min-height:calc(100dvh - var(--foot));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(14*var(--u));padding:max(calc(16*var(--u)),env(safe-area-inset-top)) calc(16*var(--u)) max(calc(16*var(--u)),env(safe-area-inset-bottom))}
 
 .head{display:flex;flex-direction:column;align-items:center;gap:calc(6*var(--u));text-align:center}
 h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
@@ -105,7 +106,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 
 /* ---------- mobile: vertical list, best (left) <-> worst (right) ---------- */
 @media (max-width:700px){
-  :root{--u:1px;--w:68px;--shift:30px;--foot:48px}
+  :root{--u:1px;--w:68px;--shift:30px;--foot:48px;--tab-w:30px}
   .stage{gap:10px;justify-content:center;padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(14px,env(safe-area-inset-bottom))}
   .row{flex-direction:column;gap:10px;width:100%;align-items:center}
   .col{width:100%;height:auto}
@@ -165,10 +166,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .linkbtn svg{width:calc(10.5*var(--u));height:calc(10.5*var(--u));fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
 .linkbtn[aria-expanded="true"] svg{transform:rotate(180deg)}
 
-.tiers-panel{display:grid;grid-template-rows:0fr;width:100%;transition:grid-template-rows .3s ease}
-.tiers-panel.open{grid-template-rows:1fr}
-.tiers-inner{min-height:0;overflow:hidden;visibility:hidden;transition:visibility 0s .3s}
-.tiers-panel.open .tiers-inner{visibility:visible;transition-delay:0s}
+.tiers-panel,.tiers-inner{width:100%}
 .tier-row{display:flex;gap:calc(12*var(--u));align-items:flex-start;padding:calc(9*var(--u)) 0;border-top:calc(1*var(--u)) solid var(--line)}
 .tier-letter{flex:none;width:calc(30*var(--u));font-size:calc(22*var(--u));font-weight:700;text-align:center;color:var(--tc);text-shadow:0 0 calc(10*var(--u)) color-mix(in srgb,var(--tc) 55%,transparent)}
 .tier-chips{display:flex;flex-wrap:wrap;gap:calc(6*var(--u));min-height:calc(40*var(--u))}
@@ -201,7 +199,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .stat-note{white-space:pre-line;margin:0;font-size:calc(10.5*var(--u));color:var(--muted);text-align:center;line-height:1.5}
 /* nerd stats: per-character numbers next to each portrait */
 #tiers-list{width:100%}
-#tiers-list.nerd{max-height:min(62vh,calc(560*var(--u)));overflow-y:auto;padding-right:calc(10*var(--u));scrollbar-width:thin;scrollbar-gutter:stable}
+#tiers-list.nerd{padding-right:0}   /* the whole pane scrolls, not the table */
 .nerd .tier-row{padding-right:calc(16*var(--u))}
 .nerd-head,.nerd .chip{display:grid;grid-template-columns:calc(26*var(--u)) minmax(0,1fr) calc(46*var(--u)) calc(36*var(--u)) calc(44*var(--u)) calc(32*var(--u));align-items:center;column-gap:calc(8*var(--u))}
 .nerd-head{position:sticky;top:0;z-index:1;padding:calc(5*var(--u)) calc(16*var(--u)) calc(5*var(--u)) calc(42*var(--u));font-size:calc(9.5*var(--u));letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:rgba(11,12,15,.88);backdrop-filter:blur(calc(6*var(--u)))}
@@ -240,8 +238,31 @@ body[data-view="user"] .nerd-only{display:none}
 .dev-badge[hidden]{display:none}
 .dev-badge:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u))}
 .dev-line{display:block;font-size:calc(10*var(--u));color:#f2c94c;font-variant-numeric:tabular-nums;white-space:nowrap}
-.below{width:min(100%,calc(560*var(--u)));padding:0 calc(16*var(--u))}
-.below .summary-body{padding-bottom:max(calc(48*var(--u)),env(safe-area-inset-bottom))}   /* inside the collapsing panel, so a closed list adds no scroll */
+/* ---------- Live Tier List: floating tab on the right edge + second pane ----------
+   >=1000px: the window splits in two. Vote stage = left half (still centred), tier list = right half, one screen tall, scrolls inside if it doesn't fit.
+   <1000px : no room for two halves, so the pane opens as a full-screen overlay (above the footer). */
+.tier-tab{position:fixed;z-index:30;right:env(safe-area-inset-right,0px);top:50%;transform:translateY(-50%);width:var(--tab-w);padding:calc(14*var(--u)) 0;display:flex;flex-direction:column;align-items:center;gap:calc(9*var(--u));border:calc(1*var(--u)) solid var(--line);border-right:0;border-radius:calc(14*var(--u)) 0 0 calc(14*var(--u));background:rgba(20,22,28,.82);backdrop-filter:blur(calc(8*var(--u)));color:var(--muted);font-family:inherit;font-size:calc(11.5*var(--u));letter-spacing:.06em;cursor:pointer;transition:color .25s,background .25s}
+.tier-tab span{writing-mode:vertical-rl;white-space:nowrap}
+.tier-tab:hover{color:var(--ink);background:rgba(34,37,46,.92)}
+.tier-tab:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(-3*var(--u))}
+.tier-tab svg{width:calc(12*var(--u));height:calc(12*var(--u));fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
+.tier-tab[aria-expanded="true"] svg{transform:rotate(180deg)}
+.below{display:none;grid-column:2;grid-row:1;min-width:0;padding:max(calc(16*var(--u)),env(safe-area-inset-top)) calc(var(--tab-w) + calc(12*var(--u))) calc(16*var(--u));overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+html.tiers-open .below{display:flex;flex-direction:column;animation:paneIn .35s ease}
+.below .tiers-panel{width:min(100%,calc(560*var(--u)));margin:auto}      /* centred while short, top-aligned and scrollable when tall */
+.below .summary-body{padding:calc(4*var(--u)) 0}
+@keyframes paneIn{from{opacity:0}to{opacity:1}}
+@media (min-width:1000px){
+  :root.tiers-open{--fit-w:960}                                          /* the vote stage only has half the width to fit into */
+  html.tiers-open main{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .below{position:sticky;top:0;align-self:start;height:calc(100vh - var(--foot));height:calc(100dvh - var(--foot));border-left:calc(1*var(--u)) solid var(--line)}
+}
+@media (max-width:999px){
+  .below{position:fixed;inset:0 0 var(--foot) 0;z-index:20;background:rgba(9,10,13,.97);backdrop-filter:blur(calc(10*var(--u)))}
+}
+@media (max-width:700px){ .tier-tab{font-size:13px;gap:8px;padding:12px 0} .tier-tab svg{width:13px;height:13px} }
+@media (prefers-reduced-motion:reduce){ html.tiers-open .below{animation:none} }
+.site-foot{grid-column:1/-1;grid-row:2}
 /* ---------- footer (fan-made disclaimer + privacy link) and privacy dialog ---------- */
 .site-foot{width:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:calc(10*var(--u));padding:calc(5*var(--u)) calc(16*var(--u)) max(calc(6*var(--u)),env(safe-area-inset-bottom));text-align:center;font-size:calc(10.5*var(--u));line-height:1.45;color:var(--muted)}
 .site-foot p{margin:0}
@@ -288,10 +309,6 @@ body[data-view="user"] .nerd-only{display:none}
       <div class="meter-sub" id="meter-sub"></div>
       <div class="bar" aria-hidden="true"><div class="bar-fill" id="bar-fill" style="width:0"></div></div>
     </div>
-    <button type="button" class="linkbtn" id="tiers-toggle" aria-expanded="false" aria-controls="tiers-panel">
-      <span id="tiers-toggle-label">Show Live Tier List</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-    </button>
   </section>
   </div>
 
@@ -326,6 +343,11 @@ body[data-view="user"] .nerd-only{display:none}
   <footer class="site-foot" id="site-foot">
     <p>Fan-made project, not affiliated with the official Stella Sora game. <button type="button" class="foot-link" id="privacy-link">Privacy notice</button></p>
   </footer>
+
+  <button type="button" class="tier-tab" id="tiers-toggle" aria-expanded="false" aria-controls="tiers-panel">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+    <span id="tiers-toggle-label">Show Live Tier List</span>
+  </button>
 
   <button type="button" class="dev-badge" id="dev-badge" hidden title="Click, or press ↑ ↓ ← →, to leave dev mode">Dev mode · everything unlocked</button>
 
@@ -900,7 +922,7 @@ function setDev(on){
 }
 const DEV_SEQ="ArrowUp,ArrowDown,ArrowLeft,ArrowRight", devSeq=[];
 function setTiersOpen(open){
-  tiersOpen=open; $tiersPanel.classList.toggle("open",open);
+  tiersOpen=open; $tiersPanel.classList.toggle("open",open); document.documentElement.classList.toggle("tiers-open",open);
   $tiersToggle.setAttribute("aria-expanded",open);
   $tiersLabel.textContent=open?"Hide Live Tier List":"Show Live Tier List";
   if(open) renderTiers();
@@ -997,7 +1019,7 @@ document.addEventListener("keydown",e=>{               // Space = submit, Ctrl/C
     if(k.startsWith("Arrow")){ devSeq.push(k); if(devSeq.length>4) devSeq.shift(); if(devSeq.join()===DEV_SEQ){ devSeq.length=0; setDev(!DEV); } }
     else if(!/^(Shift|Control|Alt|Meta)/.test(k)) devSeq.length=0;
   }
-  if(e.repeat||(e.target.closest&&e.target.closest(".summary button,.below button,.site-foot button,#shot-cta"))) return;   // let the Details buttons behave normally
+  if(e.repeat||(e.target.closest&&e.target.closest(".summary button,.below button,.site-foot button,#shot-cta,#tiers-toggle"))) return;   // let the Details buttons behave normally
   if(e.code==="Space"){ e.preventDefault(); tierSubmit(); }
   else if(e.code==="KeyZ"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); if(viewMode()!=="user") tierUndo(); }
 });
