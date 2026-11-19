@@ -187,13 +187,11 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .submit-row{display:flex;align-items:center;justify-content:center;gap:calc(14*var(--u));width:min(100%,calc(400*var(--u)))}
 .submit-row #submit{flex:1 1 0;width:auto;min-width:0}
 /* ---------- Save Final Tier: a locked progress pill (confidence fills it, red -> yellow -> green) that turns into the Save button once ready ---------- */
-.save-btn{--fill:var(--red);--p:0%;position:relative;isolation:isolate;overflow:hidden;flex:none;width:calc(138*var(--u));height:calc(37.5*var(--u));padding:0;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(1*var(--u));border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid color-mix(in srgb,var(--fill) 55%,transparent);background:rgba(255,255,255,.04);color:var(--ink);font-family:inherit;line-height:1.1;cursor:not-allowed;transition:border-color .4s,background .4s,color .4s,box-shadow .45s,transform .15s}
+.save-btn{--fill:var(--red);--p:0%;position:relative;isolation:isolate;overflow:hidden;flex:none;width:calc(162*var(--u));height:calc(37.5*var(--u));padding:0 calc(6*var(--u));display:inline-flex;align-items:center;justify-content:center;border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid color-mix(in srgb,var(--fill) 55%,transparent);background:rgba(255,255,255,.04);color:var(--ink);font-family:inherit;line-height:1.1;cursor:not-allowed;transition:border-color .4s,background .4s,color .4s,box-shadow .45s,transform .15s}
 .save-btn::before{content:"";position:absolute;inset:0 auto 0 0;z-index:-1;width:var(--p);background:color-mix(in srgb,var(--fill) 42%,transparent);box-shadow:inset calc(-2*var(--u)) 0 0 color-mix(in srgb,var(--fill) 70%,transparent);transition:width .6s var(--ease),background .4s}
-.save-top{font-size:max(8px,calc(8.5*var(--u)));font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(242,243,245,.72)}
-.save-main{font-size:max(11px,calc(13.5*var(--u)));font-weight:700;font-variant-numeric:tabular-nums}
+.save-main{font-size:max(11px,calc(12.5*var(--u)));font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
 .save-btn.ready{cursor:pointer;color:#0b0c0f;border-color:var(--green);background:var(--green);box-shadow:0 0 calc(25.5*var(--u)) rgba(155,209,123,.35)}
 .save-btn.ready::before{background:var(--green);box-shadow:none}
-.save-btn.ready .save-top{display:none}
 .save-btn.ready:not(:disabled):hover{box-shadow:0 0 calc(36*var(--u)) rgba(155,209,123,.55)}
 .save-btn.ready:not(:disabled):active{transform:scale(.98)}
 .save-btn:disabled.ready{cursor:default}
@@ -233,8 +231,8 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 @media (max-width:700px) and (orientation:portrait){
   .summary{width:100%}
   .submit-row{width:100%;max-width:394px}
-  .save-btn{width:130px;height:45px}
-  .save-top{letter-spacing:.05em}
+  .save-btn{width:152px;height:45px}
+  .save-main{font-size:12.5px}
   .nerd-head,.nerd .chip{grid-template-columns:32px minmax(0,1fr) 40px 30px 38px 28px;column-gap:6px}
   .btn{height:36px;font-size:13px}
   .linkbtn,.tier-tab{font-size:13.5px}
@@ -322,8 +320,7 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
   <div class="row" id="trow"></div>
   <div class="submit-row">
     <button type="button" class="save-btn" id="shot-cta" disabled>
-      <span class="save-top" id="save-top">Save Final Tier</span>
-      <span class="save-main" id="save-main">0%</span>
+      <span class="save-main" id="save-main">Confidence: 0%</span>
     </button>
     <button id="submit" disabled>Submit</button>
   </div>
@@ -847,8 +844,8 @@ async function tierReset(){
   tierNext(); renderMeter(); if(tiersOpen) renderTiers();
 }
 
-/* ----- Save Final Tier button: locked + filling with confidence, then ready (pop animation, then "Save (NN%)") ----- */
-const $saveTop=document.getElementById("save-top"), $saveMain=document.getElementById("save-main");
+/* ----- result button: locked + filling with confidence ("Confidence: NN%"), then ready (pop animation, then "Result ready (NN%)") ----- */
+const $saveMain=document.getElementById("save-main");
 let saveState=null, saveTimer=0, saveMsg=null;         // saveState: null (first paint) | "locked" | "unlocking" (animation) | "ready"
 const SAVE_RGB={red:[255,107,107],yellow:[242,201,76],green:[155,209,123]};
 function confColor(p){                                 // red at 0%, yellow at LIGHT_YELLOW, green at LIGHT_GREEN, blended in between
@@ -866,12 +863,10 @@ function renderSaveBtn(){
   b.classList.toggle("ready",ready);
   b.style.setProperty("--fill",confColor(pct)); b.style.setProperty("--p",(ready?100:pct).toFixed(1)+"%");
   b.disabled=!ready||saveMsg!==null;
-  if(saveMsg!==null){ $saveTop.textContent=""; $saveMain.textContent=saveMsg; }
-  else if(ready){ $saveTop.textContent=""; $saveMain.textContent=saveState==="unlocking"?"Ready!":"Save ("+shown+"%)"; }
-  else{ $saveTop.textContent="Save Final Tier"; $saveMain.textContent=shown+"%"; }
+  $saveMain.textContent=saveMsg!==null?saveMsg:ready?(saveState==="unlocking"?"Unlocked!":"Result ready ("+shown+"%)"):"Confidence: "+shown+"%";
   const why="Confidence = share of characters whose 95% interval (mu ± 2 sigma) crosses at most one tier boundary, i.e. their tier is at worst one step off";
-  b.setAttribute("aria-label",ready?"Save final tier as an image. Confidence "+shown+" percent":"Save final tier, locked. Confidence "+shown+" percent, unlocks at "+TS.LIGHT_GREEN+" percent");
-  b.title=ready?"":"Confidence "+shown+"% · Save unlocks at "+TS.LIGHT_GREEN+"%. "+why;
+  b.setAttribute("aria-label",ready?"Your result is ready. Save your final tier as an image. Confidence "+shown+" percent":"Save final tier, locked. Confidence "+shown+" percent, unlocks at "+TS.LIGHT_GREEN+" percent");
+  b.title=ready?"Click to save your final tier as an image":"Your result unlocks at "+TS.LIGHT_GREEN+"% confidence. "+why;
 }
 
 /* ----- confidence indicator (updates at each batch boundary) ----- */
@@ -1027,14 +1022,14 @@ let shotURL=null, shotReturnFocus=null;
 async function openShot(btn){
   if(!revealAll()) return;                             // the image shows every tier: only once everything is unlocked
   const label=btn.textContent, say=t=>{ if(btn===$shotCta){ saveMsg=t; renderSaveBtn(); } else btn.textContent=t; };
-  btn.disabled=true; say("Building image…");
+  btn.disabled=true; say("Building…");
   try{
     const blob=await buildTierImage();
     if(shotURL) URL.revokeObjectURL(shotURL);
     shotURL=URL.createObjectURL(blob); $shotImg.src=shotURL; $shotDl.href=shotURL;
     shotReturnFocus=btn; $shot.hidden=false; $shotClose.focus();
   }catch(e){
-    console.error(e); say("Couldn't build image"); await sleep(1600);
+    console.error(e); say("Try again"); await sleep(1600);
   }finally{ if(btn===$shotCta){ saveMsg=null; renderSaveBtn(); } else{ btn.disabled=false; btn.textContent=label; } }
 }
 function closeShot(){
