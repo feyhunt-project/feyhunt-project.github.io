@@ -14,7 +14,7 @@
   --ease:cubic-bezier(.22,1.2,.36,1);
   /* UI scale: 1 unit = whichever is smaller of (viewport width / --fit-w) and (viewport height / --fit-h). The voting screen is ~450 units wide and ~640 units tall,
      so --fit-w / --fit-h are the sizes (in units) it should just fit into. (660 leaves room for the footer; 640 would be 2.25px per unit at 1440p.) Lower them to make everything bigger. Mobile resets it to 1px */
-  --accent:#ff9a45;               /* orange accent: the Live Tier List toggle */
+  --accent:var(--red);            /* accent of the Live Tier List toggle: same red as the down arrow */
   --fit-w:480; --fit-h:660;
   --tab-w:max(30px,calc(34*var(--u)));      /* width of the floating Live Tier List tab */
   --foot:calc(26*var(--u));      /* footer height: measured by script (ResizeObserver) so the stage + footer always add up to one screen */
@@ -167,7 +167,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .linkbtn svg{width:calc(10.5*var(--u));height:calc(10.5*var(--u));fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
 .linkbtn[aria-expanded="true"] svg{transform:rotate(180deg)}
 .tier-tab{padding:calc(6*var(--u)) calc(16*var(--u));gap:calc(6*var(--u));font-size:calc(12.5*var(--u));font-weight:600;letter-spacing:.02em;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);box-shadow:inset 0 0 0 calc(1*var(--u)) color-mix(in srgb,var(--accent) 55%,transparent)}
-.tier-tab:hover{color:#ffb878;background:color-mix(in srgb,var(--accent) 24%,transparent)}
+.tier-tab:hover{color:#ff9a9a;background:color-mix(in srgb,var(--accent) 24%,transparent)}
 .tier-tab:focus-visible{outline:calc(2*var(--u)) solid var(--accent);outline-offset:calc(2*var(--u))}
 .tier-tab[aria-expanded="true"]{background:none;box-shadow:none;color:var(--ink)}   /* list open: a plain, quiet button (orange + glow is only for the closed state) */
 .tier-tab[aria-expanded="true"]:hover{color:var(--ink);background:rgba(255,255,255,.05)}
@@ -186,16 +186,24 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .chip-name{max-width:100%;font-size:calc(10*var(--u));color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .submit-row{display:flex;align-items:center;justify-content:center;gap:calc(14*var(--u));width:min(100%,calc(400*var(--u)))}
 .submit-row #submit{flex:1 1 0;width:auto;min-width:0}
-.conf-wheel{flex:none;display:flex;align-items:center;gap:calc(8*var(--u))}
-.conf-wheel[hidden]{display:none}
-.conf-wheel-label{font-size:calc(11.5*var(--u));color:var(--muted);letter-spacing:.02em}
-.donut{width:calc(46*var(--u));height:calc(46*var(--u))}
-.donut-track{fill:none;stroke:rgba(255,255,255,.1);stroke-width:4}
-.donut-fill{fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .6s var(--ease),stroke .4s}
-.donut text{fill:var(--ink);font-family:inherit;font-size:10px;font-weight:600;font-variant-numeric:tabular-nums}
-.conf-wheel[data-level="red"] .donut-fill{stroke:var(--red)}
-.conf-wheel[data-level="yellow"] .donut-fill{stroke:#f2c94c}
-.conf-wheel[data-level="green"] .donut-fill{stroke:var(--green)}
+/* ---------- Save Final Tier: a locked progress pill (confidence fills it, red -> yellow -> green) that turns into the Save button once ready ---------- */
+.save-btn{--fill:var(--red);--p:0%;position:relative;isolation:isolate;overflow:hidden;flex:none;width:calc(138*var(--u));height:calc(37.5*var(--u));padding:0;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(1*var(--u));border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid color-mix(in srgb,var(--fill) 55%,transparent);background:rgba(255,255,255,.04);color:var(--ink);font-family:inherit;line-height:1.1;cursor:not-allowed;transition:border-color .4s,background .4s,color .4s,box-shadow .45s,transform .15s}
+.save-btn::before{content:"";position:absolute;inset:0 auto 0 0;z-index:-1;width:var(--p);background:color-mix(in srgb,var(--fill) 42%,transparent);box-shadow:inset calc(-2*var(--u)) 0 0 color-mix(in srgb,var(--fill) 70%,transparent);transition:width .6s var(--ease),background .4s}
+.save-top{font-size:max(8px,calc(8.5*var(--u)));font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(242,243,245,.72)}
+.save-main{font-size:max(11px,calc(13.5*var(--u)));font-weight:700;font-variant-numeric:tabular-nums}
+.save-btn.ready{cursor:pointer;color:#0b0c0f;border-color:var(--green);background:var(--green);box-shadow:0 0 calc(25.5*var(--u)) rgba(155,209,123,.35)}
+.save-btn.ready::before{background:var(--green);box-shadow:none}
+.save-btn.ready .save-top{display:none}
+.save-btn.ready:not(:disabled):hover{box-shadow:0 0 calc(36*var(--u)) rgba(155,209,123,.55)}
+.save-btn.ready:not(:disabled):active{transform:scale(.98)}
+.save-btn:disabled.ready{cursor:default}
+.save-btn:focus-visible{outline:calc(2*var(--u)) solid var(--ink);outline-offset:calc(3*var(--u))}
+.save-btn.popping{animation:savePop .6s var(--ease),saveGlow 1.2s ease-out}                     /* the moment it unlocks */
+.save-btn.popping::after{content:"";position:absolute;top:0;bottom:0;left:0;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.7),transparent);transform:translateX(-130%) skewX(-18deg);animation:saveShine .9s .2s ease-out forwards}
+@keyframes savePop{0%{transform:scale(1)}35%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes saveGlow{0%{box-shadow:0 0 0 0 rgba(155,209,123,.7)}100%{box-shadow:0 0 0 calc(16*var(--u)) rgba(155,209,123,0)}}
+@keyframes saveShine{to{transform:translateX(320%) skewX(-18deg)}}
+@media (prefers-reduced-motion:reduce){ .save-btn.popping,.save-btn.popping::after{animation:none} }
 .state-line{font-size:calc(12.5*var(--u));color:var(--muted);text-align:center}
 .state-line b{color:var(--ink);font-weight:600}
 .stats{display:grid;gap:calc(5*var(--u));margin:0;width:min(100%,calc(320*var(--u)))}
@@ -225,8 +233,8 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 @media (max-width:700px) and (orientation:portrait){
   .summary{width:100%}
   .submit-row{width:100%;max-width:394px}
-  .conf-wheel-label{font-size:12px}
-  .donut{width:44px;height:44px}
+  .save-btn{width:130px;height:45px}
+  .save-top{letter-spacing:.05em}
   .nerd-head,.nerd .chip{grid-template-columns:32px minmax(0,1fr) 40px 30px 38px 28px;column-gap:6px}
   .btn{height:36px;font-size:13px}
   .linkbtn,.tier-tab{font-size:13.5px}
@@ -235,7 +243,6 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 /* ---------- views: user / nerd / dev (body[data-view]) + progressive reveal ---------- */
 body[data-view="user"] .nerd-only{display:none}
 .nerd-block{display:flex;flex-direction:column;align-items:center;gap:calc(16*var(--u));width:100%}
-#shot-cta{margin-top:calc(4*var(--u))}
 .tier-row.locked .tier-letter{opacity:.5;text-shadow:none}
 .lock-note{flex:none;width:100%;display:flex;align-items:center;gap:calc(6*var(--u));padding:calc(2*var(--u)) 0;font-size:calc(11.5*var(--u));color:var(--muted);letter-spacing:.01em}
 .lock-note svg{flex:none;width:calc(12*var(--u));height:calc(12*var(--u));fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -263,7 +270,7 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
   .below .tiers-panel{width:min(100%,calc(560*var(--u)));margin:auto}      /* centred while short, top-aligned and scrollable when tall */
   .tier-tab{position:fixed;z-index:30;right:env(safe-area-inset-right,0px);top:50%;transform:translateY(-50%);width:var(--tab-w);padding:calc(14*var(--u)) 0;flex-direction:column;gap:calc(9*var(--u));border:calc(1*var(--u)) solid color-mix(in srgb,var(--accent) 65%,transparent);border-right:0;border-radius:calc(14*var(--u)) 0 0 calc(14*var(--u));background:color-mix(in srgb,var(--accent) 18%,rgba(20,22,28,.9));box-shadow:0 0 calc(18*var(--u)) color-mix(in srgb,var(--accent) 24%,transparent);backdrop-filter:blur(calc(8*var(--u)));font-size:max(11px,calc(11.5*var(--u)));letter-spacing:.06em}
   .tier-tab span{writing-mode:vertical-rl;white-space:nowrap}
-  .tier-tab:hover{color:#ffb878;background:color-mix(in srgb,var(--accent) 30%,rgba(20,22,28,.9))}
+  .tier-tab:hover{color:#ff9a9a;background:color-mix(in srgb,var(--accent) 30%,rgba(20,22,28,.9))}
   .tier-tab:focus-visible{outline-offset:calc(-3*var(--u))}   /* inside the tab so the edge of the screen cannot clip it */
   .tier-tab svg{order:-1;width:max(11px,calc(12*var(--u)));height:max(11px,calc(12*var(--u)));transform:rotate(90deg)}   /* points left = "pull the list in" */
   .tier-tab[aria-expanded="true"] svg{transform:rotate(-90deg)}
@@ -311,18 +318,13 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
     <p class="period">05/13 12:00 AM to 06/30 11:59 PM (UTC)</p>
     <h1 id="title"></h1>
     <p class="hint" id="hint">Which character do you like the <b class="tag-best">MOST</b> and <b class="tag-worst">LEAST</b>?</p>
-    <button type="button" class="btn cta" id="shot-cta" hidden>Save Final Tier</button>
   </header>
   <div class="row" id="trow"></div>
   <div class="submit-row">
-    <div class="conf-wheel" id="conf-wheel" data-level="red" title="Confidence = share of characters whose 95% interval (mu ± 2 sigma) crosses at most one tier boundary, i.e. their tier is at worst one step off">
-      <span class="conf-wheel-label">Confidence</span>
-      <svg class="donut" viewBox="0 0 44 44" role="img" aria-label="Confidence">
-        <circle class="donut-track" cx="22" cy="22" r="18"/>
-        <circle class="donut-fill" id="donut-fill" cx="22" cy="22" r="18" transform="rotate(-90 22 22)" style="stroke-dasharray:113.1;stroke-dashoffset:113.1"/>
-        <text id="donut-text" x="22" y="22" text-anchor="middle" dominant-baseline="central">0%</text>
-      </svg>
-    </div>
+    <button type="button" class="save-btn" id="shot-cta" disabled>
+      <span class="save-top" id="save-top">Save Final Tier</span>
+      <span class="save-main" id="save-main">0%</span>
+    </button>
     <button id="submit" disabled>Submit</button>
   </div>
   <section class="summary" id="summary" aria-label="Voting progress">
@@ -505,7 +507,7 @@ const TS={
   SURPRISE_P:.35,                  // a win with expected probability below this counts as an upset
   SPIKE:.9,                        // how hard an upset inflates sigma
   EPS:10, DISPLAY_EVERY:3, PRIOR_TAU:200, MLE_ITERS:60,   // re-fit, next-set pick and the tier list update after EVERY vote; the Confidence numbers refresh every DISPLAY_EVERY votes
-  LIGHT_YELLOW:20, LIGHT_GREEN:85,      // donut colour thresholds (% of characters whose 95% interval straddles at most one tier boundary).
+  LIGHT_YELLOW:20, LIGHT_GREEN:85,      // Save-button colour thresholds (% of characters whose 95% interval straddles at most one tier boundary).
                                         // Calibrated for the 10/13/16/16/16/16/13 split: yellow lands near 0.6N votes, green near 1.2N (40/95 would land near 0.8N / 1.35N)
   BUDGET_PER_CHAR:1.2                   // suggested votes = 1.2 x roster size
 };
@@ -610,7 +612,7 @@ function tsBuckets(S){
   order.forEach((it,r)=>{let b=0;while(b<cuts.length&&r>=cuts[b])b++;tiers[b].push(it);of.set(it.id,b);});
   /* Boundary stability from the 95% interval mu +/- 2 sigma:
      strict  = interval sits entirely inside one tier (crosses 0 boundaries)  -> "exact-tier stability", also drives the dashed chips
-     relaxed = interval crosses at most 1 boundary (tier is at worst one step off) -> System Confidence shown by the Confidence donut */
+     relaxed = interval crosses at most 1 boundary (tier is at worst one step off) -> System Confidence shown by the Save Final Tier button */
   const wl=new Map();for(const[w,l]of S.games){(wl.get(w)||wl.set(w,[0,0]).get(w))[0]++;(wl.get(l)||wl.set(l,[0,0]).get(l))[1]++;}
   let strict=0,relaxed=0;const stableSet=new Set(),info=new Map();   // info = frozen per-character numbers for the "nerd stats" view
   for(const it of S.items){
@@ -713,7 +715,7 @@ function drawTierImage(c,L,D){
 const STORE_ID=(STORAGE_ID||PAGE_TITLE).toLowerCase().replace(/[^\p{L}\p{M}\p{N}]+/gu,"-").replace(/^-+|-+$/g,"")||"default";
 const TIER_STORE="tiersort:"+STORE_ID+":v2", TIER_STORE_V1="tiersort:"+STORE_ID+":v1";
 const TIER_COLORS=["#ff8f6b","#ffb86b","#ffe16b","#c8e86b","#7fd9a1","#6bc2ff","#a98bff"];
-const $trow=document.getElementById("trow"), $updateNote=document.getElementById("update-note"), $wheel=document.getElementById("conf-wheel"), $donutFill=document.getElementById("donut-fill"), $donutText=document.getElementById("donut-text"),
+const $trow=document.getElementById("trow"), $updateNote=document.getElementById("update-note"),
       $stateMain=document.getElementById("state-main"), $stateSub=document.getElementById("state-sub"), $statExact=document.getElementById("stat-exact"), $statBoundary=document.getElementById("stat-boundary"), $nerd=document.getElementById("nerd-toggle"),
       $confirm=document.getElementById("confirm"), $confirmTitle=document.getElementById("confirm-title"), $confirmMsg=document.getElementById("confirm-msg"), $confirmOk=document.getElementById("confirm-ok"), $confirmCancel=document.getElementById("confirm-cancel"),
       $shot=document.getElementById("shot"), $shotImg=document.getElementById("shot-img"), $shotDl=document.getElementById("shot-dl"), $shotClose=document.getElementById("shot-close"), $shotCta=document.getElementById("shot-cta"), $tShot=document.getElementById("t-shot"),
@@ -845,16 +847,39 @@ async function tierReset(){
   tierNext(); renderMeter(); if(tiersOpen) renderTiers();
 }
 
+/* ----- Save Final Tier button: locked + filling with confidence, then ready (pop animation, then "Save (NN%)") ----- */
+const $saveTop=document.getElementById("save-top"), $saveMain=document.getElementById("save-main");
+let saveState=null, saveTimer=0, saveMsg=null;         // saveState: null (first paint) | "locked" | "unlocking" (animation) | "ready"
+const SAVE_RGB={red:[255,107,107],yellow:[242,201,76],green:[155,209,123]};
+function confColor(p){                                 // red at 0%, yellow at LIGHT_YELLOW, green at LIGHT_GREEN, blended in between
+  const y=TS.LIGHT_YELLOW, g=TS.LIGHT_GREEN, mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+  return "rgb("+(p>=g?SAVE_RGB.green:p>=y?mix(SAVE_RGB.yellow,SAVE_RGB.green,(p-y)/(g-y)):mix(SAVE_RGB.red,SAVE_RGB.yellow,p/y)).join(",")+")";
+}
+function renderSaveBtn(){
+  const b=$shotCta, pct=Math.max(0,Math.min(100,tC.confidence)), shown=Math.round(pct), ready=revealAll();
+  if(ready){
+    if(saveState==="locked"&&!(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)){      // just unlocked: play the animation, then settle on "Save (NN%)"
+      saveState="unlocking"; b.classList.add("popping"); clearTimeout(saveTimer);
+      saveTimer=setTimeout(()=>{ saveState="ready"; b.classList.remove("popping"); renderSaveBtn(); },1250);
+    }else if(saveState!=="unlocking") saveState="ready";   // (also the first paint after a reload: no animation)
+  }else{ saveState="locked"; clearTimeout(saveTimer); b.classList.remove("popping"); }
+  b.classList.toggle("ready",ready);
+  b.style.setProperty("--fill",confColor(pct)); b.style.setProperty("--p",(ready?100:pct).toFixed(1)+"%");
+  b.disabled=!ready||saveMsg!==null;
+  if(saveMsg!==null){ $saveTop.textContent=""; $saveMain.textContent=saveMsg; }
+  else if(ready){ $saveTop.textContent=""; $saveMain.textContent=saveState==="unlocking"?"Ready!":"Save ("+shown+"%)"; }
+  else{ $saveTop.textContent="Save Final Tier"; $saveMain.textContent=shown+"%"; }
+  const why="Confidence = share of characters whose 95% interval (mu ± 2 sigma) crosses at most one tier boundary, i.e. their tier is at worst one step off";
+  b.setAttribute("aria-label",ready?"Save final tier as an image. Confidence "+shown+" percent":"Save final tier, locked. Confidence "+shown+" percent, unlocks at "+TS.LIGHT_GREEN+" percent");
+  b.title=ready?"":"Confidence "+shown+"% · Save unlocks at "+TS.LIGHT_GREEN+"%. "+why;
+}
+
 /* ----- confidence indicator (updates at each batch boundary) ----- */
 function renderMeter(){
   const N=characters.length, votes=T.votes.length, pct=tC.confidence, B=TS.DISPLAY_EVERY;
   const budget=tsBudget(N);                           // suggested votes = 1.2 x roster size (from the JSON)
   const level=pct>=TS.LIGHT_GREEN?"green":pct>=TS.LIGHT_YELLOW?"yellow":"red";
-  $wheel.dataset.level=level;
-  // Confidence donut (left of Submit)
-  $donutFill.style.strokeDashoffset=(113.1*(1-Math.min(100,pct)/100)).toFixed(2);
-  $donutText.textContent=Math.round(pct)+"%";
-  $wheel.setAttribute("aria-label","Confidence "+Math.round(pct)+" percent");
+  renderSaveBtn();                                   // Save Final Tier button (left of Submit): confidence progress, then the Save button
   // suggested votes + progress bar
   $barFill.style.width=Math.min(100,votes/budget*100)+"%";
   $meterSub.textContent=votes+" / ~"+budget+" suggested votes for "+N+" characters"
@@ -865,8 +890,7 @@ function renderMeter(){
   $statExact.innerHTML=Math.round(tC.strictConfidence)+"% <small>("+tC.strict+" / "+N+")</small>";
   $statBoundary.innerHTML=Math.round(pct)+"% <small>("+tC.relaxed+" / "+N+")</small>";
   const left=B-votes%B;
-  $updateNote.textContent="Donut: yellow ≥ "+TS.LIGHT_YELLOW+"%, green ≥ "+TS.LIGHT_GREEN+"% boundary stability.\nConfidence updates every "+B+" votes"+(left===B?"":" · next in "+left);
-  $shotCta.hidden=!revealAll();                         // "Save Final Tier" appears once everything is unlocked (confidence green) or in dev mode
+  $updateNote.textContent="Save button: yellow ≥ "+TS.LIGHT_YELLOW+"%, green (Save unlocks) ≥ "+TS.LIGHT_GREEN+"% boundary stability.\nConfidence updates every "+B+" votes"+(left===B?"":" · next in "+left);
   { const ok=revealAll(); $tShot.disabled=!ok; $copy.disabled=!ok; $tShot.title=$copy.title=ok?"":"Unlocks with the full tier list"; }
   $undo.disabled=!votes; $reset.disabled=!votes;
 }
@@ -1002,15 +1026,16 @@ async function buildTierImage(){
 let shotURL=null, shotReturnFocus=null;
 async function openShot(btn){
   if(!revealAll()) return;                             // the image shows every tier: only once everything is unlocked
-  const label=btn.textContent; btn.disabled=true; btn.textContent="Building image…";
+  const label=btn.textContent, say=t=>{ if(btn===$shotCta){ saveMsg=t; renderSaveBtn(); } else btn.textContent=t; };
+  btn.disabled=true; say("Building image…");
   try{
     const blob=await buildTierImage();
     if(shotURL) URL.revokeObjectURL(shotURL);
     shotURL=URL.createObjectURL(blob); $shotImg.src=shotURL; $shotDl.href=shotURL;
     shotReturnFocus=btn; $shot.hidden=false; $shotClose.focus();
   }catch(e){
-    console.error(e); btn.textContent="Couldn't build image"; await sleep(1600);
-  }finally{ btn.disabled=false; btn.textContent=label; }
+    console.error(e); say("Couldn't build image"); await sleep(1600);
+  }finally{ if(btn===$shotCta){ saveMsg=null; renderSaveBtn(); } else{ btn.disabled=false; btn.textContent=label; } }
 }
 function closeShot(){
   $shot.hidden=true; $shotImg.removeAttribute("src");
