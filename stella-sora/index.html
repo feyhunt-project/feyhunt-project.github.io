@@ -118,12 +118,8 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .verify:empty{display:none}
 .verify{margin:0;font-size:calc(11.5*var(--u));color:var(--muted);text-align:center}
 
-.meter{width:100%;display:flex;flex-direction:column;align-items:center;gap:calc(8*var(--u));margin-bottom:calc(6*var(--u))}
-.meter[hidden]{display:none}
-.bar{position:relative;width:min(100%,calc(333*var(--u)));height:calc(5*var(--u));border-radius:calc(999*var(--u));background:rgba(255,255,255,.08)}
-.bar-fill{height:100%;border-radius:inherit;background:var(--ink);opacity:.8;transition:width .4s}
-.bar-tick{position:absolute;top:calc(-3*var(--u));bottom:calc(-3*var(--u));width:calc(1*var(--u));background:rgba(255,255,255,.4)}
-.meter-sub{white-space:pre-line;line-height:1.5;font-size:calc(11.5*var(--u));color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.tier-bar{width:min(60%,calc(200*var(--u)));height:calc(4*var(--u));margin:calc(7*var(--u)) auto calc(2*var(--u));border-radius:calc(999*var(--u));background:rgba(255,255,255,.09);overflow:hidden}
+.tier-bar-fill{--bar:var(--green);width:0;height:100%;border-radius:inherit;background:var(--bar);transition:width .6s var(--ease),background .5s}      /* progress to the NEXT tier, in that tier's colour */
 
 .tier-actions{display:flex;flex-wrap:wrap;gap:calc(8*var(--u));justify-content:center}
 .btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;height:calc(31*var(--u));padding:0 calc(16*var(--u));border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font-family:inherit;font-size:calc(11.5*var(--u));cursor:pointer;transition:background .25s,border-color .25s,opacity .25s}
@@ -301,6 +297,7 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
     <p class="period">05/13 12:00 AM to 06/30 11:59 PM (UTC)</p>
     <h1 id="title"></h1>
     <p class="next-tier" id="next-tier"></p>
+    <div class="tier-bar" aria-hidden="true"><div class="tier-bar-fill" id="tier-bar-fill"></div></div>
     <p class="hint" id="keys-hint">Hotkeys: ← → arrow keys or Q / E</p>
     <span class="sr-only" id="sr-status" role="status" aria-live="polite"></span>
   </header>
@@ -315,10 +312,6 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
     </button>
   </div>
   <section class="summary" id="summary" aria-label="Voting progress">
-    <div class="meter" id="meter">
-      <div class="meter-sub" id="meter-sub"></div>
-      <div class="bar" aria-hidden="true"><div class="bar-fill" id="bar-fill" style="width:0"></div></div>
-    </div>
     <button type="button" class="linkbtn tier-tab" id="tiers-toggle" aria-expanded="false" aria-controls="tiers-panel">
       <span id="tiers-toggle-label">Show Live Tier List</span>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
@@ -710,8 +703,8 @@ const $trow=document.getElementById("trow"), $updateNote=document.getElementById
       $confirm=document.getElementById("confirm"), $confirmTitle=document.getElementById("confirm-title"), $confirmMsg=document.getElementById("confirm-msg"), $confirmOk=document.getElementById("confirm-ok"), $confirmCancel=document.getElementById("confirm-cancel"),
       $shot=document.getElementById("shot"), $shotImg=document.getElementById("shot-img"), $shotDl=document.getElementById("shot-dl"), $shotClose=document.getElementById("shot-close"), $shotCta=document.getElementById("shot-cta"), $tShot=document.getElementById("t-shot"),
       $verify=document.getElementById("verify"),
-      $barFill=document.getElementById("bar-fill"),
-      $meterSub=document.getElementById("meter-sub"), $undo=document.getElementById("t-undo"), $skip=document.getElementById("t-skip"),
+      $barFill=document.getElementById("tier-bar-fill"),
+      $undo=document.getElementById("t-undo"), $skip=document.getElementById("t-skip"),
       $reset=document.getElementById("t-reset"), $copy=document.getElementById("t-copy"), $tiersToggle=document.getElementById("tiers-toggle"),
       $tiersLabel=document.getElementById("tiers-toggle-label"), $tiersPanel=document.getElementById("tiers-panel"), $tiersList=document.getElementById("tiers-list");
 let T=null, tB=null, tC=null, tCur=null, committed=0, shownStack=[], tCols=new Map(), tLocked=false, tiersOpen=false, nerdOn=false, charById=new Map();
@@ -885,7 +878,9 @@ function renderNextTier(){
   if(tierFlashing) return;
   let b=-1; for(let i=U.length-1;i>=0;i--) if(!U[i].open){ b=i; break; }          // tiers open F first ... S last, so the next one is the locked tier with the highest index
   $nextTier.textContent="";
-  if(b<0){ $nextTier.append("All tiers unlocked"); return; }
+  if(b<0){ $nextTier.append("All tiers unlocked"); $barFill.style.setProperty("--bar","var(--green)"); $barFill.style.width="100%"; return; }
+  const votes=T.votes.length, frac=Math.max(0,Math.min(1,(votes-U[b].from)/Math.max(1,U[b].to-U[b].from)));      // progress from the previous tier's opening to this one's
+  $barFill.style.setProperty("--bar",TIER_COLORS[b]); $barFill.style.width=(frac*100).toFixed(1)+"%";
   const letter=document.createElement("b"); letter.textContent=TS.LABELS[b]; letter.style.color=TIER_COLORS[b];
   $nextTier.append(U[b].need>0?U[b].need+" more vote"+(U[b].need===1?"":"s")+" to unlock Tier ":"A few more votes to unlock Tier ",letter);
 }
@@ -894,6 +889,7 @@ function flashTiers(opened,all){
   const L=b=>TS.LABELS[b];
   const msg=all&&opened.length>1?"All tiers unlocked!":opened.length===1?"Tier "+L(opened[0])+" unlocked!":"Tiers "+L(opened[0])+"–"+L(opened[opened.length-1])+" unlocked!";
   $nextTier.className="next-tier unlocked"; $nextTier.textContent=msg; $srStatus.textContent=msg;
+  $barFill.style.setProperty("--bar",TIER_COLORS[opened[opened.length-1]]); $barFill.style.width="100%";      // the bar stays full, in the new tier's colour, while the celebration is up
   tierFlashing=true; clearTimeout(tierFlashTimer);
   tierFlashTimer=setTimeout(()=>{ tierFlashing=false; $nextTier.className="next-tier swap"; renderNextTier(); },3200);
 }
@@ -901,14 +897,9 @@ function flashTiers(opened,all){
 /* ----- confidence indicator (updates at each batch boundary) ----- */
 function renderMeter(){
   const N=characters.length, votes=T.votes.length, pct=tC.confidence, B=TS.DISPLAY_EVERY;
-  const budget=tsBudget(N);                           // suggested votes = 1.2 x roster size (from the JSON)
   const level=pct>=TS.LIGHT_GREEN?"green":pct>=TS.LIGHT_YELLOW?"yellow":"red";
   renderSaveBtn();                                   // Confidence / Save button: confidence progress, then the Save button
   renderNextTier();                                  // header line: votes to the next tier, or "Tier Y unlocked!"
-  // suggested votes + progress bar
-  $barFill.style.width=Math.min(100,votes/budget*100)+"%";
-  $meterSub.textContent=votes+" / ~"+budget+" suggested votes for "+N+" characters"
-    +(votes>budget&&level!=="green"?" · past the suggestion, more votes still help":"");
   // Details panel
   const [m,sub]=level==="green"?["Converged","Tiers within ±1"]:level==="yellow"?["Stabilizing","Boundaries resolving"]:["Volatile","Keep voting"];
   $stateMain.textContent=m; $stateSub.textContent=sub;
@@ -926,12 +917,12 @@ const UNLOCK_AT=[1,.9,.8,.7,.6,.5,.25];   // per tier S..F (same order as TS.LAB
                                          // S also waits for Confidence to turn green; green (or dev mode) reveals everything at once
 const revealAll=()=>DEV||tC.confidence>=TS.LIGHT_GREEN;
 function tierUnlocks(){
-  const votes=T.votes.length, budget=tsBudget(characters.length), all=revealAll();
+  const votes=T.votes.length, budget=tsBudget(characters.length), all=revealAll(), last=TS.LABELS.length-1;
   return TS.LABELS.map((_,b)=>{
-    if(all) return {open:true,need:0};
-    const target=Math.max(1,Math.ceil((UNLOCK_AT[b]??1)*budget));
-    if(b===0) return {open:false,need:Math.max(0,target-votes)};
-    return votes>=target?{open:true,need:0}:{open:false,need:target-votes};
+    const to=Math.max(1,Math.ceil((UNLOCK_AT[b]??1)*budget)), from=b===last?0:Math.max(1,Math.ceil((UNLOCK_AT[b+1]??1)*budget));   // votes at which this tier opens / the tier before it opened
+    if(all) return {open:true,need:0,from,to};
+    if(b===0) return {open:false,need:Math.max(0,to-votes),from,to};                      // S also waits for Confidence to turn green
+    return votes>=to?{open:true,need:0,from,to}:{open:false,need:to-votes,from,to};
   });
 }
 const lockMsg=u=>u.need>0?"Vote ~"+u.need+" more time"+(u.need===1?"":"s")+" to unlock this tier":"Vote a few more times to unlock this tier";
