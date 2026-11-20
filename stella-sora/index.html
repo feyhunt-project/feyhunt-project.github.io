@@ -32,6 +32,16 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .period{margin:0;font-size:calc(12*var(--u));color:var(--muted);letter-spacing:.04em;font-variant-numeric:tabular-nums}
 .hint{margin:0;font-size:calc(14*var(--u));color:var(--muted);text-align:center;letter-spacing:.01em}
 .row{display:flex;gap:calc(44*var(--u));justify-content:center}
+.pair{display:flex;flex-direction:column;align-items:center}
+.ask{position:relative;z-index:3;margin:0 0 calc(36*var(--u));font-size:calc(16*var(--u))}      /* sits above the glow of the picked card; the gap is bigger than the card's 16% growth, so the grown portrait never touches it */
+.next-tier{margin:calc(2*var(--u)) 0 0;min-height:calc(20*var(--u));font-size:calc(13.5*var(--u));line-height:calc(20*var(--u));color:rgba(242,243,245,.82);text-align:center;white-space:nowrap}
+.next-tier b{font-weight:700}
+.next-tier.swap{animation:tierIn .45s ease}
+.next-tier.unlocked{color:var(--green);font-weight:700;text-shadow:0 0 calc(8*var(--u)) rgba(155,209,123,.9),0 0 calc(22*var(--u)) rgba(155,209,123,.55);animation:tierPop 3.2s var(--ease) both}
+@keyframes tierPop{0%{opacity:0;transform:scale(.8)}12%{opacity:1;transform:scale(1.2)}26%{transform:scale(1)}100%{opacity:1;transform:scale(1)}}
+@keyframes tierIn{from{opacity:0;transform:translateY(calc(4*var(--u)))}to{opacity:1;transform:none}}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (hover:none),(pointer:coarse){ #keys-hint{display:none} }      /* no keyboard on a touchscreen */
 
 .bg{position:fixed;inset:0;z-index:0;opacity:var(--bg-opacity);overflow:hidden;pointer-events:none}
 .bg-layer{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1.12);filter:blur(calc(16*var(--u)));
@@ -78,7 +88,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   .stage{display:grid;grid-template-rows:auto 1fr auto auto;justify-items:center;gap:0;row-gap:calc(10*var(--u));
        padding:max(calc(24*var(--u)),env(safe-area-inset-top)) calc(16*var(--u)) max(calc(24*var(--u)),env(safe-area-inset-bottom))}
   .head{grid-row:1;align-self:start}          /* header | cards (fill the gap, centred in it) | Confidence + Submit | Details */
-  .row{grid-row:2;align-self:center}
+  .pair{grid-row:2;align-self:center}
   .submit-row{grid-row:3;align-self:end}
   .summary{grid-row:4}
 }
@@ -91,8 +101,10 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   .portrait{border-radius:18px;font-size:40px}
   .name{font-size:15px}
   /* extra breathing room: title block -> portraits, portraits -> Save button (100px, shrinks a little on short screens so it still fits) */
-  .head{margin-bottom:clamp(24px,calc(13vh - 26px),100px);margin-bottom:clamp(24px,calc(13dvh - 26px),100px)}
-  .row{margin-bottom:clamp(24px,calc(13vh - 26px),100px);margin-bottom:clamp(24px,calc(13dvh - 26px),100px)}
+  .head{margin-bottom:clamp(12px,calc(8vh - 20px),60px);margin-bottom:clamp(12px,calc(8dvh - 20px),60px)}
+  .pair{margin-bottom:clamp(14px,calc(10vh - 26px),70px);margin-bottom:clamp(14px,calc(10dvh - 26px),70px)}
+  .hint.ask{margin-bottom:28px;font-size:14px}
+  .next-tier{font-size:13px}
   h1{font-size:17px}
   .period{font-size:11px}
   .hint{font-size:13px;margin-bottom:6px}
@@ -153,7 +165,8 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .chip.shaky{opacity:.7}
 .chip.shaky .chip-img{border-style:dashed;border-color:rgba(255,255,255,.45)}
 .chip-name{max-width:100%;font-size:calc(10*var(--u));color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.submit-row{display:flex;align-items:center;justify-content:center;width:min(100%,calc(400*var(--u)))}      /* just the Save / Confidence button now: it fills the row */
+.submit-row{display:flex;align-items:center;justify-content:center;gap:calc(12*var(--u));width:min(100%,calc(400*var(--u)))}      /* just the Save / Confidence button now: it fills the row */
+.undo-btn{flex:none;width:calc(96*var(--u));height:calc(37.5*var(--u));padding:0;font-size:max(12px,calc(12.5*var(--u)));font-variant-numeric:tabular-nums;white-space:nowrap}
 /* ---------- Save Final Tier: a locked progress pill (confidence fills it, red -> yellow -> green) that turns into the Save button once ready ---------- */
 .save-btn{--fill:var(--red);--p:0%;position:relative;isolation:isolate;overflow:hidden;flex:1 1 0;min-width:0;width:auto;height:calc(37.5*var(--u));padding:0 calc(6*var(--u));display:inline-flex;align-items:center;justify-content:center;border-radius:calc(999*var(--u));border:calc(1*var(--u)) solid color-mix(in srgb,var(--fill) 55%,transparent);background:rgba(255,255,255,.04);color:var(--ink);font-family:inherit;line-height:1.1;cursor:not-allowed;transition:border-color .4s,background .4s,color .4s,box-shadow .45s,transform .15s}
 .save-btn::before{content:"";position:absolute;inset:0 auto 0 0;z-index:-1;width:var(--p);background:color-mix(in srgb,var(--fill) 42%,transparent);box-shadow:inset calc(-2*var(--u)) 0 0 color-mix(in srgb,var(--fill) 70%,transparent);transition:width .6s var(--ease),background .4s}
@@ -200,6 +213,8 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   .summary{width:100%}
   .submit-row{width:100%;max-width:394px}
   .save-btn{height:45px}
+  .undo-btn{height:45px;width:92px;font-size:13px}
+  .submit-row{gap:10px}
   .save-main{font-size:13.5px}
   .nerd-head,.nerd .chip{grid-template-columns:32px minmax(0,1fr) 40px 30px 38px 28px;column-gap:6px}
   .btn{height:36px;font-size:13px}
@@ -247,10 +262,12 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
 @media (orientation:landscape) and (max-height:560px){
   :root{--fit-h:455;--w:calc(112*var(--u))}
   .period{display:none}
+  #keys-hint{display:none}
+  .hint.ask{margin-bottom:24px}
   .stage{row-gap:calc(6*var(--u));padding-top:max(calc(8*var(--u)),env(safe-area-inset-top));padding-bottom:max(calc(8*var(--u)),env(safe-area-inset-bottom))}
   .keyhint{display:none}
 }
-@media (prefers-reduced-motion:reduce){ html.tiers-open .below{animation:none} .col.picked .portrait{animation:none} }
+@media (prefers-reduced-motion:reduce){ html.tiers-open .below{animation:none} .col.picked .portrait{animation:none} .next-tier.unlocked,.next-tier.swap{animation:none} }
 .site-foot{grid-column:1/-1;grid-row:3}
 /* ---------- footer (fan-made disclaimer + privacy link) and privacy dialog ---------- */
 .site-foot{width:100%;display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;column-gap:calc(10*var(--u));padding:calc(5*var(--u)) calc(16*var(--u)) max(calc(6*var(--u)),env(safe-area-inset-bottom));text-align:center;font-size:max(10px,calc(10.5*var(--u)));line-height:1.45;color:var(--muted)}
@@ -283,10 +300,16 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
   <header class="head">
     <p class="period">05/13 12:00 AM to 06/30 11:59 PM (UTC)</p>
     <h1 id="title"></h1>
-    <p class="hint" id="hint">Which one do you like <b class="tag-best">more</b>?</p>
+    <p class="next-tier" id="next-tier"></p>
+    <p class="hint" id="keys-hint">Hotkeys: ← → arrow keys or Q / E</p>
+    <span class="sr-only" id="sr-status" role="status" aria-live="polite"></span>
   </header>
-  <div class="row" id="trow"></div>
+  <div class="pair">
+    <p class="hint ask" id="hint">Which one do you like <b class="tag-best">more</b>?</p>
+    <div class="row" id="trow"></div>
+  </div>
   <div class="submit-row">
+    <button type="button" class="btn undo-btn" id="t-undo" disabled>Undo (0)</button>
     <button type="button" class="save-btn" id="shot-cta" disabled>
       <span class="save-main" id="save-main">Confidence: 0%</span>
     </button>
@@ -323,7 +346,6 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
         <div class="tier-actions nerd-only">
           <button type="button" class="btn" id="t-shot">Save tier image</button>
           <button type="button" class="btn" id="t-copy">Copy tier list</button>
-          <button type="button" class="btn" id="t-undo" disabled>Undo</button>
           <button type="button" class="btn" id="t-skip">Skip set</button>
         </div>
         <button type="button" class="btn danger" id="t-reset" disabled>Reset All Data</button>
@@ -386,6 +408,7 @@ const BRAND_NAME = "FeyHunt";   // used for the logo's tooltip / screen-reader l
 const STORAGE_ID = "";   // optional. Saved data is filed under this page's id, so several pages on one site (Stella Sora, Blue Archive ...) never share or wipe each other's data.
                          // "" = the id is made from PAGE_TITLE (editing the title then starts a fresh list). Set a fixed word here, e.g. "blue-archive", to keep the data when you reword the title.
 const VOTE_COOLDOWN_MS = 750;   // minimum time per vote: the pick animation + hand-over to the next pair (design note: about 1 vote / second at most)
+const UNDO_LIMIT = 3;            // how many of the most recent votes can be undone (dev mode: unlimited). Votes older than that are "committed".
 const LEAVE_MS = 230;            // the last part of that time: the pair fades out
 const CHARACTERS_URL = "data/characters.json";   // source of truth for characters
 const BACKGROUNDS_URL = "data/backgrounds.json"; // source of truth for backgrounds
@@ -472,10 +495,11 @@ const TS={
   SURPRISE_P:.35,                  // a win with expected probability below this counts as an upset
   SPIKE:.9,                        // how hard an upset inflates sigma
   EPS:10, DISPLAY_EVERY:3, PRIOR_TAU:200, MLE_ITERS:60,   // re-fit, next-set pick and the tier list update after EVERY vote; the Confidence numbers refresh every DISPLAY_EVERY votes
-  LIGHT_YELLOW:20, LIGHT_GREEN:85,      // Save-button colour thresholds (% of characters whose 95% interval straddles at most one tier boundary).
-                                        // Calibrated for the 10/13/16/16/16/16/13 split. With PAIR votes (one A-or-B pick per vote) yellow lands near 1.7N votes and green near 3.4N
-                                        // (with 3-card votes it was 0.65N / 1.2N: one pair vote carries ~2.5x less information than a 3-card vote)
-  BUDGET_PER_CHAR:3.4                   // suggested votes = 3.4 x roster size
+  LIGHT_YELLOW:15, LIGHT_GREEN:60,      // Save-button colour thresholds (% of characters whose 95% interval straddles at most one tier boundary).
+                                        // Calibrated by simulation (real engine, one A-or-B pick per vote, 10/13/16/16/16/16/13 split): Confidence reaches 15% at about 1.45N votes and 60% at about 2.9N,
+                                        // where ~92% of characters are within one tier and ~50% in exactly the right tier: the same accuracy as 1.2N votes had with 3-card votes.
+                                        // (The old 20 / 85 would have landed at 1.65N / 3.45N: in pair mode the Confidence number climbs steeply, so its green point is much lower than before.)
+  BUDGET_PER_CHAR:2.9                   // suggested votes = 2.9 x roster size
 };
 function tsHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0)/4294967296}
 const tsKey=(a,b)=>a<b?a+"\u0001"+b:b+"\u0001"+a;
@@ -566,7 +590,7 @@ function tsSelectSet(S,size,exclude){
   for(let i=set.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[set[i],set[j]]=[set[j],set[i]];}   // random on-screen order
   return set.map(i=>it[i].id);
 }
-/* Suggested budget in VOTES for a roster of N: 3.4 votes per character (simulation of pair votes with the current tier split: green arrives around 3.4N with ~93% of characters within one tier and ~50% exact tier;
+/* Suggested budget in VOTES for a roster of N: 2.9 votes per character (simulation of pair votes with the current tier split: green arrives around 2.9N with ~92% of characters within one tier and ~50% exact tier;
    accuracy depends on votes per character, not on roster size). Rounded up to a Confidence refresh because that number only updates every TS.DISPLAY_EVERY votes. */
 function tsBudget(N){return Math.max(TS.DISPLAY_EVERY,Math.ceil(N*TS.BUDGET_PER_CHAR/TS.DISPLAY_EVERY)*TS.DISPLAY_EVERY);}
 /* bucket assignment by rank percentile + boundary stability */
@@ -679,7 +703,7 @@ function drawTierImage(c,L,D){
 // localStorage keys, namespaced per page: tiersort:<page id>:v2. Only the vote history is stored (v1 = old flat list of pairs, read for migration only).
 // Everything this page stores or deletes goes through these two keys; nothing ever calls localStorage.clear().
 const STORE_ID=(STORAGE_ID||PAGE_TITLE).toLowerCase().replace(/[^\p{L}\p{M}\p{N}]+/gu,"-").replace(/^-+|-+$/g,"")||"default";
-const TIER_STORE="tiersort:"+STORE_ID+":v2", TIER_STORE_V1="tiersort:"+STORE_ID+":v1";
+const TIER_STORE="tiersort:"+STORE_ID+":v2", TIER_STORE_V1="tiersort:"+STORE_ID+":v1", TIER_COMMIT="tiersort:"+STORE_ID+":committed";
 const TIER_COLORS=["#ff8f6b","#ffb86b","#ffe16b","#c8e86b","#7fd9a1","#6bc2ff","#a98bff"];
 const $trow=document.getElementById("trow"), $updateNote=document.getElementById("update-note"),
       $stateMain=document.getElementById("state-main"), $stateSub=document.getElementById("state-sub"), $statExact=document.getElementById("stat-exact"), $statBoundary=document.getElementById("stat-boundary"), $nerd=document.getElementById("nerd-toggle"),
@@ -690,7 +714,7 @@ const $trow=document.getElementById("trow"), $updateNote=document.getElementById
       $meterSub=document.getElementById("meter-sub"), $undo=document.getElementById("t-undo"), $skip=document.getElementById("t-skip"),
       $reset=document.getElementById("t-reset"), $copy=document.getElementById("t-copy"), $tiersToggle=document.getElementById("tiers-toggle"),
       $tiersLabel=document.getElementById("tiers-toggle-label"), $tiersPanel=document.getElementById("tiers-panel"), $tiersList=document.getElementById("tiers-list");
-let T=null, tB=null, tC=null, tCur=null, tCols=new Map(), tLocked=false, tiersOpen=false, nerdOn=false, charById=new Map();
+let T=null, tB=null, tC=null, tCur=null, committed=0, shownStack=[], tCols=new Map(), tLocked=false, tiersOpen=false, nerdOn=false, charById=new Map();
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const $devBadge=document.getElementById("dev-badge"), $privacy=document.getElementById("privacy"), $privacyLink=document.getElementById("privacy-link"), $privacyClose=document.getElementById("privacy-close"), $foot=document.getElementById("site-foot");
 let DEV=false;   // dev mode: press ArrowUp, ArrowDown, ArrowLeft, ArrowRight (again to leave)
@@ -705,6 +729,18 @@ function tierLoadVotes(){
   }catch(e){ return []; }
 }
 function tierSave(){ try{ localStorage.setItem(TIER_STORE,JSON.stringify(T.votes)); }catch(e){} }
+/* Undo window: votes[0 .. committed) can no longer be undone; only the newest UNDO_LIMIT votes can. Every new vote pushes `committed` up so the window stays at 3, and undoing never lowers it,
+   so after undoing 3 votes and voting once you have exactly 1 undo. It is stored with the votes, so a reload cannot hand out extra undos. */
+function saveCommit(){ try{ localStorage.setItem(TIER_COMMIT,String(committed)); }catch(e){} }
+function loadCommit(len){ let c=NaN; try{ c=parseInt(localStorage.getItem(TIER_COMMIT),10); }catch(e){} return Math.min(len,Math.max(Number.isFinite(c)?c:0,len-UNDO_LIMIT,0)); }
+const canUndo=()=>DEV?T.votes.length>0:T.votes.length>committed;
+function renderUndo(){
+  const left=DEV?T.votes.length:Math.max(0,T.votes.length-committed);
+  $undo.disabled=tLocked||!canUndo();
+  $undo.textContent=DEV?"Undo":"Undo ("+left+")";
+  $undo.setAttribute("aria-label",DEV?"Undo last vote (dev mode: unlimited)":"Undo last vote ("+left+" left)");
+  $undo.title=DEV?"Dev mode: undo as many votes as you like":left?"Take back your last vote ("+left+" left)":T.votes.length?"You can only undo your last "+UNDO_LIMIT+" votes":"";
+}
 function tierRebuild(votes){            // state is a pure function of the vote history: undo / reset / reload / roster edits all go through here
   const skips=T?T.skips:new Map(), ok=new Set(characters.map(c=>c.key)), fix=x=>legacyIds.get(String(x))||x;
   votes=votes.map(v=>v.map(([w,l])=>[fix(w),fix(l)])).map(v=>v.filter(([w,l])=>ok.has(w)&&ok.has(l)&&w!==l)).filter(v=>v.length);   // drop pairs involving characters no longer in the JSON
@@ -714,6 +750,7 @@ function tierRebuild(votes){            // state is a pure function of the vote 
 function initTier(){
   charById=new Map(characters.map(c=>[c.key,c]));
   T=null; tierRebuild(tierLoadVotes());
+  committed=loadCommit(T.votes.length); shownStack=[];
 }
 
 function fillPortrait(el,c){
@@ -744,12 +781,23 @@ function renderPair(){
   // fault tolerance made visible: an upset inflates sigma, so the sampler re-checks that character against close peers
   $verify.textContent=(tCur||[]).some(id=>T.byId.get(id).spike>1.25)?"Re-verifying a surprising result":"";
 }
+/* ===================== SERVER SYNC NOTE (not implemented yet) =====================
+   Votes must reach the server 4 VOTES LATE:
+   - Undo can take back the last UNDO_LIMIT (3) votes, so a vote must never be sent while it can still be undone.
+   - Keep a local outbox of unsent votes {winner, loser}. When vote #n is recorded, send vote #(n-4) (the oldest one past the lag); the newest 4 stay local.
+     Undo pops the newest vote off the outbox. Lag (4) is bigger than the undo window (3), so a vote that was sent can never be undone (the extra 1 is a safety margin).
+   - Persist the outbox in localStorage (next to the votes) so a reload neither loses nor double-sends votes.
+   - Decide how the last 4 unsent votes get flushed when the person is done or leaves (e.g. once Save unlocks, and on pagehide via navigator.sendBeacon).
+   - Dev mode can undo past the window: it must never touch votes that were already sent (keep dev undo local-only).
+   ================================================================================== */
 async function tierPick(i){                              // i = 0 (left card) or 1 (right card)
   if(tLocked||!tCur||tCur.length<2) return; tLocked=true;
   const win=tCur[i], lose=tCur[1-i];
   tsRecord(T,win,lose); T.votes.push([[win,lose]]); tierSave();      // logged instantly: a vote is a single [winner, loser] pair
+  shownStack.push(tCur.slice());                           // remember the pair as shown (left/right), so Undo can put exactly that question back
+  committed=Math.max(committed,T.votes.length-UNDO_LIMIT); saveCommit();   // the undo window slides: only the newest 3 votes stay undoable
   const payload={winner:win,loser:lose};                   // only the pick: the server knows the time, and the pair shown is implied by these two
-  // MOCK: replace with fetch(YOUR_WORKER_URL,{method:"POST",body:JSON.stringify({...payload,turnstileToken})})
+  // MOCK: nothing is sent yet. When it is: do NOT send this vote now; send vote #(n-4) instead (see the SERVER SYNC NOTE above), e.g. fetch(YOUR_WORKER_URL,{method:"POST",body:JSON.stringify({...oldPayload,turnstileToken})})
   console.log("tier vote recorded",payload);
   tsAfterVote(T,T.votes.length);                           // re-fit now: tiers update every vote, Confidence only every TS.DISPLAY_EVERY votes
   tB=T.snap; tC=T.conf; if(tiersOpen) renderTiers();
@@ -759,16 +807,22 @@ async function tierPick(i){                              // i = 0 (left card) or
   if(T.votes.length%3===0) changeBackground();             // shuffle background (every 3rd vote: pair votes come 3x as often as the old 3-card votes)
   await sleep(VOTE_COOLDOWN_MS-LEAVE_MS);
   $trow.classList.add("leaving"); await sleep(LEAVE_MS);
-  tLocked=false; tierNext();
+  tLocked=false; renderUndo(); tierNext();
 }
 function tierSkip(){
   if(tLocked||!tCur) return;
   for(let i=0;i<tCur.length;i++)for(let j=i+1;j<tCur.length;j++){ const k=tsKey(tCur[i],tCur[j]); T.skips.set(k,(T.skips.get(k)||0)+1); }
   tierNext();                 // re-pick with the skipped pair discounted
 }
-function tierUndo(){            // removes the last vote
-  if(tLocked||!T.votes.length) return;
-  tierRebuild(T.votes.slice(0,-1)); tierSave(); tierNext(); renderMeter(); if(tiersOpen) renderTiers();
+function tierUndo(){            // takes back the last vote (max UNDO_LIMIT in a row; unlimited in dev mode) and shows that same pair again
+  if(tLocked||!T.votes.length||!canUndo()) return;
+  const [w,l]=T.votes[T.votes.length-1][0];
+  tierRebuild(T.votes.slice(0,-1));
+  committed=Math.min(committed,T.votes.length); saveCommit();      // only changes in dev mode, when undo goes past the window
+  tierSave();
+  let pair=shownStack.pop();                                       // the pair as it was shown; after a reload there is no record, so any order will do
+  if(!pair||!pair.includes(w)||!pair.includes(l)) pair=Math.random()<.5?[w,l]:[l,w];
+  tCur=pair; renderPair(); renderMeter(); if(tiersOpen) renderTiers();
 }
 /* in-page confirm: the browser's confirm() always titles itself "<this site> says", so we draw our own with the page name */
 let confirmResolve=null, confirmReturnFocus=null;
@@ -789,7 +843,7 @@ async function tierReset(){
   const n=T.votes.length;
   if(!await askConfirm("Erase your tier list and the "+n+" vote"+(n===1?"":"s")+" saved in this browser? This only resets your data on this device. Votes you’ve already submitted stay in the community results and can’t be taken back.","Reset all data")) return;
   if(tLocked) return;
-  T.skips=new Map(); tierRebuild([]); try{ localStorage.removeItem(TIER_STORE); localStorage.removeItem(TIER_STORE_V1); }catch(e){}   // only THIS page's keys; other pages and unrelated data are untouched
+  T.skips=new Map(); tierRebuild([]); committed=0; shownStack=[]; try{ localStorage.removeItem(TIER_STORE); localStorage.removeItem(TIER_STORE_V1); localStorage.removeItem(TIER_COMMIT); }catch(e){}   // only THIS page's keys; other pages and unrelated data are untouched
   tierNext(); renderMeter(); if(tiersOpen) renderTiers();
 }
 
@@ -818,12 +872,39 @@ function renderSaveBtn(){
   b.title=ready?"Click to save your final tier as an image":"Your result unlocks at "+TS.LIGHT_GREEN+"% confidence. "+why;
 }
 
+/* ----- "X more votes to unlock Tier Y" (header). When a tier opens it turns into "Tier Y unlocked!" with a little animation, then goes back ----- */
+const $nextTier=document.getElementById("next-tier"), $srStatus=document.getElementById("sr-status");
+let tierPrev=null, tierFlashing=false, tierFlashTimer=0;
+function renderNextTier(){
+  const U=tierUnlocks(), open=U.map(u=>u.open), prev=tierPrev; tierPrev=open;
+  if(prev){                                                // (null on the first paint: no celebration after a reload)
+    const opened=[]; open.forEach((o,b)=>{ if(o&&!prev[b]) opened.push(b); });
+    if(open.some((o,b)=>!o&&prev[b])){ clearTimeout(tierFlashTimer); tierFlashing=false; $nextTier.className="next-tier"; }   // something re-locked (undo / reset / leaving dev mode): drop the celebration
+    else if(opened.length) flashTiers(opened,open.every(Boolean));
+  }
+  if(tierFlashing) return;
+  let b=-1; for(let i=U.length-1;i>=0;i--) if(!U[i].open){ b=i; break; }          // tiers open F first ... S last, so the next one is the locked tier with the highest index
+  $nextTier.textContent="";
+  if(b<0){ $nextTier.append("All tiers unlocked"); return; }
+  const letter=document.createElement("b"); letter.textContent=TS.LABELS[b]; letter.style.color=TIER_COLORS[b];
+  $nextTier.append(U[b].need>0?U[b].need+" more vote"+(U[b].need===1?"":"s")+" to unlock Tier ":"A few more votes to unlock Tier ",letter);
+}
+function flashTiers(opened,all){
+  opened.sort((a,b)=>b-a);                                 // unlock order: F first
+  const L=b=>TS.LABELS[b];
+  const msg=all&&opened.length>1?"All tiers unlocked!":opened.length===1?"Tier "+L(opened[0])+" unlocked!":"Tiers "+L(opened[0])+"–"+L(opened[opened.length-1])+" unlocked!";
+  $nextTier.className="next-tier unlocked"; $nextTier.textContent=msg; $srStatus.textContent=msg;
+  tierFlashing=true; clearTimeout(tierFlashTimer);
+  tierFlashTimer=setTimeout(()=>{ tierFlashing=false; $nextTier.className="next-tier swap"; renderNextTier(); },3200);
+}
+
 /* ----- confidence indicator (updates at each batch boundary) ----- */
 function renderMeter(){
   const N=characters.length, votes=T.votes.length, pct=tC.confidence, B=TS.DISPLAY_EVERY;
   const budget=tsBudget(N);                           // suggested votes = 1.2 x roster size (from the JSON)
   const level=pct>=TS.LIGHT_GREEN?"green":pct>=TS.LIGHT_YELLOW?"yellow":"red";
-  renderSaveBtn();                                   // Save Final Tier button (left of Submit): confidence progress, then the Save button
+  renderSaveBtn();                                   // Confidence / Save button: confidence progress, then the Save button
+  renderNextTier();                                  // header line: votes to the next tier, or "Tier Y unlocked!"
   // suggested votes + progress bar
   $barFill.style.width=Math.min(100,votes/budget*100)+"%";
   $meterSub.textContent=votes+" / ~"+budget+" suggested votes for "+N+" characters"
@@ -836,7 +917,7 @@ function renderMeter(){
   const left=B-votes%B;
   $updateNote.textContent="Save button: yellow ≥ "+TS.LIGHT_YELLOW+"%, green (Save unlocks) ≥ "+TS.LIGHT_GREEN+"% boundary stability.\nConfidence updates every "+B+" votes"+(left===B?"":" · next in "+left);
   { const ok=revealAll(); $tShot.disabled=!ok; $copy.disabled=!ok; $tShot.title=$copy.title=ok?"":"Unlocks with the full tier list"; }
-  $undo.disabled=!votes; $reset.disabled=!votes;
+  renderUndo(); $reset.disabled=!votes;
 }
 
 /* ----- tier list (+ nerd stats) ----- */
@@ -921,7 +1002,7 @@ function setDev(on){
   if(on){ nerdOn=true; if(!tiersOpen) setTiersOpen(true); } else nerdOn=false;
   applyView();
 }
-const DEV_SEQ="ArrowUp,ArrowDown,ArrowLeft,ArrowRight", devSeq=[];
+const DEV_SEQ="ArrowUp,ArrowDown,ArrowLeft,ArrowRight", devSeq=[];      // dev mode: hold Control (either one) and press Up, Down, Left, Right
 function setTiersOpen(open){
   tiersOpen=open; $tiersPanel.classList.toggle("open",open); document.documentElement.classList.toggle("tiers-open",open);
   $tiersToggle.setAttribute("aria-expanded",open);
@@ -1014,7 +1095,7 @@ if("ResizeObserver" in window) new ResizeObserver(fitFoot).observe($foot); fitFo
   if(!LOGO_URL) return;
   a.href=CHANNEL_URL; a.title=BRAND_NAME+" on YouTube"; a.setAttribute("aria-label",BRAND_NAME+" on YouTube"); im.onload=()=>{ a.hidden=false; fitFoot(); }; im.src=LOGO_URL;
 })();
-document.addEventListener("keydown",e=>{               // <- / Q = left card, -> / E = right card, Ctrl/Cmd+Z = undo last vote, Esc closes dialogs
+document.addEventListener("keydown",e=>{               // <- / Q = left card, -> / E = right card, Ctrl/Cmd+Z = undo (same limit as the button), Esc closes dialogs
   if(!$confirm.hidden){                                // confirm dialog: Esc cancels, Tab stays between its two buttons
     if(e.code==="Escape") closeConfirm(false);
     else if(e.code==="Tab"){ e.preventDefault(); (document.activeElement===$confirmCancel?$confirmOk:$confirmCancel).focus(); }
@@ -1024,21 +1105,18 @@ document.addEventListener("keydown",e=>{               // <- / Q = left card, ->
   if(!$privacy.hidden){ if(e.code==="Escape") closePrivacy(); else if(e.code==="Tab"){ e.preventDefault(); $privacyClose.focus(); } return; }   // while a dialog is open, nothing else reacts
   const k=e.code||"";
   if(e.repeat) return;
-  /* dev mode = Up, Down, Left, Right in a row (again to leave). Left/Right are also the voting keys, so once Up+Down have been pressed they belong to the sequence
-     (no vote is cast); on their own they vote. Any other key restarts the sequence. */
-  let inSeq=false;
-  if(k.startsWith("Arrow")){
-    const before=devSeq.join();
+  /* dev mode = hold Control (either one) and press Up, Down, Left, Right in a row; again to leave. Ctrl+arrows never vote. Any other key restarts the sequence. */
+  if(e.ctrlKey&&k.startsWith("Arrow")){
     devSeq.push(k); if(devSeq.length>4) devSeq.shift();
-    if(devSeq.join()===DEV_SEQ){ devSeq.length=0; setDev(!DEV); inSeq=true; }
-    else if(k==="ArrowLeft"&&before==="ArrowUp,ArrowDown") inSeq=true;
-  }else if(!/^(Shift|Control|Alt|Meta)/.test(k)) devSeq.length=0;
-  if(inSeq) return;
+    if(devSeq.join()===DEV_SEQ){ devSeq.length=0; setDev(!DEV); }
+    e.preventDefault(); return;
+  }
+  if(!/^(Control|Shift|Alt|Meta)/.test(k)) devSeq.length=0;
   if(!(e.ctrlKey||e.metaKey||e.altKey)){
     if(k==="ArrowLeft"||k==="KeyQ"){ e.preventDefault(); tierPick(0); return; }
     if(k==="ArrowRight"||k==="KeyE"){ e.preventDefault(); tierPick(1); return; }
   }
-  if(k==="KeyZ"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); if(viewMode()!=="user") tierUndo(); }
+  if(k==="KeyZ"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); tierUndo(); }
 });
 load();
 </script>
