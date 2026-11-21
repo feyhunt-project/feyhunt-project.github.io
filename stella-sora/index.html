@@ -905,7 +905,8 @@ function renderNextTier(){
   if(tierFlashing) return;
   let b=-1; for(let i=U.length-1;i>=0;i--) if(!U[i].open){ b=i; break; }          // tiers open F first ... S last, so the next one is the locked tier with the highest index
   $nextTier.textContent="";
-  if(b<0){ $nextTier.append("All tiers unlocked"); $barFill.style.setProperty("--bar","var(--green)"); $barFill.style.width="100%"; return; }
+  $nextTier.style.whiteSpace=b<0?"normal":"";      // the longer message may wrap on narrow screens
+  if(b<0){ $nextTier.append("All tiers unlocked. Keep voting to increase confidence rating"); $barFill.style.setProperty("--bar","var(--green)"); $barFill.style.width="100%"; return; }
   const votes=T.votes.length, frac=Math.max(0,Math.min(1,(votes-U[b].from)/Math.max(1,U[b].to-U[b].from)));      // progress from the previous tier's opening to this one's
   $barFill.style.setProperty("--bar",TIER_COLORS[b]); $barFill.style.width=(frac*100).toFixed(1)+"%";
   const letter=document.createElement("b"); letter.textContent=TS.LABELS[b]; letter.style.color=TIER_COLORS[b];
