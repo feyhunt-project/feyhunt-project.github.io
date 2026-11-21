@@ -1,0 +1,309 @@
+{
+  "characters": [
+    {
+      "key": "alva",
+      "name": "Alva",
+      "portrait": "assets/characters/alva.png"
+    },
+    {
+      "key": "andoris",
+      "name": "Andoris",
+      "portrait": "assets/characters/andoris.png"
+    },
+    {
+      "key": "balthilde",
+      "name": "Balthilde",
+      "portrait": "assets/characters/balthilde.png"
+    },
+    {
+      "key": "basti",
+      "name": "Basti",
+      "portrait": "assets/characters/basti.png"
+    },
+    {
+      "key": "belka",
+      "name": "Belka",
+      "portrait": "assets/characters/belka.png"
+    },
+    {
+      "key": "centaureissi",
+      "name": "Centaureissi",
+      "portrait": "assets/characters/centaureissi.png"
+    },
+    {
+      "key": "cheeta",
+      "name": "Cheeta",
+      "portrait": "assets/characters/cheeta.png"
+    },
+    {
+      "key": "cheyanne",
+      "name": "Cheyanne",
+      "portrait": "assets/characters/cheyanne.png"
+    },
+    {
+      "key": "colphne",
+      "name": "Colphne",
+      "portrait": "assets/characters/colphne.png"
+    },
+    {
+      "key": "daiyan",
+      "name": "Daiyan",
+      "portrait": "assets/characters/daiyan.png"
+    },
+    {
+      "key": "dushevnaya",
+      "name": "Dushevnaya",
+      "portrait": "assets/characters/dushevnaya.png"
+    },
+    {
+      "key": "faelynn",
+      "name": "Faelynn",
+      "portrait": "assets/characters/faelynn.png"
+    },
+    {
+      "key": "faye",
+      "name": "Faye",
+      "portrait": "assets/characters/faye.png"
+    },
+    {
+      "key": "florence",
+      "name": "Florence",
+      "portrait": "assets/characters/florence.png"
+    },
+    {
+      "key": "groza",
+      "name": "Groza",
+      "portrait": "assets/characters/groza.png"
+    },
+    {
+      "key": "harpsy",
+      "name": "Harpsy",
+      "portrait": "assets/characters/harpsy.png"
+    },
+    {
+      "key": "helen",
+      "name": "Helen",
+      "portrait": "assets/characters/helen.png"
+    },
+    {
+      "key": "jiangyu",
+      "name": "Jiangyu",
+      "portrait": "assets/characters/jiangyu.png"
+    },
+    {
+      "key": "klukai",
+      "name": "Klukai",
+      "portrait": "assets/characters/klukai.png"
+    },
+    {
+      "key": "krolik",
+      "name": "Krolik",
+      "portrait": "assets/characters/krolik.png"
+    },
+    {
+      "key": "ksenia",
+      "name": "Ksenia",
+      "portrait": "assets/characters/ksenia.png"
+    },
+    {
+      "key": "lainie",
+      "name": "Lainie",
+      "portrait": "assets/characters/lainie.png"
+    },
+    {
+      "key": "lenna",
+      "name": "Lenna",
+      "portrait": "assets/characters/lenna.png"
+    },
+    {
+      "key": "leva",
+      "name": "Leva",
+      "portrait": "assets/characters/leva.png"
+    },
+    {
+      "key": "lewis",
+      "name": "Lewis",
+      "portrait": "assets/characters/lewis.png"
+    },
+    {
+      "key": "lind",
+      "name": "Lind",
+      "portrait": "assets/characters/lind.png"
+    },
+    {
+      "key": "littara",
+      "name": "Littara",
+      "portrait": "assets/characters/littara.png"
+    },
+    {
+      "key": "liushih",
+      "name": "Liushih",
+      "portrait": "assets/characters/liushih.png"
+    },
+    {
+      "key": "loreley",
+      "name": "Loreley",
+      "portrait": "assets/characters/loreley.png"
+    },
+    {
+      "key": "lotta",
+      "name": "Lotta",
+      "portrait": "assets/characters/lotta.png"
+    },
+    {
+      "key": "makiatto",
+      "name": "Makiatto",
+      "portrait": "assets/characters/makiatto.png"
+    },
+    {
+      "key": "mechty",
+      "name": "Mechty",
+      "portrait": "assets/characters/mechty.png"
+    },
+    {
+      "key": "mityl",
+      "name": "Mityl",
+      "portrait": "assets/characters/mityl.png"
+    },
+    {
+      "key": "mosin-nagant",
+      "name": "Mosin-Nagant",
+      "portrait": "assets/characters/mosin-nagant.png"
+    },
+    {
+      "key": "nagant",
+      "name": "Nagant",
+      "portrait": "assets/characters/nagant.png"
+    },
+    {
+      "key": "nemesis_gnosis",
+      "name": "Nemesis Gnosis",
+      "portrait": "assets/characters/nemesis_gnosis.png"
+    },
+    {
+      "key": "nikketa",
+      "name": "Nikketa",
+      "portrait": "assets/characters/nikketa.png"
+    },
+    {
+      "key": "ots-14",
+      "name": "OTs-14",
+      "portrait": "assets/characters/ots-14.png"
+    },
+    {
+      "key": "papasha",
+      "name": "Papasha",
+      "portrait": "assets/characters/papasha.png"
+    },
+    {
+      "key": "peri",
+      "name": "Peri",
+      "portrait": "assets/characters/peri.png"
+    },
+    {
+      "key": "peritya",
+      "name": "Peritya",
+      "portrait": "assets/characters/peritya.png"
+    },
+    {
+      "key": "phaetusa",
+      "name": "Phaetusa",
+      "portrait": "assets/characters/phaetusa.png"
+    },
+    {
+      "key": "qiongjiu",
+      "name": "Qiongjiu",
+      "portrait": "assets/characters/qiongjiu.png"
+    },
+    {
+      "key": "qiuhua",
+      "name": "Qiuhua",
+      "portrait": "assets/characters/qiuhua.png"
+    },
+    {
+      "key": "robella",
+      "name": "Robella",
+      "portrait": "assets/characters/robella.png"
+    },
+    {
+      "key": "sabrina",
+      "name": "Sabrina",
+      "portrait": "assets/characters/sabrina.png"
+    },
+    {
+      "key": "sakura",
+      "name": "Sakura",
+      "portrait": "assets/characters/sakura.png"
+    },
+    {
+      "key": "sextans",
+      "name": "Sextans",
+      "portrait": "assets/characters/sextans.png"
+    },
+    {
+      "key": "sharkry",
+      "name": "Sharkry",
+      "portrait": "assets/characters/sharkry.png"
+    },
+    {
+      "key": "soppo",
+      "name": "Soppo",
+      "portrait": "assets/characters/soppo.png"
+    },
+    {
+      "key": "springfield",
+      "name": "Springfield",
+      "portrait": "assets/characters/springfield.png"
+    },
+    {
+      "key": "suomi",
+      "name": "Suomi",
+      "portrait": "assets/characters/suomi.png"
+    },
+    {
+      "key": "sweeper",
+      "name": "Sweeper",
+      "portrait": "assets/characters/sweeper.png"
+    },
+    {
+      "key": "tololo",
+      "name": "Tololo",
+      "portrait": "assets/characters/tololo.png"
+    },
+    {
+      "key": "ullrid",
+      "name": "Ullrid",
+      "portrait": "assets/characters/ullrid.png"
+    },
+    {
+      "key": "vector",
+      "name": "Vector",
+      "portrait": "assets/characters/vector.png"
+    },
+    {
+      "key": "vepley",
+      "name": "Vepley",
+      "portrait": "assets/characters/vepley.png"
+    },
+    {
+      "key": "voymastina",
+      "name": "Voymastina",
+      "portrait": "assets/characters/voymastina.png"
+    },
+    {
+      "key": "welrod",
+      "name": "Welrod",
+      "portrait": "assets/characters/welrod.png"
+    },
+    {
+      "key": "yoohee",
+      "name": "Yoohee",
+      "portrait": "assets/characters/yoohee.png"
+    },
+    {
+      "key": "zhaohui",
+      "name": "Zhaohui",
+      "portrait": "assets/characters/zhaohui.png"
+    }
+  ]
+}

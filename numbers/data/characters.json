@@ -1,0 +1,209 @@
+{
+  "characters": [
+    {
+      "key": "0",
+      "name": "0",
+      "portrait": "assets/characters/0.png"
+    },
+    {
+      "key": "1",
+      "name": "1",
+      "portrait": "assets/characters/1.png"
+    },
+    {
+      "key": "2",
+      "name": "2",
+      "portrait": "assets/characters/2.png"
+    },
+    {
+      "key": "3",
+      "name": "3",
+      "portrait": "assets/characters/3.png"
+    },
+    {
+      "key": "4",
+      "name": "4",
+      "portrait": "assets/characters/4.png"
+    },
+    {
+      "key": "5",
+      "name": "5",
+      "portrait": "assets/characters/5.png"
+    },
+    {
+      "key": "6",
+      "name": "6",
+      "portrait": "assets/characters/6.png"
+    },
+    {
+      "key": "7",
+      "name": "7",
+      "portrait": "assets/characters/7.png"
+    },
+    {
+      "key": "8",
+      "name": "8",
+      "portrait": "assets/characters/8.png"
+    },
+    {
+      "key": "9",
+      "name": "9",
+      "portrait": "assets/characters/9.png"
+    },
+    {
+      "key": "10",
+      "name": "10",
+      "portrait": "assets/characters/10.png"
+    },
+    {
+      "key": "11",
+      "name": "11",
+      "portrait": "assets/characters/11.png"
+    },
+    {
+      "key": "12",
+      "name": "12",
+      "portrait": "assets/characters/12.png"
+    },
+    {
+      "key": "13",
+      "name": "13",
+      "portrait": "assets/characters/13.png"
+    },
+    {
+      "key": "14",
+      "name": "14",
+      "portrait": "assets/characters/14.png"
+    },
+    {
+      "key": "15",
+      "name": "15",
+      "portrait": "assets/characters/15.png"
+    },
+    {
+      "key": "16",
+      "name": "16",
+      "portrait": "assets/characters/16.png"
+    },
+    {
+      "key": "17",
+      "name": "17",
+      "portrait": "assets/characters/17.png"
+    },
+    {
+      "key": "18",
+      "name": "18",
+      "portrait": "assets/characters/18.png"
+    },
+    {
+      "key": "19",
+      "name": "19",
+      "portrait": "assets/characters/19.png"
+    },
+    {
+      "key": "20",
+      "name": "20",
+      "portrait": "assets/characters/20.png"
+    },
+    {
+      "key": "21",
+      "name": "21",
+      "portrait": "assets/characters/21.png"
+    },
+    {
+      "key": "22",
+      "name": "22",
+      "portrait": "assets/characters/22.png"
+    },
+    {
+      "key": "23",
+      "name": "23",
+      "portrait": "assets/characters/23.png"
+    },
+    {
+      "key": "24",
+      "name": "24",
+      "portrait": "assets/characters/24.png"
+    },
+    {
+      "key": "25",
+      "name": "25",
+      "portrait": "assets/characters/25.png"
+    },
+    {
+      "key": "26",
+      "name": "26",
+      "portrait": "assets/characters/26.png"
+    },
+    {
+      "key": "27",
+      "name": "27",
+      "portrait": "assets/characters/27.png"
+    },
+    {
+      "key": "28",
+      "name": "28",
+      "portrait": "assets/characters/28.png"
+    },
+    {
+      "key": "29",
+      "name": "29",
+      "portrait": "assets/characters/29.png"
+    },
+    {
+      "key": "30",
+      "name": "30",
+      "portrait": "assets/characters/30.png"
+    },
+    {
+      "key": "31",
+      "name": "31",
+      "portrait": "assets/characters/31.png"
+    },
+    {
+      "key": "32",
+      "name": "32",
+      "portrait": "assets/characters/32.png"
+    },
+    {
+      "key": "33",
+      "name": "33",
+      "portrait": "assets/characters/33.png"
+    },
+    {
+      "key": "34",
+      "name": "34",
+      "portrait": "assets/characters/34.png"
+    },
+    {
+      "key": "35",
+      "name": "35",
+      "portrait": "assets/characters/35.png"
+    },
+    {
+      "key": "36",
+      "name": "36",
+      "portrait": "assets/characters/36.png"
+    },
+    {
+      "key": "37",
+      "name": "37",
+      "portrait": "assets/characters/37.png"
+    },
+    {
+      "key": "38",
+      "name": "38",
+      "portrait": "assets/characters/38.png"
+    },
+    {
+      "key": "39",
+      "name": "39",
+      "portrait": "assets/characters/39.png"
+    },
+    {
+      "key": "40",
+      "name": "40",
+      "portrait": "assets/characters/40.png"
+    }
+  ]
+}

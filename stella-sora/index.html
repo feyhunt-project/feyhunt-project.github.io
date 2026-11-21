@@ -361,7 +361,7 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
         <li><b>What we save:</b> The 3-character triad choices you make and your non-PII country of origin (automatically detected by Cloudflare).</li>
         <li><b>What stays private:</b> Your final generated tier list, custom rankings, and progress live entirely in your browser’s local storage. We do not track, save, or upload your personal tier list.</li>
         <li><b>What we ignore:</b> We never log your IP address, assign user tracking IDs, or require logins/cookies, ensuring zero Personally Identifiable Information (PII) is ever collected.</li>
-        <li><b>Where it goes:</b> Votes are pooled anonymously into a private database used to calculate global character rankings, conduct statistical research, and publish community insights.</li>
+        <li><b>Where it goes:</b> Votes are pooled anonymously into a private database used to calculate global character rankings, conduct statistical research, and publish community insights. Each submitted vote contains only the two characters you compared, the time, and your country (no IP address).</li>
       </ul>
       <div class="shot-actions"><button type="button" class="btn" id="privacy-close">Close</button></div>
     </div>
@@ -402,6 +402,7 @@ const STORAGE_ID = "";   // optional. Saved data is filed under this page's id, 
                          // "" = the id is made from PAGE_TITLE (editing the title then starts a fresh list). Set a fixed word here, e.g. "blue-archive", to keep the data when you reword the title.
 const VOTE_COOLDOWN_MS = 750;   // minimum time per vote: the pick animation + hand-over to the next pair (design note: about 1 vote / second at most)
 const UNDO_LIMIT = 3;            // how many of the most recent votes can be undone (dev mode: unlimited). Votes older than that are "committed".
+const VOTE_ENDPOINT = "https://stella-sora-character-votes.feyhunt-project.workers.dev";        // your Cloudflare Worker URL, e.g. "https://tier-votes.yourname.workers.dev". "" = votes stay in this browser only (nothing is sent).
 const KOTH_CHANCE = 0.6;         // King of the Hill: chance that the winner stays for the next screen (same side) against a new opponent
 const KOTH_MAX_STREAK = 2;       // ...but a character is carried over at most this many times in a row, then a fresh pair is shown
 const LEAVE_MS = 230;            // the last part of that time: the pair fades out
@@ -699,6 +700,28 @@ function drawTierImage(c,L,D){
 // Everything this page stores or deletes goes through these two keys; nothing ever calls localStorage.clear().
 const STORE_ID=(STORAGE_ID||PAGE_TITLE).toLowerCase().replace(/[^\p{L}\p{M}\p{N}]+/gu,"-").replace(/^-+|-+$/g,"")||"default";
 const TIER_STORE="tiersort:"+STORE_ID+":v2", TIER_STORE_V1="tiersort:"+STORE_ID+":v1", TIER_COMMIT="tiersort:"+STORE_ID+":committed";
+/* ----- vote upload: each vote is sent to VOTE_ENDPOINT 4 votes LATE (Undo can take back the last 3, so a vote is never sent while it can still be undone).
+         The unsent votes live in localStorage, so a reload neither loses nor double-sends them; a failed send is simply retried on the next vote / page load.
+         Each vote carries a random one-off id (not linked to the person), which lets you drop duplicates in the sheet. Dev-mode votes are never sent. ----- */
+const OUTBOX_KEY="tiersort:"+STORE_ID+":outbox", SEND_LAG=4;
+let outbox=[], sending=false;
+try{ outbox=JSON.parse(localStorage.getItem(OUTBOX_KEY)||"[]"); if(!Array.isArray(outbox)) outbox=[]; }catch(e){ outbox=[]; }
+function outboxSave(){ try{ outbox.length?localStorage.setItem(OUTBOX_KEY,JSON.stringify(outbox)):localStorage.removeItem(OUTBOX_KEY); }catch(e){} }
+function newVoteId(){ return crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12); }
+function outboxPush(w,l){ if(!VOTE_ENDPOINT||DEV) return; outbox.push({id:newVoteId(),w,l}); outboxSave(); outboxFlush(); }
+function outboxUndo(w,l){ const v=outbox[outbox.length-1]; if(v&&v.w===w&&v.l===l){ outbox.pop(); outboxSave(); } }   // only ever takes back a vote that was not sent yet
+async function outboxFlush(){
+  if(sending||!VOTE_ENDPOINT) return; sending=true;
+  try{
+    while(outbox.length>SEND_LAG){
+      const v=outbox[0];
+      const r=await fetch(VOTE_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:v.id,page:STORE_ID,winner:v.w,loser:v.l})});
+      if(r.ok||(r.status>=400&&r.status<500&&r.status!==429)){ outbox.shift(); outboxSave(); }   // 4xx = refused for good, don't retry forever
+      else break;                                                                                  // 5xx / rate limit: keep it, try again later
+    }
+  }catch(e){}
+  sending=false;
+}
 const TIER_COLORS=["#ff8f6b","#ffb86b","#ffe16b","#c8e86b","#7fd9a1","#6bc2ff","#a98bff"];
 const $trow=document.getElementById("trow"), $updateNote=document.getElementById("update-note"),
       $stateMain=document.getElementById("state-main"), $stateSub=document.getElementById("state-sub"), $statExact=document.getElementById("stat-exact"), $statBoundary=document.getElementById("stat-boundary"), $nerd=document.getElementById("nerd-toggle"),
@@ -796,12 +819,10 @@ function renderPair(){
 async function tierPick(i){                              // i = 0 (left card) or 1 (right card)
   if(tLocked||!tCur||tCur.length<2) return; tLocked=true;
   const win=tCur[i], lose=tCur[1-i];
-  tsRecord(T,win,lose); T.votes.push([[win,lose]]); tierSave();      // logged instantly: a vote is a single [winner, loser] pair
+  tsRecord(T,win,lose); T.votes.push([[win,lose]]); tierSave(); outboxPush(win,lose);      // logged instantly: a vote is a single [winner, loser] pair
   shownStack.push(tCur.slice());                           // remember the pair as shown (left/right), so Undo can put exactly that question back
   committed=Math.max(committed,T.votes.length-UNDO_LIMIT); saveCommit();   // the undo window slides: only the newest 3 votes stay undoable
-  const payload={winner:win,loser:lose};                   // only the pick: the server knows the time, and the pair shown is implied by these two
-  // MOCK: nothing is sent yet. When it is: do NOT send this vote now; send vote #(n-4) instead (see the SERVER SYNC NOTE above), e.g. fetch(YOUR_WORKER_URL,{method:"POST",body:JSON.stringify({...oldPayload,turnstileToken})})
-  console.log("tier vote recorded",payload);
+  // upload: outboxPush above queues this vote and sends the one from 4 votes ago (see VOTE_ENDPOINT)
   tsAfterVote(T,T.votes.length);                           // re-fit now: tiers update every vote, Confidence only every TS.DISPLAY_EVERY votes
   tB=T.snap; tC=T.conf; if(tiersOpen) renderTiers();
   renderMeter();
@@ -836,7 +857,7 @@ function tierSkip(){
 }
 function tierUndo(){            // takes back the last vote (max UNDO_LIMIT in a row; unlimited in dev mode) and shows that same pair again
   if(tLocked||!T.votes.length||!canUndo()) return; kothId=null; kothStreak=0;
-  const [w,l]=T.votes[T.votes.length-1][0];
+  const [w,l]=T.votes[T.votes.length-1][0]; outboxUndo(w,l);
   tierRebuild(T.votes.slice(0,-1));
   committed=Math.min(committed,T.votes.length); saveCommit();      // only changes in dev mode, when undo goes past the window
   tierSave();
@@ -863,7 +884,7 @@ async function tierReset(){
   const n=T.votes.length;
   if(!await askConfirm("Erase your tier list and the "+n+" vote"+(n===1?"":"s")+" saved in this browser? This only resets your data on this device. Votes you’ve already submitted stay in the community results and can’t be taken back.","Reset all data")) return;
   if(tLocked) return;
-  kothId=null; kothStreak=0; T.skips=new Map(); tierRebuild([]); committed=0; shownStack=[]; try{ localStorage.removeItem(TIER_STORE); localStorage.removeItem(TIER_STORE_V1); localStorage.removeItem(TIER_COMMIT); }catch(e){}   // only THIS page's keys; other pages and unrelated data are untouched
+  kothId=null; kothStreak=0; outbox=[]; outboxSave(); T.skips=new Map(); tierRebuild([]); committed=0; shownStack=[]; try{ localStorage.removeItem(TIER_STORE); localStorage.removeItem(TIER_STORE_V1); localStorage.removeItem(TIER_COMMIT); }catch(e){}   // only THIS page's keys; other pages and unrelated data are untouched
   tierNext(); renderMeter(); if(tiersOpen) renderTiers();
 }
 
@@ -1138,6 +1159,7 @@ document.addEventListener("keydown",e=>{               // <- / Q = left card, ->
   if(k==="KeyZ"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); tierUndo(); }
 });
 load();
+outboxFlush();   // send any votes left over from a previous visit
 </script>
 </body>
 </html>
