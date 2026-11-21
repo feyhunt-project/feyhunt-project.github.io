@@ -33,7 +33,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .hint{margin:0;font-size:calc(14*var(--u));color:var(--muted);text-align:center;letter-spacing:.01em}
 .row{display:flex;gap:calc(44*var(--u));justify-content:center}
 .pair{display:flex;flex-direction:column;align-items:center}
-.ask{position:relative;z-index:3;margin:0 0 calc(36*var(--u));font-size:calc(16*var(--u))}      /* sits above the glow of the picked card; the gap is bigger than the card's 16% growth, so the grown portrait never touches it */
+.ask{color:rgba(242,243,245,.82);position:relative;z-index:3;margin:0 0 calc(36*var(--u));font-size:calc(16*var(--u))}      /* sits above the glow of the picked card; the gap is bigger than the card's 16% growth, so the grown portrait never touches it */
 .next-tier{margin:calc(2*var(--u)) 0 0;min-height:calc(20*var(--u));font-size:calc(13.5*var(--u));line-height:calc(20*var(--u));color:rgba(242,243,245,.82);text-align:center;white-space:nowrap}
 .next-tier b{font-weight:700}
 .next-tier.swap{animation:tierIn .45s ease}
@@ -41,7 +41,6 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 @keyframes tierPop{0%{opacity:0;transform:scale(.8)}12%{opacity:1;transform:scale(1.2)}26%{transform:scale(1)}100%{opacity:1;transform:scale(1)}}
 @keyframes tierIn{from{opacity:0;transform:translateY(calc(4*var(--u)))}to{opacity:1;transform:none}}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-@media (hover:none),(pointer:coarse){ #keys-hint{display:none} }      /* no keyboard on a touchscreen */
 
 .bg{position:fixed;inset:0;z-index:0;opacity:var(--bg-opacity);overflow:hidden;pointer-events:none}
 .bg-layer{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1.12);filter:blur(calc(16*var(--u)));
@@ -81,7 +80,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 
 /* ---------- round enter / exit ---------- */
 @keyframes enter{to{opacity:1;transform:none}}
-.row.leaving .col{animation:leave .23s ease forwards;animation-delay:0s}
+.row.leaving .col,.col.out{animation:leave .23s ease forwards;animation-delay:0s}      /* .out = only the loser leaves during a King of the Hill carry-over */
 @keyframes leave{from{opacity:1;transform:none}to{opacity:0;transform:translateY(calc(-10*var(--u)))}}
 
 @media (min-width:701px), (orientation:landscape){      /* every screen except a narrow portrait one */
@@ -118,7 +117,8 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .verify:empty{display:none}
 .verify{margin:0;font-size:calc(11.5*var(--u));color:var(--muted);text-align:center}
 
-.tier-bar{width:min(60%,calc(200*var(--u)));height:calc(4*var(--u));margin:calc(7*var(--u)) auto calc(2*var(--u));border-radius:calc(999*var(--u));background:rgba(255,255,255,.09);overflow:hidden}
+.tier-prog{display:flex;flex-direction:column;align-items:center;width:max-content;max-width:100%}      /* shrink-wraps the "X more votes" line, so the bar can be sized against its width */
+.tier-bar{width:88%;height:calc(4*var(--u));margin:calc(7*var(--u)) auto calc(2*var(--u));border-radius:calc(999*var(--u));background:rgba(255,255,255,.09);overflow:hidden}
 .tier-bar-fill{--bar:var(--green);width:0;height:100%;border-radius:inherit;background:var(--bar);transition:width .6s var(--ease),background .5s}      /* progress to the NEXT tier, in that tier's colour */
 
 .tier-actions{display:flex;flex-wrap:wrap;gap:calc(8*var(--u));justify-content:center}
@@ -258,7 +258,6 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
 @media (orientation:landscape) and (max-height:560px){
   :root{--fit-h:455;--w:calc(112*var(--u))}
   .period{display:none}
-  #keys-hint{display:none}
   .hint.ask{margin-bottom:24px}
   .stage{row-gap:calc(6*var(--u));padding-top:max(calc(8*var(--u)),env(safe-area-inset-top));padding-bottom:max(calc(8*var(--u)),env(safe-area-inset-bottom))}
   .keyhint{display:none}
@@ -296,9 +295,10 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
   <header class="head">
     <p class="period">05/13 12:00 AM to 06/30 11:59 PM (UTC)</p>
     <h1 id="title"></h1>
-    <p class="next-tier" id="next-tier"></p>
-    <div class="tier-bar" aria-hidden="true"><div class="tier-bar-fill" id="tier-bar-fill"></div></div>
-    <p class="hint" id="keys-hint">Hotkeys: ← → arrow keys or Q / E</p>
+    <div class="tier-prog">
+      <p class="next-tier" id="next-tier"></p>
+      <div class="tier-bar" aria-hidden="true"><div class="tier-bar-fill" id="tier-bar-fill"></div></div>
+    </div>
     <span class="sr-only" id="sr-status" role="status" aria-live="polite"></span>
   </header>
   <div class="pair">
@@ -402,6 +402,8 @@ const STORAGE_ID = "";   // optional. Saved data is filed under this page's id, 
                          // "" = the id is made from PAGE_TITLE (editing the title then starts a fresh list). Set a fixed word here, e.g. "blue-archive", to keep the data when you reword the title.
 const VOTE_COOLDOWN_MS = 750;   // minimum time per vote: the pick animation + hand-over to the next pair (design note: about 1 vote / second at most)
 const UNDO_LIMIT = 3;            // how many of the most recent votes can be undone (dev mode: unlimited). Votes older than that are "committed".
+const KOTH_CHANCE = 0.6;         // King of the Hill: chance that the winner stays for the next screen (same side) against a new opponent
+const KOTH_MAX_STREAK = 2;       // ...but a character is carried over at most this many times in a row, then a fresh pair is shown
 const LEAVE_MS = 230;            // the last part of that time: the pair fades out
 const CHARACTERS_URL = "data/characters.json";   // source of truth for characters
 const BACKGROUNDS_URL = "data/backgrounds.json"; // source of truth for backgrounds
@@ -757,18 +759,26 @@ function tierNext(){
   tCur=tsSelectSet(T,2);            // active sampler on freshly re-fitted ratings: the most ambiguous pair right now
   renderPair();
 }
+function makeCol(id,i){
+  const c=charById.get(id), col=document.createElement("button");
+  col.type="button"; col.className="col"; col.style.setProperty("--i",i);
+  col.setAttribute("aria-label","Choose "+c.name+" ("+(i?"E or right arrow":"Q or left arrow")+")");
+  col.innerHTML=`<span class="face"><span class="portrait"></span><span class="name">${esc(c.name)}</span></span><span class="keyhint" aria-hidden="true">${i?"<kbd>E</kbd><kbd>\u2192</kbd>":"<kbd>\u2190</kbd><kbd>Q</kbd>"}</span>`;
+  fillPortrait(col.querySelector(".portrait"),c);
+  col.onclick=()=>tierPick(i);
+  return col;
+}
+/* King of the Hill: the winner stays on the same side and just shrinks back to normal; only the loser's card is swapped for a new opponent */
+let kothId=null, kothStreak=0;
+function kothOpponent(winId,loseId){
+  const w=T.byId.get(winId); let best=null,bs=-1;
+  for(const it of T.items){ if(it.id===winId||it.id===loseId) continue; const sc=tsPairScore(T,w,it); if(sc>bs){bs=sc;best=it.id;} }
+  return best;
+}
 function renderPair(){
   const hadFocus=$trow.contains(document.activeElement);       // keyboard users keep their place
   $trow.classList.remove("leaving","locked"); $trow.innerHTML=""; tCols=new Map();
-  (tCur||[]).forEach((id,i)=>{
-    const c=charById.get(id), col=document.createElement("button");
-    col.type="button"; col.className="col"; col.style.setProperty("--i",i);
-    col.setAttribute("aria-label","Choose "+c.name+" ("+(i?"E or right arrow":"Q or left arrow")+")");
-    col.innerHTML=`<span class="face"><span class="portrait"></span><span class="name">${esc(c.name)}</span></span><span class="keyhint" aria-hidden="true">${i?"<kbd>E</kbd><kbd>\u2192</kbd>":"<kbd>\u2190</kbd><kbd>Q</kbd>"}</span>`;
-    fillPortrait(col.querySelector(".portrait"),c);
-    col.onclick=()=>tierPick(i);
-    tCols.set(id,col); $trow.appendChild(col);
-  });
+  (tCur||[]).forEach((id,i)=>{ const col=makeCol(id,i); tCols.set(id,col); $trow.appendChild(col); });
   renderDevTags();
   if(hadFocus&&$trow.firstChild) $trow.firstChild.focus({preventScroll:true});
   // fault tolerance made visible: an upset inflates sigma, so the sampler re-checks that character against close peers
@@ -799,16 +809,33 @@ async function tierPick(i){                              // i = 0 (left card) or
   for(const [id,col] of tCols) col.classList.add(id===win?"picked":"rejected");      // winner grows + glows green
   if(T.votes.length%3===0) changeBackground();             // shuffle background (every 3rd vote: pair votes come 3x as often as the old 3-card votes)
   await sleep(VOTE_COOLDOWN_MS-LEAVE_MS);
-  $trow.classList.add("leaving"); await sleep(LEAVE_MS);
-  tLocked=false; renderUndo(); tierNext();
+  const streak=kothId===win?kothStreak:0;
+  const opp=(streak<KOTH_MAX_STREAK&&Math.random()<KOTH_CHANCE)?kothOpponent(win,lose):null;
+  if(opp){                                                 // carry-over: winner stays put (same side), shrinks back; the loser fades out and a new opponent comes in
+    kothId=win; kothStreak=streak+1;
+    const wCol=tCols.get(win), lCol=tCols.get(lose), slot=1-i;
+    wCol.classList.remove("picked"); lCol.classList.add("out");
+    await sleep(LEAVE_MS);
+    const nCol=makeCol(opp,slot); nCol.style.setProperty("--i",0);
+    lCol.replaceWith(nCol); tCols.delete(lose); tCols.set(opp,nCol);
+    for(const c of tCols.values()) c.classList.remove("rejected");
+    tCur=[]; tCur[i]=win; tCur[slot]=opp;
+    $trow.classList.remove("locked"); renderDevTags();
+    $verify.textContent=tCur.some(id=>T.byId.get(id).spike>1.25)?"Re-verifying a surprising result":"";
+  }else{
+    kothId=null; kothStreak=0;
+    $trow.classList.add("leaving"); await sleep(LEAVE_MS);
+    tLocked=false; renderUndo(); tierNext(); return;
+  }
+  tLocked=false; renderUndo();
 }
 function tierSkip(){
-  if(tLocked||!tCur) return;
+  if(tLocked||!tCur) return; kothId=null; kothStreak=0;
   for(let i=0;i<tCur.length;i++)for(let j=i+1;j<tCur.length;j++){ const k=tsKey(tCur[i],tCur[j]); T.skips.set(k,(T.skips.get(k)||0)+1); }
   tierNext();                 // re-pick with the skipped pair discounted
 }
 function tierUndo(){            // takes back the last vote (max UNDO_LIMIT in a row; unlimited in dev mode) and shows that same pair again
-  if(tLocked||!T.votes.length||!canUndo()) return;
+  if(tLocked||!T.votes.length||!canUndo()) return; kothId=null; kothStreak=0;
   const [w,l]=T.votes[T.votes.length-1][0];
   tierRebuild(T.votes.slice(0,-1));
   committed=Math.min(committed,T.votes.length); saveCommit();      // only changes in dev mode, when undo goes past the window
@@ -836,7 +863,7 @@ async function tierReset(){
   const n=T.votes.length;
   if(!await askConfirm("Erase your tier list and the "+n+" vote"+(n===1?"":"s")+" saved in this browser? This only resets your data on this device. Votes you’ve already submitted stay in the community results and can’t be taken back.","Reset all data")) return;
   if(tLocked) return;
-  T.skips=new Map(); tierRebuild([]); committed=0; shownStack=[]; try{ localStorage.removeItem(TIER_STORE); localStorage.removeItem(TIER_STORE_V1); localStorage.removeItem(TIER_COMMIT); }catch(e){}   // only THIS page's keys; other pages and unrelated data are untouched
+  kothId=null; kothStreak=0; T.skips=new Map(); tierRebuild([]); committed=0; shownStack=[]; try{ localStorage.removeItem(TIER_STORE); localStorage.removeItem(TIER_STORE_V1); localStorage.removeItem(TIER_COMMIT); }catch(e){}   // only THIS page's keys; other pages and unrelated data are untouched
   tierNext(); renderMeter(); if(tiersOpen) renderTiers();
 }
 
@@ -913,7 +940,7 @@ function renderMeter(){
 
 /* ----- tier list (+ nerd stats) ----- */
 /* ----- progressive reveal: tiers unlock F first, S last, as the suggested vote budget fills up ----- */
-const UNLOCK_AT=[1,.9,.8,.7,.6,.5,.25];   // per tier S..F (same order as TS.LABELS): share of the suggested votes needed to reveal it.
+const UNLOCK_AT=[1,.88,.75,.62,.48,.33,.17];   // per tier S..F (same order as TS.LABELS): share of the suggested votes needed to reveal it.
                                          // S also waits for Confidence to turn green; green (or dev mode) reveals everything at once
 const revealAll=()=>DEV||tC.confidence>=TS.LIGHT_GREEN;
 function tierUnlocks(){
