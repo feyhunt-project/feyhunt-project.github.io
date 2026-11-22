@@ -47,7 +47,7 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   transition:opacity 1.8s ease,transform 7s ease-out}      /* no animated blur: filter on a full-screen layer repaints every frame (it was the main cost of a swap) */
 .bg-layer.on{opacity:var(--bg-opacity);transform:scale(1)}      /* the 10% opacity lives on each layer, not on the parent: a parent opacity forces an extra full-screen compositing pass every frame */
 
-/* ---------- the two cards: tap one (or press <- / Q and -> / E) ---------- */
+/* ---------- the two cards: tap one (or press <- / A and -> / D) ---------- */
 .col{position:relative;display:flex;flex-direction:column;align-items:center;gap:calc(8*var(--u));width:var(--w);padding:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;border-radius:calc(24*var(--u));
   opacity:0;transform:translateY(calc(14*var(--u)));animation:enter .6s var(--ease) forwards;animation-delay:calc(var(--i) * 90ms)}
 .face{display:flex;flex-direction:column;align-items:center;width:100%;transition:transform .5s var(--ease),opacity .35s}      /* the pick scales this, so it never fights the enter/leave animation on .col */
@@ -923,8 +923,8 @@ function tierNext(){
 function makeCol(id,i){
   const c=charById.get(id), col=document.createElement("button");
   col.type="button"; col.className="col"; col.style.setProperty("--i",i);
-  col.setAttribute("aria-label","Choose "+c.name+" ("+(i?"E or right arrow":"Q or left arrow")+")");
-  col.innerHTML=`<span class="face"><span class="portrait"></span><span class="name">${esc(c.name)}</span></span><span class="keyhint" aria-hidden="true">${i?"<kbd>E</kbd><kbd>\u2192</kbd>":"<kbd>\u2190</kbd><kbd>Q</kbd>"}</span>`;
+  col.setAttribute("aria-label","Choose "+c.name+" ("+(i?"D or right arrow":"A or left arrow")+")");
+  col.innerHTML=`<span class="face"><span class="portrait"></span><span class="name">${esc(c.name)}</span></span><span class="keyhint" aria-hidden="true">${i?"<kbd>D</kbd><kbd>\u2192</kbd>":"<kbd>\u2190</kbd><kbd>A</kbd>"}</span>`;
   fillPortrait(col.querySelector(".portrait"),c);
   col.onclick=()=>tierPick(i);
   return col;
@@ -1325,8 +1325,8 @@ document.addEventListener("keydown",e=>{               // <- / Q = left card, ->
   }
   if(!/^(Control|Shift|Alt|Meta)/.test(k)) devSeq.length=0;
   if(!(e.ctrlKey||e.metaKey||e.altKey)){
-    if(k==="ArrowLeft"||k==="KeyQ"){ e.preventDefault(); tierPick(0); return; }
-    if(k==="ArrowRight"||k==="KeyE"){ e.preventDefault(); tierPick(1); return; }
+    if(k==="ArrowLeft"||k==="KeyA"){ e.preventDefault(); tierPick(0); return; }
+          if(k==="ArrowRight"||k==="KeyD"){ e.preventDefault(); tierPick(1); return; }
   }
   if(k==="KeyZ"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); tierUndo(); }
 });

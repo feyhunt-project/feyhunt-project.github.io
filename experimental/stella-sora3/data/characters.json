@@ -1,0 +1,129 @@
+{
+  "characters": [
+    {
+      "key": "amber",
+      "name": "Amber",
+      "portrait": "assets/characters/amber.webp"
+    },
+    {
+      "key": "chaton",
+      "name": "Chaton",
+      "portrait": "assets/characters/chaton.webp"
+    },
+    {
+      "key": "chixia",
+      "name": "Chixia",
+      "portrait": "assets/characters/chixia.webp"
+    },
+    {
+      "key": "donna",
+      "name": "Donna",
+      "portrait": "assets/characters/donna.webp"
+    },
+    {
+      "key": "firefly",
+      "name": "Firefly",
+      "portrait": "assets/characters/firefly.webp"
+    },
+    {
+      "key": "firenze",
+      "name": "Firenze",
+      "portrait": "assets/characters/firenze.webp"
+    },
+    {
+      "key": "freesia",
+      "name": "Freesia",
+      "portrait": "assets/characters/freesia.webp"
+    },
+    {
+      "key": "fuyuka",
+      "name": "Fuyuka",
+      "portrait": "assets/characters/fuyuka.webp"
+    },
+    {
+      "key": "iris",
+      "name": "Iris",
+      "portrait": "assets/characters/iris.webp"
+    },
+    {
+      "key": "jinglin",
+      "name": "Jinglin",
+      "portrait": "assets/characters/jinglin.webp"
+    },
+    {
+      "key": "kasimira",
+      "name": "Kasimira",
+      "portrait": "assets/characters/kasimira.webp"
+    },
+    {
+      "key": "leafia",
+      "name": "Leafia",
+      "portrait": "assets/characters/leafia.webp"
+    },
+    {
+      "key": "minova",
+      "name": "Minova",
+      "portrait": "assets/characters/minova.webp"
+    },
+    {
+      "key": "mistique",
+      "name": "Mistique",
+      "portrait": "assets/characters/mistique.webp"
+    },
+    {
+      "key": "nanoha",
+      "name": "Nanoha",
+      "portrait": "assets/characters/nanoha.webp"
+    },
+    {
+      "key": "nazuka",
+      "name": "Nazuka",
+      "portrait": "assets/characters/nazuka.webp"
+    },
+    {
+      "key": "nazuna",
+      "name": "Nazuna",
+      "portrait": "assets/characters/nazuna.webp"
+    },
+    {
+      "key": "noya",
+      "name": "Noya",
+      "portrait": "assets/characters/noya.webp"
+    },
+    {
+      "key": "noya_firstlight",
+      "name": "Firstlight Noya",
+      "portrait": "assets/characters/noya_firstlight.webp"
+    },
+    {
+      "key": "ridge",
+      "name": "Ridge",
+      "portrait": "assets/characters/ridge.webp"
+    },
+    {
+      "key": "shimiao",
+      "name": "Shimiao",
+      "portrait": "assets/characters/shimiao.webp"
+    },
+    {
+      "key": "sparkla",
+      "name": "Sparkla",
+      "portrait": "assets/characters/sparkla.webp"
+    },
+    {
+      "key": "teresa",
+      "name": "Teresa",
+      "portrait": "assets/characters/teresa.webp"
+    },
+    {
+      "key": "tilia",
+      "name": "Tilia",
+      "portrait": "assets/characters/tilia.webp"
+    },
+    {
+      "key": "willow_suntide",
+      "name": "Suntide Willow",
+      "portrait": "assets/characters/willow_suntide.webp"
+    }
+  ]
+}

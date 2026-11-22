@@ -9,7 +9,7 @@
 :root{
   --bg:#0b0c0f; --surface:#14161b; --line:rgba(255,255,255,.12); --ink:#f2f3f5; --muted:#7d828c;
   --green:#9bd17b; --red:#ff6b6b;
-  --w:calc(190*var(--u));            /* portrait size (two cards side by side) */
+  --w:calc(154*var(--u));            /* portrait size (three cards side by side in triad mode) */
   --ease:cubic-bezier(.22,1.2,.36,1);
   /* UI scale: 1 unit = whichever is smaller of (viewport width / --fit-w) and (viewport height / --fit-h). The voting screen is ~450 units wide and ~640 units tall,
      so --fit-w / --fit-h are the sizes (in units) it should just fit into. (660 leaves room for the footer; 640 would be 2.25px per unit at 1440p.) Lower them to make everything bigger. Mobile resets it to 1px */
@@ -31,7 +31,7 @@ main{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:grid
 h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 .period{margin:0;font-size:calc(12*var(--u));color:var(--muted);letter-spacing:.04em;font-variant-numeric:tabular-nums}
 .hint{margin:0;font-size:calc(14*var(--u));color:var(--muted);text-align:center;letter-spacing:.01em}
-.row{display:flex;gap:calc(44*var(--u));justify-content:center}
+.row{display:flex;gap:calc(24*var(--u));justify-content:center}
 .pair{display:flex;flex-direction:column;align-items:center}
 .ask{color:rgba(242,243,245,.82);position:relative;z-index:3;margin:0 0 calc(36*var(--u));font-size:calc(16*var(--u))}      /* sits above the glow of the picked card; the gap is bigger than the card's 16% growth, so the grown portrait never touches it */
 .next-tier{margin:calc(2*var(--u)) 0 0;min-height:calc(20*var(--u));font-size:calc(13.5*var(--u));line-height:calc(20*var(--u));color:rgba(242,243,245,.82);text-align:center;white-space:nowrap}
@@ -92,13 +92,13 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
   .summary{grid-row:4}
 }
 
-/* ---------- phone (narrow portrait): the two cards stay side by side, a little smaller ---------- */
+/* ---------- phone (narrow portrait): three cards stay side by side, sized cleanly to viewport ---------- */
 @media (max-width:700px) and (orientation:portrait){
-  :root{--u:1px;--w:min(168px,calc((100vw - 56px) / 2));--foot:48px;--tab-w:30px}
+  :root{--u:1px;--w:min(116px,calc((100vw - 48px) / 3));--foot:48px;--tab-w:30px}
   .stage{gap:10px;justify-content:center;padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(14px,env(safe-area-inset-bottom))}
-  .row{gap:24px;width:100%}
-  .portrait{border-radius:18px;font-size:40px}
-  .name{font-size:15px}
+  .row{gap:10px;width:100%}
+  .portrait{border-radius:14px;font-size:30px}
+  .name{font-size:13px}
   /* extra breathing room: title block -> portraits, portraits -> Save button (100px, shrinks a little on short screens so it still fits) */
   .head{margin-bottom:clamp(12px,calc(8vh - 20px),60px);margin-bottom:clamp(12px,calc(8dvh - 20px),60px)}
   .pair{margin-bottom:clamp(14px,calc(10vh - 26px),70px);margin-bottom:clamp(14px,calc(10dvh - 26px),70px)}
@@ -242,7 +242,7 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
 .below .summary-body{padding:calc(4*var(--u)) 0}
 @keyframes paneIn{from{opacity:0}to{opacity:1}}
 @media (min-aspect-ratio:13/10){
-  :root.tiers-open{--fit-w:960}                                          /* the vote stage only has half the width to fit into */
+  :root.tiers-open{--fit-w:960;--w:calc(142*var(--u))}                   /* the vote stage only has half the width to fit into */
   html.tiers-open main{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .below{grid-column:2;grid-row:1;justify-self:stretch;width:auto;min-width:0;position:sticky;top:0;align-self:start;height:calc(100vh - var(--foot));height:calc(100dvh - var(--foot));
          padding:max(calc(16*var(--u)),env(safe-area-inset-top)) calc(var(--tab-w) + calc(12*var(--u))) calc(16*var(--u));overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;border-left:calc(1*var(--u)) solid var(--line)}
@@ -259,7 +259,7 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
 }
 /* short landscape screens (phones on their side): drop the date line and tighten the stage so it still fits one screen */
 @media (orientation:landscape) and (max-height:560px){
-  :root{--fit-h:455;--w:calc(112*var(--u))}
+  :root{--fit-h:455;--w:calc(104*var(--u))}
   .period{display:none}
   .hint.ask{margin-bottom:24px}
   .stage{row-gap:calc(6*var(--u));padding-top:max(calc(8*var(--u)),env(safe-area-inset-top));padding-bottom:max(calc(8*var(--u)),env(safe-area-inset-bottom))}
@@ -305,7 +305,7 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
     <span class="sr-only" id="sr-status" role="status" aria-live="polite"></span>
   </header>
   <div class="pair">
-    <p class="hint ask" id="hint">Which one do you like <b class="tag-best">more</b>?</p>
+    <p class="hint ask" id="hint">Which one do you like <b class="tag-best">most</b>?</p>
     <div class="row" id="trow"></div>
   </div>
   <div class="submit-row">
@@ -366,7 +366,7 @@ html.tiers-open .below{display:block;animation:paneIn .35s ease}
         <li><b>What we save:</b> The 3-character triad choices you make and your non-PII country of origin (automatically detected by Cloudflare).</li>
         <li><b>What stays private:</b> Your final generated tier list, custom rankings, and progress live entirely in your browser’s local storage. We do not track, save, or upload your personal tier list.</li>
         <li><b>What we ignore:</b> We never log your IP address, assign user tracking IDs, or require logins/cookies, ensuring zero Personally Identifiable Information (PII) is ever collected.</li>
-        <li><b>Where it goes:</b> Votes are pooled anonymously into a private database used to calculate global character rankings, conduct statistical research, and publish community insights. Each submitted vote contains only the two characters you compared, the time, and your country (no IP address).</li>
+        <li><b>Where it goes:</b> Votes are pooled anonymously into a private database used to calculate global character rankings, conduct statistical research, and publish community insights. Each submitted vote contains only the three characters you compared (winner and two others), the time, and your country (no IP address).</li>
       </ul>
       <div class="shot-actions"><button type="button" class="btn" id="privacy-close">Close</button></div>
     </div>
@@ -447,7 +447,7 @@ async function load(){
       if(c.key&&c.id!=null&&String(c.id)!==key) legacyIds.set(String(c.id),key);   // lets votes saved under an old id carry over
       return {...c,key};
     }).filter(c=>{ if(seen.has(c.key)){ console.warn("characters.json: duplicate key skipped:",c.key); return false; } seen.add(c.key); return true; });
-    if(characters.length<2) throw new Error("Need at least 2 characters with a name and a key");
+    if(characters.length<3) throw new Error("Need at least 3 characters with a name and a key");
     initTier();
   }catch(e){
     console.error(e);
@@ -517,9 +517,9 @@ const TS={
      Each +.02 on TARGET_ACC costs roughly +0.2-0.3N votes and buys roughly +2 points of within-one accuracy. */
   TARGET_ACC:.85,       // green (Save unlocks) when the expected share of characters within ONE tier of their true tier reaches this
   YELLOW_ACC:.70,       // the Save button turns from red to green-ish between 0 and this, and is fully "yellow" here
-  MIN_PER_CHAR:1.5,     // never unlock Save before this many votes per character (guards against a lucky early streak)
-  MAX_PER_CHAR:3.5,     // ...and always unlock by this many, however erratic the voter (the honest Confidence is still shown)
-  BUDGET_PER_CHAR:2.4,  // the vote PLAN (votes per character): a fixed, rough schedule. Tiers F -> B open at set shares of it (UNLOCK_AT); A and S are the plan's last stops but also need the accuracy gates below.
+  MIN_PER_CHAR:1.0,     // triad mode: never unlock Save before this many triad votes per character (2 induced pairs each)
+  MAX_PER_CHAR:2.3,     // triad mode: always unlock by this many triad votes per character, however erratic the voter
+  BUDGET_PER_CHAR:1.55, // triad mode vote PLAN (~1.55 triads/char ≈ 2.45 bits/char, matching ~2.4 pairs/char)
                         // A typical voter finishes at ~2.4-2.7 per character, so A / S sometimes undershoot the plan and the header just says "A few more votes" until they are really ready.
   /* --- Top-tier focus: toned down from 3.0 to 1.8 so S and A stay sharp while D-F get enough comparisons --- */
   TOP_BOOST:1.8, TOP_FULL:.30, TOP_FADE:.45,
@@ -834,14 +834,17 @@ let outbox=[], sending=false;
 try{ outbox=JSON.parse(localStorage.getItem(OUTBOX_KEY)||"[]"); if(!Array.isArray(outbox)) outbox=[]; }catch(e){ outbox=[]; }
 function outboxSave(){ try{ outbox.length?localStorage.setItem(OUTBOX_KEY,JSON.stringify(outbox)):localStorage.removeItem(OUTBOX_KEY); }catch(e){} }
 function newVoteId(){ return crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12); }
-function outboxPush(w,l){ if(!VOTE_ENDPOINT||DEV) return; outbox.push({id:newVoteId(),w,l}); outboxSave(); outboxFlush(); }
-function outboxUndo(w,l){ const v=outbox[outbox.length-1]; if(v&&v.w===w&&v.l===l){ outbox.pop(); outboxSave(); } }   // only ever takes back a vote that was not sent yet
+function outboxPush(w,l1,l2){ if(!VOTE_ENDPOINT||DEV) return; outbox.push({id:newVoteId(),w,l1,l2}); outboxSave(); outboxFlush(); }
+function outboxUndo(w,l1,l2){ const v=outbox[outbox.length-1]; if(v&&v.w===w&&v.l1===l1&&v.l2===l2){ outbox.pop(); outboxSave(); } }   // only ever takes back a vote that was not sent yet
 async function outboxFlush(){
   if(sending||!VOTE_ENDPOINT) return; sending=true;
   try{
     while(outbox.length>SEND_LAG){
       const v=outbox[0];
-      const r=await fetch(VOTE_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:v.id,page:STORE_ID,winner:v.w,loser:v.l})});
+      const payload=v.l1!==undefined
+        ? {id:v.id,page:STORE_ID,winner:v.w,loser1:v.l1,loser2:v.l2}
+        : {id:v.id,page:STORE_ID,winner:v.w,loser:v.l};
+      const r=await fetch(VOTE_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
       if(r.ok||(r.status>=400&&r.status<500&&r.status!==429)){ outbox.shift(); outboxSave(); }   // 4xx = refused for good, don't retry forever
       else break;                                                                                  // 5xx / rate limit: keep it, try again later
     }
@@ -915,26 +918,37 @@ function fillPortrait(el,c){
   el.append(img);
 }
 
-/* ----- one vote = one pair: tap the card you like more (or press <- / Q, -> / E). It is logged instantly; the winner grows and glows green, then the next pair appears ----- */
+/* ----- one vote = one triad: tap the card you like most (or press <- / Q, Up / W, -> / E). It is logged instantly; the winner grows and glows green, then the next triad appears ----- */
 function tierNext(){
-  tCur=tsSelectSet(T,2);            // active sampler on freshly re-fitted ratings: the most ambiguous pair right now
+  tCur=tsSelectSet(T,3);            // active sampler on freshly re-fitted ratings: the most ambiguous triad right now
   renderPair();
 }
+const SLOT_META=[
+  {label:"Q or left arrow",keys:"<kbd>\u2190</kbd><kbd>Q</kbd>"},
+  {label:"W or up arrow",keys:"<kbd>\u2191</kbd><kbd>W</kbd>"},
+  {label:"E or right arrow",keys:"<kbd>E</kbd><kbd>\u2192</kbd>"}
+];
 function makeCol(id,i){
-  const c=charById.get(id), col=document.createElement("button");
+  const c=charById.get(id), col=document.createElement("button"), meta=SLOT_META[i]||SLOT_META[0];
   col.type="button"; col.className="col"; col.style.setProperty("--i",i);
-  col.setAttribute("aria-label","Choose "+c.name+" ("+(i?"E or right arrow":"Q or left arrow")+")");
-  col.innerHTML=`<span class="face"><span class="portrait"></span><span class="name">${esc(c.name)}</span></span><span class="keyhint" aria-hidden="true">${i?"<kbd>E</kbd><kbd>\u2192</kbd>":"<kbd>\u2190</kbd><kbd>Q</kbd>"}</span>`;
+  col.setAttribute("aria-label","Choose "+c.name+" ("+meta.label+")");
+  col.innerHTML=`<span class="face"><span class="portrait"></span><span class="name">${esc(c.name)}</span></span><span class="keyhint" aria-hidden="true">${meta.keys}</span>`;
   fillPortrait(col.querySelector(".portrait"),c);
   col.onclick=()=>tierPick(i);
   return col;
 }
-/* King of the Hill: the winner stays on the same side and just shrinks back to normal; only the loser's card is swapped for a new opponent */
+/* King of the Hill (Triad): the winner stays in the same slot and shrinks back; both unpicked cards swap out for two new challengers */
 let kothId=null, kothStreak=0;
-function kothOpponent(winId,loseId){
-  const w=T.byId.get(winId); let best=null,bs=-1;
-  for(const it of T.items){ if(it.id===winId||it.id===loseId) continue; const sc=tsPairScore(T,w,it); if(sc>bs){bs=sc;best=it.id;} }
-  return best;
+function kothOpponents(winId,excludeIds){
+  const w=T.byId.get(winId), skip=new Set(excludeIds);
+  let best1=null, bs1=-1;
+  for(const it of T.items){ if(skip.has(it.id)) continue; const sc=tsPairScore(T,w,it); if(sc>bs1){bs1=sc;best1=it.id;} }
+  if(!best1) return null;
+  const o1=T.byId.get(best1);
+  let best2=null, bs2=-1;
+  for(const it of T.items){ if(skip.has(it.id)||it.id===best1) continue; const sc=tsPairScore(T,w,it)+tsPairScore(T,o1,it); if(sc>bs2){bs2=sc;best2=it.id;} }
+  if(!best2) return null;
+  return Math.random()<.5?[best1,best2]:[best2,best1];
 }
 function renderPair(){
   const hadFocus=$trow.contains(document.activeElement);       // keyboard users keep their place
@@ -945,22 +959,13 @@ function renderPair(){
   // fault tolerance made visible: an upset inflates sigma, so the sampler re-checks that character against close peers
   $verify.textContent=(tCur||[]).some(id=>T.byId.get(id).spike>1.25)?"Re-verifying a surprising result":"";
 }
-/* ===================== SERVER SYNC NOTE (not implemented yet) =====================
-   Votes must reach the server 4 VOTES LATE:
-   - Undo can take back the last UNDO_LIMIT (3) votes, so a vote must never be sent while it can still be undone.
-   - Keep a local outbox of unsent votes {winner, loser}. When vote #n is recorded, send vote #(n-4) (the oldest one past the lag); the newest 4 stay local.
-     Undo pops the newest vote off the outbox. Lag (4) is bigger than the undo window (3), so a vote that was sent can never be undone (the extra 1 is a safety margin).
-   - Persist the outbox in localStorage (next to the votes) so a reload neither loses nor double-sends votes.
-   - Decide how the last 4 unsent votes get flushed when the person is done or leaves (e.g. once Save unlocks, and on pagehide via navigator.sendBeacon).
-   - Dev mode can undo past the window: it must never touch votes that were already sent (keep dev undo local-only).
-   ================================================================================== */
-async function tierPick(i){                              // i = 0 (left card) or 1 (right card)
-  if(tLocked||!tCur||tCur.length<2) return; tLocked=true;
-  const win=tCur[i], lose=tCur[1-i];
-  tsRecord(T,win,lose); T.votes.push([[win,lose]]); tierSave(); outboxPush(win,lose);      // logged instantly: a vote is a single [winner, loser] pair
-  shownStack.push(tCur.slice());                           // remember the pair as shown (left/right), so Undo can put exactly that question back
+async function tierPick(i){                              // i = 0 (left), 1 (middle), or 2 (right)
+  if(tLocked||!tCur||tCur.length<3||i<0||i>=tCur.length) return; tLocked=true;
+  const win=tCur[i], losers=tCur.filter((_,idx)=>idx!==i);
+  const [l1,l2]=losers;
+  tsRecord(T,win,l1); tsRecord(T,win,l2); T.votes.push([[win,l1],[win,l2]]); tierSave(); outboxPush(win,l1,l2);
+  shownStack.push(tCur.slice());                           // remember the triad as shown (left/middle/right), so Undo can put exactly that question back
   committed=Math.max(committed,T.votes.length-UNDO_LIMIT); saveCommit();   // the undo window slides: only the newest 3 votes stay undoable
-  // upload: outboxPush above queues this vote and sends the one from 4 votes ago (see VOTE_ENDPOINT)
   tsAfterVote(T,T.votes.length);                           // re-fit now: tiers update every vote, Confidence only every TS.DISPLAY_EVERY votes
   tB=T.snap; tC=T.conf; if(tiersOpen) renderTiers();
   renderMeter();
@@ -968,16 +973,22 @@ async function tierPick(i){                              // i = 0 (left card) or
   for(const [id,col] of tCols) col.classList.add(id===win?"picked":"rejected");      // winner grows + glows green
   await sleep(VOTE_COOLDOWN_MS-LEAVE_MS);
   const streak=kothId===win?kothStreak:0;
-  const opp=(streak<KOTH_MAX_STREAK&&Math.random()<KOTH_CHANCE)?kothOpponent(win,lose):null;
-  if(opp){                                                 // carry-over: winner stays put (same side), shrinks back; the loser fades out and a new opponent comes in
+  const opps=(streak<KOTH_MAX_STREAK&&Math.random()<KOTH_CHANCE)?kothOpponents(win,tCur):null;
+  if(opps){                                                // carry-over: winner stays put (same slot), shrinks back; the two losers fade out and two new opponents come in
     kothId=win; kothStreak=streak+1;
-    const wCol=tCols.get(win), lCol=tCols.get(lose), slot=1-i;
-    wCol.classList.remove("picked"); lCol.classList.add("out");
+    const wCol=tCols.get(win), lSlots=[0,1,2].filter(s=>s!==i);
+    wCol.classList.remove("picked");
+    losers.forEach(lid=>tCols.get(lid).classList.add("out"));
     await sleep(LEAVE_MS);
-    const nCol=makeCol(opp,slot); nCol.style.setProperty("--i",0);
-    lCol.replaceWith(nCol); tCols.delete(lose); tCols.set(opp,nCol);
+    const nextCur=[]; nextCur[i]=win;
+    lSlots.forEach((slot,idx)=>{
+      const oid=opps[idx], oldId=losers[idx], oldCol=tCols.get(oldId);
+      const nCol=makeCol(oid,slot); nCol.style.setProperty("--i",idx);
+      oldCol.replaceWith(nCol); tCols.delete(oldId); tCols.set(oid,nCol);
+      nextCur[slot]=oid;
+    });
     for(const c of tCols.values()) c.classList.remove("rejected");
-    tCur=[]; tCur[i]=win; tCur[slot]=opp;
+    tCur=nextCur;
     $trow.classList.remove("locked"); renderDevTags();
     $verify.textContent=tCur.some(id=>T.byId.get(id).spike>1.25)?"Re-verifying a surprising result":"";
   }else{
@@ -990,17 +1001,23 @@ async function tierPick(i){                              // i = 0 (left card) or
 function tierSkip(){
   if(tLocked||!tCur) return; kothId=null; kothStreak=0;
   for(let i=0;i<tCur.length;i++)for(let j=i+1;j<tCur.length;j++){ const k=tsKey(tCur[i],tCur[j]); T.skips.set(k,(T.skips.get(k)||0)+1); }
-  tierNext();                 // re-pick with the skipped pair discounted
+  tierNext();                 // re-pick with the skipped triad discounted
 }
-function tierUndo(){            // takes back the last vote (max UNDO_LIMIT in a row; unlimited in dev mode) and shows that same pair again
+function tierUndo(){            // takes back the last triad vote (max UNDO_LIMIT in a row; unlimited in dev mode) and shows that same triad again
   if(tLocked||!T.votes.length||!canUndo()) return; kothId=null; kothStreak=0;
-  const [w,l]=T.votes[T.votes.length-1][0]; outboxUndo(w,l);
+  const lastVote=T.votes[T.votes.length-1];
+  const w=lastVote[0][0], l1=lastVote[0][1], l2=lastVote[1]?lastVote[1][1]:undefined;
+  outboxUndo(w,l1,l2);
   tierRebuild(T.votes.slice(0,-1));
   committed=Math.min(committed,T.votes.length); saveCommit();      // only changes in dev mode, when undo goes past the window
   tierSave();
-  let pair=shownStack.pop();                                       // the pair as it was shown; after a reload there is no record, so any order will do
-  if(!pair||!pair.includes(w)||!pair.includes(l)) pair=Math.random()<.5?[w,l]:[l,w];
-  tCur=pair; renderPair(); renderMeter(); if(tiersOpen) renderTiers();
+  let triad=shownStack.pop();                                      // the triad as it was shown; after a reload there is no record, so reconstruct from w, l1, l2
+  const expected=[w,l1,l2].filter(Boolean);
+  if(!triad||triad.length!==expected.length||!expected.every(id=>triad.includes(id))){
+    triad=expected.slice();
+    for(let i=triad.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[triad[i],triad[j]]=[triad[j],triad[i]];}
+  }
+  tCur=triad; renderPair(); renderMeter(); if(tiersOpen) renderTiers();
 }
 /* in-page confirm: the browser's confirm() always titles itself "<this site> says", so we draw our own with the page name */
 let confirmResolve=null, confirmReturnFocus=null;
@@ -1326,7 +1343,8 @@ document.addEventListener("keydown",e=>{               // <- / Q = left card, ->
   if(!/^(Control|Shift|Alt|Meta)/.test(k)) devSeq.length=0;
   if(!(e.ctrlKey||e.metaKey||e.altKey)){
     if(k==="ArrowLeft"||k==="KeyQ"){ e.preventDefault(); tierPick(0); return; }
-    if(k==="ArrowRight"||k==="KeyE"){ e.preventDefault(); tierPick(1); return; }
+    if(k==="ArrowUp"||k==="KeyW"){ e.preventDefault(); tierPick(1); return; }
+    if(k==="ArrowRight"||k==="KeyE"){ e.preventDefault(); tierPick(2); return; }
   }
   if(k==="KeyZ"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); tierUndo(); }
 });
