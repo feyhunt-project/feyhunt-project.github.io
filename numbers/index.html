@@ -42,10 +42,10 @@ h1{margin:0;font-size:calc(20*var(--u));font-weight:600;letter-spacing:.02em}
 @keyframes tierIn{from{opacity:0;transform:translateY(calc(4*var(--u)))}to{opacity:1;transform:none}}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-.bg{position:fixed;inset:0;z-index:0;opacity:var(--bg-opacity);overflow:hidden;pointer-events:none}
-.bg-layer{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1.12);filter:blur(calc(16*var(--u)));
-  transition:opacity 1.8s ease,transform 7s ease-out,filter 1.8s ease}
-.bg-layer.on{opacity:1;transform:scale(1);filter:blur(0)}
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;contain:strict}
+.bg-layer{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1.12);
+  transition:opacity 1.8s ease,transform 7s ease-out}      /* no animated blur: filter on a full-screen layer repaints every frame (it was the main cost of a swap) */
+.bg-layer.on{opacity:var(--bg-opacity);transform:scale(1)}      /* the 10% opacity lives on each layer, not on the parent: a parent opacity forces an extra full-screen compositing pass every frame */
 
 /* ---------- the two cards: tap one (or press <- / Q and -> / E) ---------- */
 .col{position:relative;display:flex;flex-direction:column;align-items:center;gap:calc(8*var(--u));width:var(--w);padding:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;border-radius:calc(24*var(--u));
@@ -458,7 +458,14 @@ async function load(){
 }
 
 /* ---------- background slideshow ---------- */
-function preload(url){return new Promise(r=>{const i=new Image();i.onload=()=>r(true);i.onerror=()=>r(false);i.src=url})}
+const bgReady=new Map();   // url -> fully DECODED Image: the next background is downloaded AND decoded in advance, so the swap frame never has to decode a big picture
+function preload(url){
+  if(bgReady.has(url)) return Promise.resolve(true);
+  return new Promise(r=>{
+    const i=new Image(); i.decoding="async"; i.src=url;
+    (i.decode?i.decode():new Promise((ok,no)=>{ i.onload=ok; i.onerror=no; })).then(()=>{ bgReady.set(url,i); if(bgReady.size>2) bgReady.delete(bgReady.keys().next().value); r(true); },()=>r(false));
+  });
+}
 let bgQueued=-1;
 function pickBg(){
   if(!backgrounds.length) return -1;
@@ -472,6 +479,7 @@ async function changeBackground(){
   const url=encodeURI(backgrounds[n].image);
   if(!await preload(url)) return;                 // skip broken images
   bgIndex=n;
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));   // let the vote's own animation frames go first, then swap
   const next=layers[bgFront===0?1:0], prev=layers[bgFront===0?0:1];
   next.style.backgroundImage=`url("${url}")`;
   void next.offsetWidth;                          // reflow so the transition runs
@@ -969,7 +977,7 @@ async function tierReset(){
   tierNext(); renderMeter(); if(tiersOpen) renderTiers();
 }
 
-/* ----- result button: locked + filling with confidence ("Confidence: NN%"), then ready (pop animation, then "Result ready (NN%)") ----- */
+/* ----- result button: locked + filling with confidence ("Confidence: NN%"), then ready (pop animation, then "Result Ready (NN%)") ----- */
 const $saveMain=document.getElementById("save-main");
 let saveState=null, saveTimer=0, saveMsg=null;         // saveState: null (first paint) | "locked" | "unlocking" (animation) | "ready"
 const SAVE_RGB={red:[255,107,107],yellow:[242,201,76],green:[155,209,123]};
@@ -988,7 +996,7 @@ function renderSaveBtn(){
   b.classList.toggle("ready",ready);
   b.style.setProperty("--fill",confColor(pct)); b.style.setProperty("--p",(ready?100:pct).toFixed(1)+"%");
   b.disabled=!ready||saveMsg!==null;
-  $saveMain.textContent=saveMsg!==null?saveMsg:ready?(saveState==="unlocking"?"Unlocked!":"Result ready ("+shown+"%)"):"Confidence: "+shown+"%";
+  $saveMain.textContent=saveMsg!==null?saveMsg:ready?(saveState==="unlocking"?"Unlocked!":"Result Ready ("+shown+"%)"):"Confidence: "+shown+"%";
   const why="Confidence = how far your tier list is beyond random guessing, from the expected share of characters whose tier is at most one step off. It is estimated from your own votes, so consistent voters finish sooner. S and A are held to a higher standard than the other tiers";
   b.setAttribute("aria-label",ready?"Your result is ready. Save your final tier as an image. Confidence "+shown+" percent":"Save final tier, locked. Confidence "+shown+" percent, unlocks at "+Math.round(TS.LIGHT_GREEN)+" percent");
   b.title=ready?"Click to save your final tier as an image":"Your result unlocks at "+Math.round(TS.LIGHT_GREEN)+"% confidence, once S and A are solid. "+why;
@@ -1071,11 +1079,11 @@ function tierFrac(U,b){                  // fill of the header bar on the way to
   const u=U[b];
   return Math.max(0,Math.min(.97,(T.votes.length-u.from)/Math.max(1,u.at-u.from)));
 }
-function needTxt(n){                     // the count is a projection, so say so, and don't pretend to precision
-  if(n<=3) return "A few more votes";
-  return "About "+(n<=15?n:Math.round(n/5)*5)+" more votes";
+function needTxt(n){                     // exact countdown on the fixed plan, down to 1; once the plan is used up and the tier still isn't ready (accuracy gate), "A few more votes"
+  if(n<=0) return "A few more votes";
+  return n+" more vote"+(n===1?"":"s");
 }
-const lockMsg=u=>u.need>3?"Vote "+(u.need<=15?"~"+u.need:"~"+Math.round(u.need/5)*5)+" more times to unlock this tier":"Vote a few more times to unlock this tier";
+const lockMsg=u=>u.need>0?"Vote "+u.need+" more time"+(u.need===1?"":"s")+" to unlock this tier":"Vote a few more times to unlock this tier";
 const LOCK_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 const ANON_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>';
 
