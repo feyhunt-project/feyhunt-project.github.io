@@ -1,0 +1,55 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vote Analyzer</title>
+<style>
+:root{--bg:#0b0c0f;--surface:#14161b;--line:rgba(255,255,255,.12);--ink:#f2f3f5;--muted:#7d828c;--green:#9bd17b;--red:#ff6b6b}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:980px;margin:0 auto;padding:22px 16px 60px}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--muted);font-size:12.5px;margin:0 0 16px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.btn,select{height:31px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font:inherit;font-size:12px;cursor:pointer}
+select{padding:0 12px}.btn:hover{background:rgba(255,255,255,.1)}.btn.cta{border-color:var(--green);color:var(--green);background:rgba(155,209,123,.1)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.tab{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font:inherit;font-size:13px;padding:8px 14px;cursor:pointer}
+.tab.on{color:var(--ink);border-color:var(--green)}.pane{display:none}.pane.on{display:block}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px 4px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12.5px}th,td{padding:7px 10px;text-align:right;white-space:nowrap}th:first-child,td:first-child,td.l,th.l{text-align:left}
+th{color:var(--muted);font-weight:500;cursor:pointer;user-select:none}tr+tr td{border-top:1px solid var(--line)}
+.bar2{display:inline-block;height:6px;border-radius:3px;background:var(--green);vertical-align:middle;margin-right:8px}.mut{color:var(--muted)}
+.mx td,.mx th{text-align:center;padding:6px 8px;font-size:11.5px}.mx th:first-child,.mx td:first-child{position:sticky;left:0;background:var(--surface);text-align:left}
+#msg{color:var(--muted);font-size:12.5px;margin:6px 0}.note{color:var(--muted);font-size:12px;line-height:1.6;padding:8px 12px}
+</style></head><body><main>
+<h1>Vote Analyzer</h1><p class="sub">Load the CSV exported from your Google Sheet (File → Download → CSV). Duplicates are removed by <b>vote_id</b>.</p>
+<div class="bar"><label class="btn cta">Load CSV<input id="file" type="file" accept=".csv" hidden></label>
+<select id="page"><option value="">All pages</option></select><select id="country"><option value="">All countries</option></select></div>
+<div id="msg">No data loaded.</div>
+<div class="tabs"><button class="tab on" data-t="rank">Rankings</button><button class="tab" data-t="tally">Tally</button><button class="tab" data-t="h2h">Head-to-head</button><button class="tab" data-t="info">Info</button></div>
+<div id="rank" class="pane on card"></div><div id="tally" class="pane card"></div><div id="h2h" class="pane card"></div><div id="info" class="pane card"></div>
+</main><script>
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let D=null,meta=null,sortK="rating",sortDir=-1;
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab,.pane").forEach(e=>e.classList.remove("on"));b.classList.add("on");$(b.dataset.t).classList.add("on")});
+$("file").onchange=async e=>{const f=e.target.files[0];if(!f)return;$("msg").textContent="Reading file… (large files take a moment, your PC stays responsive)";
+ const r=await fetch("/api/upload",{method:"POST",body:f});if(!r.ok){$("msg").textContent="Upload failed: "+(await r.json()).error;return}
+ meta=await (await fetch("/api/meta")).json();fill("page",meta.pages,"All pages");fill("country",meta.countries,"All countries");run()};
+function fill(id,a,all){$(id).innerHTML=`<option value="">${all}</option>`+a.map(x=>`<option>${esc(x)}</option>`).join("")}
+$("page").onchange=$("country").onchange=()=>run();
+async function run(){$("msg").textContent="Computing Bradley-Terry…";
+ D=await (await fetch(`/api/analyze?page=${encodeURIComponent($("page").value)}&country=${encodeURIComponent($("country").value)}`)).json();render()}
+function render(){if(!D.names.length){$("msg").textContent="No votes match this filter.";["rank","tally","h2h"].forEach(i=>$(i).innerHTML="");return}
+ const n=D.names.length,rows=D.names.map((c,i)=>{const w=D.matrix[i].reduce((a,b)=>a+b,0),l=D.matrix.reduce((a,r)=>a+r[i],0);
+  return{name:c,rating:D.rating[i],ci:D.ci[i],wins:w,losses:l,games:w+l,rate:w+l?w/(w+l):0,i}});
+ $("msg").textContent=`${D.votes.toLocaleString()} votes · ${n} characters · converged in ${D.iters} iterations`;
+ rows.sort((a,b)=>sortK==="name"?sortDir*-a.name.localeCompare(b.name):sortDir*(a[sortK]-b[sortK]));
+ const hd=(k,t,l)=>`<th class="${l?"l":""}" onclick="srt('${k}')">${t}${sortK===k?(sortDir<0?" ▾":" ▴"):""}</th>`;
+ const mx=Math.max(...D.rating),mn=Math.min(...D.rating);
+ $("rank").innerHTML=`<table><tr><th class="l">#</th>${hd("name","Character",1)}${hd("rating","BT rating")}<th>±95%</th>${hd("rate","Win rate")}</tr>`+
+  [...rows].sort((a,b)=>b.rating-a.rating).map((r,k)=>`<tr><td class="mut">${k+1}</td><td class="l">${esc(r.name)}</td><td class="l"><span class="bar2" style="width:${10+130*(r.rating-mn)/(mx-mn||1)}px"></span>${r.rating.toFixed(0)}</td><td class="mut">±${r.ci.toFixed(0)}</td><td>${(r.rate*100).toFixed(1)}%</td></tr>`).join("")+
+  `</table><div class="note">Rating is Elo-style (1500 = average, 400 points = 10× odds). It depends only on the win/loss counts between each pair, never on vote order, and corrects for unequal matchups. ± is an approximate 95% interval; overlapping ranges mean those characters are statistically close.</div>`;
+ $("tally").innerHTML=`<table><tr>${hd("name","Character",1)}${hd("wins","Wins")}${hd("losses","Losses")}${hd("games","Matchups")}${hd("rate","Win rate")}</tr>`+
+  rows.map(r=>`<tr><td class="l">${esc(r.name)}</td><td>${r.wins}</td><td>${r.losses}</td><td>${r.games}</td><td>${(r.rate*100).toFixed(1)}%</td></tr>`).join("")+`</table>`;
+ const order=[...rows].sort((a,b)=>b.rating-a.rating).map(r=>r.i);
+ $("h2h").innerHTML=`<div class="note">Row beat column this many times. Green = row wins most of the pairs. Ordered by BT rating.</div><table class="mx"><tr><th>wins ↓ vs →</th>${order.map(j=>`<th title="${esc(D.names[j])}">${esc(D.names[j].slice(0,6))}</th>`).join("")}</tr>`+
+  order.map(i=>`<tr><td>${esc(D.names[i])}</td>${order.map(j=>{const a=D.matrix[i][j],b=D.matrix[j][i],t=a+b;
+   return i===j?`<td class="mut">–</td>`:t?`<td style="background:rgba(${a>=b?"155,209,123":"255,107,107"},${(Math.abs(a/t-.5)*1.4).toFixed(2)})">${a}</td>`:`<td class="mut">·</td>`}).join("")}</tr>`).join("")+`</table>`;
+ $("info").innerHTML=`<div class="note">Rows used: <b>${meta.rows.toLocaleString()}</b> · duplicate vote_ids removed: <b>${meta.dupes.toLocaleString()}</b> · invalid rows skipped: <b>${meta.bad.toLocaleString()}</b><br>Pages: ${meta.pages.map(esc).join(", ")||"–"}<br>Countries: ${meta.countries.map(esc).join(", ")||"–"}<br><br>Method: Bradley-Terry via the MM algorithm on the pair win matrix, with a tiny 0.5 pseudo-win prior per pair so unbeaten characters stay finite.</div>`}
+function srt(k){sortDir=sortK===k?-sortDir:(k==="name"?1:-1);sortK=k;render()}
+</script></body></html>
