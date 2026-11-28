@@ -1,74 +1,74 @@
 {
-  "academies": [
+  "characters": [
     {
       "key": "abydos",
       "name": "Abydos",
-      "icon": "assets/academies/abydos.webp"
+      "portrait": "assets/characters/abydos.webp"
     },
     {
       "key": "arius",
       "name": "Arius",
-      "icon": "assets/academies/arius.webp"
+      "portrait": "assets/characters/arius.webp"
     },
     {
       "key": "gehenna",
       "name": "Gehenna",
-      "icon": "assets/academies/gehenna.webp"
+      "portrait": "assets/characters/gehenna.webp"
     },
     {
       "key": "highlander",
       "name": "Highlander",
-      "icon": "assets/academies/highlander.webp"
+      "portrait": "assets/characters/highlander.webp"
     },
     {
       "key": "hyakkiyako",
       "name": "Hyakkiyako",
-      "icon": "assets/academies/hyakkiyako.webp"
+      "portrait": "assets/characters/hyakkiyako.webp"
     },
     {
       "key": "kronos",
       "name": "Kronos",
-      "icon": "assets/academies/kronos.webp"
+      "portrait": "assets/characters/kronos.webp"
     },
     {
       "key": "millennium",
       "name": "Millennium",
-      "icon": "assets/academies/millennium.webp"
+      "portrait": "assets/characters/millennium.webp"
     },
     {
       "key": "odyssey",
       "name": "Odyssey",
-      "icon": "assets/academies/odyssey.webp"
+      "portrait": "assets/characters/odyssey.webp"
     },
     {
       "key": "red_winter",
       "name": "Red Winter",
-      "icon": "assets/academies/red_winter.webp"
+      "portrait": "assets/characters/red_winter.webp"
     },
     {
       "key": "shanhaijing",
       "name": "Shanhaijing",
-      "icon": "assets/academies/shanhaijing.webp"
+      "portrait": "assets/characters/shanhaijing.webp"
     },
     {
       "key": "srt",
       "name": "SRT",
-      "icon": "assets/academies/srt.webp"
+      "portrait": "assets/characters/srt.webp"
     },
     {
       "key": "trinity",
       "name": "Trinity",
-      "icon": "assets/academies/trinity.webp"
+      "portrait": "assets/characters/trinity.webp"
     },
     {
       "key": "valkyrie",
       "name": "Valkyrie",
-      "icon": "assets/academies/valkyrie.webp"
+      "portrait": "assets/characters/valkyrie.webp"
     },
     {
       "key": "wildhunt",
       "name": "Wildhunt",
-      "icon": "assets/academies/wildhunt.webp"
+      "portrait": "assets/characters/wildhunt.webp"
     }
   ]
 }
