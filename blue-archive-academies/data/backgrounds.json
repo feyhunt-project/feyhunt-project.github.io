@@ -1,0 +1,24 @@
+{
+  "backgrounds": [
+    {
+      "id": "bg01",
+      "image": "assets/backgrounds/BG_AronaRoom.webp"
+    },
+    {
+      "id": "bg02",
+      "image": "assets/backgrounds/BG_GameDevRoom.webp"
+    },
+    {
+      "id": "bg03",
+      "image": "assets/backgrounds/BG_SRTCampSite.webp"
+    },
+    {
+      "id": "bg04",
+      "image": "assets/backgrounds/BG_TrinityClassRoom.webp"
+    },
+    {
+      "id": "bg05",
+      "image": "assets/backgrounds/BG_View_Schale.webp"
+    }
+  ]
+}

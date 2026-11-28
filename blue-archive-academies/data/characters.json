@@ -1,0 +1,74 @@
+{
+  "academies": [
+    {
+      "key": "abydos",
+      "name": "Abydos",
+      "icon": "assets/academies/abydos.webp"
+    },
+    {
+      "key": "arius",
+      "name": "Arius",
+      "icon": "assets/academies/arius.webp"
+    },
+    {
+      "key": "gehenna",
+      "name": "Gehenna",
+      "icon": "assets/academies/gehenna.webp"
+    },
+    {
+      "key": "highlander",
+      "name": "Highlander",
+      "icon": "assets/academies/highlander.webp"
+    },
+    {
+      "key": "hyakkiyako",
+      "name": "Hyakkiyako",
+      "icon": "assets/academies/hyakkiyako.webp"
+    },
+    {
+      "key": "kronos",
+      "name": "Kronos",
+      "icon": "assets/academies/kronos.webp"
+    },
+    {
+      "key": "millennium",
+      "name": "Millennium",
+      "icon": "assets/academies/millennium.webp"
+    },
+    {
+      "key": "odyssey",
+      "name": "Odyssey",
+      "icon": "assets/academies/odyssey.webp"
+    },
+    {
+      "key": "red_winter",
+      "name": "Red Winter",
+      "icon": "assets/academies/red_winter.webp"
+    },
+    {
+      "key": "shanhaijing",
+      "name": "Shanhaijing",
+      "icon": "assets/academies/shanhaijing.webp"
+    },
+    {
+      "key": "srt",
+      "name": "SRT",
+      "icon": "assets/academies/srt.webp"
+    },
+    {
+      "key": "trinity",
+      "name": "Trinity",
+      "icon": "assets/academies/trinity.webp"
+    },
+    {
+      "key": "valkyrie",
+      "name": "Valkyrie",
+      "icon": "assets/academies/valkyrie.webp"
+    },
+    {
+      "key": "wildhunt",
+      "name": "Wildhunt",
+      "icon": "assets/academies/wildhunt.webp"
+    }
+  ]
+}
